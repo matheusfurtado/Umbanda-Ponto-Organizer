@@ -16,6 +16,22 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
+## Artifacts
+
+### `artifacts/pontos-umbanda` — Pontos de Umbanda PWA
+
+React + Vite frontend-only PWA. All data stored in localStorage. No backend needed.
+
+- **Technology**: React, TypeScript, Tailwind CSS, Shadcn UI, vite-plugin-pwa
+- **Data model**: Orixás → Subcategorias → Pontos (3-level hierarchy)
+- **Features**: Full CRUD, accordion pontos, real-time search with highlight, favorites, export/import JSON backup, PWA install prompt
+- **Storage**: localStorage via `src/storage.ts`
+- **State**: React Context (`src/context.tsx`)
+- **Pages**: `TelaOrixas` (home), `TelaSubcategorias` (with search)
+- **PWA**: Service Worker via vite-plugin-pwa, offline support, install banner
+
+---
+
 ## Structure
 
 ```text

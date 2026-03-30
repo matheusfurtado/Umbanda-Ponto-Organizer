@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Pontos de Umbanda"
+version = "1.0.0"
+id = "artifacts/pontos-umbanda"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21871
+
+[services.development]
+run = "pnpm --filter @workspace/pontos-umbanda run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/pontos-umbanda", "run", "build" ]
+publicDir = "artifacts/pontos-umbanda/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21871"
+BASE_PATH = "/"
