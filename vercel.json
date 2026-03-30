@@ -1,0 +1,9 @@
+{
+  "buildCommand": "pnpm --filter @workspace/pontos-umbanda build",
+  "outputDirectory": "artifacts/pontos-umbanda/dist",
+  "installCommand": "pnpm install",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

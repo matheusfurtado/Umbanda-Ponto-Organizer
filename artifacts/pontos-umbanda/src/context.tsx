@@ -22,6 +22,11 @@ interface AppContextType {
   excluirPonto: (id: string) => void;
   toggleFavorito: (id: string) => void;
   reordenarPontos: (subcategoriaId: string, ids: string[]) => void;
+  reordenarSubcategorias: (orixaId: string, ids: string[]) => void;
+  reordenarOrixas: (ids: string[]) => void;
+  moverPontoCima: (ponto: Ponto) => void;
+  moverPontoBaixo: (ponto: Ponto) => void;
+  moverPontoParaSubcategoria: (pontoId: string, novaSubcategoriaId: string, posicao?: number) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -195,6 +200,77 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [dados, atualizar]
   );
 
+  const reordenarSubcategorias = useCallback(
+    (orixaId: string, ids: string[]) => {
+      const subcategorias = dados.subcategorias.map((s) => {
+        const idx = ids.indexOf(s.id);
+        return s.orixaId === orixaId && idx !== -1
+          ? { ...s, ordem: idx }
+          : s;
+      });
+      atualizar({ ...dados, subcategorias });
+    },
+    [dados, atualizar]
+  );
+
+  const reordenarOrixas = useCallback(
+    (ids: string[]) => {
+      const orixas = dados.orixas.map((o) => {
+        const idx = ids.indexOf(o.id);
+        return idx !== -1 ? { ...o, ordem: idx } : o;
+      });
+      atualizar({ ...dados, orixas });
+    },
+    [dados, atualizar]
+  );
+
+  const moverPontoCima = useCallback(
+    (ponto: Ponto) => {
+      const pontosDaSub = dados.pontos
+        .filter((p) => p.subcategoriaId === ponto.subcategoriaId)
+        .sort((a, b) => a.ordem - b.ordem);
+      const idx = pontosDaSub.findIndex((p) => p.id === ponto.id);
+      if (idx <= 0) return;
+      const anterior = pontosDaSub[idx - 1];
+      const pontos = dados.pontos.map((p) => {
+        if (p.id === ponto.id) return { ...p, ordem: anterior.ordem };
+        if (p.id === anterior.id) return { ...p, ordem: ponto.ordem };
+        return p;
+      });
+      atualizar({ ...dados, pontos });
+    },
+    [dados, atualizar]
+  );
+
+  const moverPontoBaixo = useCallback(
+    (ponto: Ponto) => {
+      const pontosDaSub = dados.pontos
+        .filter((p) => p.subcategoriaId === ponto.subcategoriaId)
+        .sort((a, b) => a.ordem - b.ordem);
+      const idx = pontosDaSub.findIndex((p) => p.id === ponto.id);
+      if (idx < 0 || idx >= pontosDaSub.length - 1) return;
+      const proximo = pontosDaSub[idx + 1];
+      const pontos = dados.pontos.map((p) => {
+        if (p.id === ponto.id) return { ...p, ordem: proximo.ordem };
+        if (p.id === proximo.id) return { ...p, ordem: ponto.ordem };
+        return p;
+      });
+      atualizar({ ...dados, pontos });
+    },
+    [dados, atualizar]
+  );
+
+  const moverPontoParaSubcategoria = useCallback(
+    (pontoId: string, novaSubcategoriaId: string, posicao?: number) => {
+      const novaOrdem = posicao ?? dados.pontos.filter((p) => p.subcategoriaId === novaSubcategoriaId).length;
+      const pontos = dados.pontos.map((p) =>
+        p.id === pontoId ? { ...p, subcategoriaId: novaSubcategoriaId, ordem: novaOrdem } : p
+      );
+      atualizar({ ...dados, pontos });
+    },
+    [dados, atualizar]
+  );
+
   return (
     <AppContext.Provider
       value={{
@@ -214,6 +290,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         excluirPonto,
         toggleFavorito,
         reordenarPontos,
+        reordenarSubcategorias,
+        reordenarOrixas,
+        moverPontoCima,
+        moverPontoBaixo,
+        moverPontoParaSubcategoria,
       }}
     >
       {children}

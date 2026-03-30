@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Plus, Edit2, Trash2, ChevronLeft, Search, X, Star } from "lucide-react";
+import { useState, useMemo, useCallback } from "react";
+import { Plus, Edit2, Trash2, ChevronLeft, Search, X, Star, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useApp } from "@/context";
@@ -8,6 +8,88 @@ import { ModalConfirmar } from "@/components/ModalConfirmar";
 import { ModalPonto } from "@/components/ModalPonto";
 import { Subcategoria, Ponto, Orixa } from "@/types";
 import { CardPonto } from "@/components/CardPonto";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+const SUB_PREFIX = "sub:";
+
+function SortableSubHeader({
+  sub,
+  onEdit,
+  onDelete,
+  onAddPonto,
+}: {
+  sub: Subcategoria;
+  onEdit: () => void;
+  onDelete: () => void;
+  onAddPonto: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: SUB_PREFIX + sub.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : undefined,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className={`flex items-center gap-2 mb-2 ${isDragging ? "opacity-50" : ""}`}>
+      <button
+        className="touch-none shrink-0 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing p-1"
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical className="w-3.5 h-3.5" />
+      </button>
+      <div className="flex-1 flex items-center gap-2">
+        <div className="h-px flex-1 bg-border" />
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1">
+          {sub.nome}
+        </h2>
+        <div className="h-px flex-1 bg-border" />
+      </div>
+      <div className="flex items-center gap-1 shrink-0">
+        <button
+          onClick={onEdit}
+          className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        >
+          <Edit2 className="w-3 h-3" />
+        </button>
+        <button
+          onClick={onDelete}
+          className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+        >
+          <Trash2 className="w-3 h-3" />
+        </button>
+        <button
+          onClick={onAddPonto}
+          className="w-7 h-7 rounded-lg flex items-center justify-center text-primary hover:bg-primary/10 transition-colors"
+        >
+          <Plus className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 interface Props {
   orixa: Orixa;
@@ -15,13 +97,90 @@ interface Props {
 }
 
 export function TelaSubcategorias({ orixa, onVoltar }: Props) {
-  const { dados, adicionarSubcategoria, editarSubcategoria, excluirSubcategoria, adicionarPonto } = useApp();
+  const { dados, adicionarSubcategoria, editarSubcategoria, excluirSubcategoria, adicionarPonto, reordenarPontos, reordenarSubcategorias, moverPontoParaSubcategoria } = useApp();
   const [busca, setBusca] = useState("");
   const [modalSubAberto, setModalSubAberto] = useState(false);
   const [subEditar, setSubEditar] = useState<Subcategoria | null>(null);
   const [confirmarExcluirSub, setConfirmarExcluirSub] = useState<Subcategoria | null>(null);
   const [modalPontoAberto, setModalPontoAberto] = useState(false);
   const [subParaNovoPonto, setSubParaNovoPonto] = useState<string | null>(null);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } })
+  );
+
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string);
+  }, []);
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      setActiveDragId(null);
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const activeId = active.id as string;
+      const overId = over.id as string;
+
+      // Drag subcategoria
+      if (activeId.startsWith(SUB_PREFIX) && overId.startsWith(SUB_PREFIX)) {
+        const subIds = dados.subcategorias
+          .filter((s) => s.orixaId === orixa.id)
+          .sort((a, b) => a.ordem - b.ordem)
+          .map((s) => s.id);
+        const oldIndex = subIds.indexOf(activeId.slice(SUB_PREFIX.length));
+        const newIndex = subIds.indexOf(overId.slice(SUB_PREFIX.length));
+        if (oldIndex !== -1 && newIndex !== -1) {
+          reordenarSubcategorias(orixa.id, arrayMove(subIds, oldIndex, newIndex));
+        }
+        return;
+      }
+
+      // Drag ponto
+      if (!activeId.startsWith(SUB_PREFIX)) {
+        const pontoAtivo = dados.pontos.find((p) => p.id === activeId);
+        if (!pontoAtivo) return;
+
+        // Over é um ponto
+        const pontoOver = dados.pontos.find((p) => p.id === overId);
+        if (pontoOver) {
+          if (pontoAtivo.subcategoriaId === pontoOver.subcategoriaId) {
+            // Mesmo container: reordenar
+            const subId = pontoAtivo.subcategoriaId;
+            const ids = dados.pontos
+              .filter((p) => p.subcategoriaId === subId)
+              .sort((a, b) => a.ordem - b.ordem)
+              .map((p) => p.id);
+            const oldIndex = ids.indexOf(activeId);
+            const newIndex = ids.indexOf(overId);
+            if (oldIndex !== -1 && newIndex !== -1) {
+              reordenarPontos(subId, arrayMove(ids, oldIndex, newIndex));
+            }
+          } else {
+            // Container diferente: mover para a subcategoria do ponto de destino
+            const destSubId = pontoOver.subcategoriaId;
+            const destPontos = dados.pontos
+              .filter((p) => p.subcategoriaId === destSubId)
+              .sort((a, b) => a.ordem - b.ordem);
+            const overIndex = destPontos.findIndex((p) => p.id === overId);
+            moverPontoParaSubcategoria(activeId, destSubId, overIndex >= 0 ? overIndex : undefined);
+          }
+          return;
+        }
+
+        // Over é uma subcategoria (soltar na área vazia)
+        if (overId.startsWith(SUB_PREFIX)) {
+          const destSubId = overId.slice(SUB_PREFIX.length);
+          if (pontoAtivo.subcategoriaId !== destSubId) {
+            moverPontoParaSubcategoria(activeId, destSubId);
+          }
+        }
+      }
+    },
+    [dados.pontos, dados.subcategorias, orixa.id, reordenarPontos, reordenarSubcategorias, moverPontoParaSubcategoria]
+  );
 
   const subcategorias = useMemo(
     () => dados.subcategorias
@@ -132,6 +291,12 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
           </div>
         ) : (
           /* Subcategorias normais */
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
           <div className="px-4 pb-32 space-y-4">
             {subcategorias.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
@@ -141,38 +306,18 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
                 <p className="text-xs mt-1 opacity-70">Ex: Chamada, Louvação, Descarrego</p>
               </div>
             ) : (
-              subcategorias.map((sub) => (
+              <SortableContext
+                items={subcategorias.map((s) => SUB_PREFIX + s.id)}
+                strategy={verticalListSortingStrategy}
+              >
+              {subcategorias.map((sub) => (
                 <div key={sub.id}>
-                  {/* Header da subcategoria */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex-1 flex items-center gap-2">
-                      <div className="h-px flex-1 bg-border" />
-                      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1">
-                        {sub.nome}
-                      </h2>
-                      <div className="h-px flex-1 bg-border" />
-                    </div>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <button
-                        onClick={() => { setSubEditar(sub); setModalSubAberto(true); }}
-                        className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                      >
-                        <Edit2 className="w-3 h-3" />
-                      </button>
-                      <button
-                        onClick={() => setConfirmarExcluirSub(sub)}
-                        className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                      <button
-                        onClick={() => { setSubParaNovoPonto(sub.id); setModalPontoAberto(true); }}
-                        className="w-7 h-7 rounded-lg flex items-center justify-center text-primary hover:bg-primary/10 transition-colors"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
+                  <SortableSubHeader
+                    sub={sub}
+                    onEdit={() => { setSubEditar(sub); setModalSubAberto(true); }}
+                    onDelete={() => setConfirmarExcluirSub(sub)}
+                    onAddPonto={() => { setSubParaNovoPonto(sub.id); setModalPontoAberto(true); }}
+                  />
 
                   {/* Pontos desta subcategoria */}
                   {pontosPorSub[sub.id]?.length === 0 ? (
@@ -183,16 +328,23 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
                       + Adicionar ponto
                     </button>
                   ) : (
-                    <div className="space-y-2">
-                      {pontosPorSub[sub.id].map((ponto) => (
-                        <CardPonto key={ponto.id} ponto={ponto} busca="" />
-                      ))}
-                    </div>
+                    <SortableContext
+                      items={pontosPorSub[sub.id].map((p) => p.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-2">
+                        {pontosPorSub[sub.id].map((ponto) => (
+                          <CardPonto key={ponto.id} ponto={ponto} busca="" sortable />
+                        ))}
+                      </div>
+                    </SortableContext>
                   )}
                 </div>
-              ))
+              ))}
+              </SortableContext>
             )}
           </div>
+          </DndContext>
         )}
       </div>
 
