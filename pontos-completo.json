@@ -292,6 +292,13 @@
       "orixaId": "omulu",
       "ordem": 0,
       "criadoEm": 1775839257000
+    },
+    {
+      "id": "sub-xango-pontos",
+      "nome": "Pontos",
+      "orixaId": "xango",
+      "ordem": 0,
+      "criadoEm": 1775840702821
     }
   ],
   "pontos": [
@@ -2274,6 +2281,258 @@
       "criadoEm": 1775839257000,
       "titulo": "Silêncio, meu senhor está na terra...",
       "letra": "Silêncio\nMeu senhor está na terra\nO Sol em forma de Orixá no terreiro baixou\nBradou seu ylá que zuniu feito a morte que berra\n\nCanta povo do ayê\nSalve meu pai atotô atotô Obaluaê\n\nOgum trançou seu maryô com as palhas da costa\nQue dançam aos sabor dos caprichos dos ventos de Oyá\nOs males e dores do mundo trás ele a resposta\nSegredo escondido na força do seu xaxará\nDerramei pipocas ao chão preparei seu Olubajé\nCom preto e o branco das contas fiz meu abadá\nOgã retumbou no atabaque um canto de fé\nEu vi meu Senhor embalado e trazendo Axé\n\nÉ ele o Senhor das doenças da febre que consome\nO filho que vem encantado nas mãos de Nanã\nEu peço licença a Olorum pra dizer o seu nome\nÉ Omolu, Obaluaê meu pai Xapanã"
+    },
+    {
+      "id": "xango-1",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 0,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Pedra rolou Xangô...",
+      "letra": "Pedra rolou Xangô\nLá na pedreira\nSegura a pedra meu Pai\nNa cachoeira (2x)"
+    },
+    {
+      "id": "xango-2",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 1,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Tenho o meu corpo fechado...",
+      "letra": "Tenho o meu corpo fechado\nXangô é meu protetor\nFirma o ponto meu filho\nPai de cabeça chegou (2x)"
+    },
+    {
+      "id": "xango-3",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 2,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Ô Gino olha a sua banda...",
+      "letra": "Ô Gino olha a sua banda\nÔ Gino olha o seu gongá (2x)\nAonde o rouxinol cantava\nNa pedra onde Xangô morava\nEle filho da cobra coral (3x)\nKaô\n\nParáfita olha a sua banda\nParáfita olha o seu gongá (2x)\nAonde o rouxinol cantava\nNa pedra onde Xangô morava\nEle filho da cobra coral (3x)\nKaô"
+    },
+    {
+      "id": "xango-4",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 3,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Lá em cima daquela pedreira...",
+      "letra": "Lá em cima daquela pedreira\nTem um livro que é de Xangô (2x)\nKaô ôôô\nXangô ôôô\nKaô kabecile"
+    },
+    {
+      "id": "xango-5",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 4,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Kaô Xangô, deixa essa pedreira...",
+      "letra": "Kaô Xangô\nDeixa essa pedreira aí (2x)\nMas a Umbanda ta lhe chamando\nDeixa essa pedreira aí (2x)"
+    },
+    {
+      "id": "xango-6",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 5,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Quem rola as pedras na pedreira...",
+      "letra": "Quem rola as pedras na pedreira é Xangô\nPedra rolou na cachoeira é Xangô\nVivo na coroa de Zambi\nVivo na coroa de Zambi\nVivo mas o rei da pedreira\né Xangô"
+    },
+    {
+      "id": "xango-7",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 6,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Xangô colocou pedra em meus caminhos...",
+      "letra": "Xangô colocou pedra em meus caminhos\nMas eu não era para eu passar (2x)\nEm cada pedra que Xangô pisava\nEu via um sonho se realizava (2x)\nPedras sobre pedras\nConsegui fazer\nA gruta para Oxumarê (2x)"
+    },
+    {
+      "id": "xango-8",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 7,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Ele bradou na aldeia...",
+      "letra": "Ele bradou na aldeia\nBradou na cachoeira\nEm noite de luar\nNo alto da pedreira\nVai fazer justiça\nPra nos ajudar (2x)\n\nEle bradou na aldeia\nKaô kaô\nE aqui vai bradar\nKaô kaô\nEle é Xangô da pedreira\nEle nasceu na cachoeira\nLá no juremá (2x)"
+    },
+    {
+      "id": "xango-9",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 8,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Dizem que Xangô mora na pedreira...",
+      "letra": "Dizem que Xangô\nMora na pedreira\nMas não é lá\nSua morada verdadeira (2x)\nEle mora no horizonte, numa cidade de luz\nOnde mora Santa Bárbara, Oxumarê e Jesus (2x)"
+    },
+    {
+      "id": "xango-10",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 9,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Por detrás daquela serra...",
+      "letra": "Por detrás daquela serra\nTem uma linda cachoeira (2x)\nÉ de meu pai Xangô\nQue arrebentou sete pedreiras (2x)"
+    },
+    {
+      "id": "xango-11",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 10,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Foi água nascendo na fonte...",
+      "letra": "Foi água nascendo na fonte e o espinho na flor\nDo seu medo escondido nasceu a coragem\nDe ser vencedor\nPunhal na mão no peito um escudo mais fiel\nDe quem na terra concebeu ao céu\nSão sete pedreiras que ele aprendeu a quebrar\nNa faísca na fúria no raio na chuva\nA luz do luar\nLavou o corpo com o vinho amargo do suor\nE fez do próprio bem de todos males talvez o menor"
+    },
+    {
+      "id": "xango-12",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 11,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Veja que pedreira linda...",
+      "letra": "Veja que pedreira linda\nÉ a morada de meu pai Xangô\nEle é o rei da justiça\nMeu pai de fé meu protetor\nQuando me encontro perdido\nA ele peço sua proteção\nSinto logo um grande alívio\nE lhe rezo firme uma oração (2x)\n\nEle é meu pai\nÉ meu senhor\nÉ meu braço forte é meu pai Xangô (2x)\n\nUma oferenda eu faço\nE levo na pedreira pra lhe ofertar\nUm buquê de lírios brancos\nUma gamela com seu amalá\nPeço paz para a humanidade\nE que todos possam se encontrar\nEsse é o pedido que faço a meu pai de fé Xangô Airá (2x)\n\nEle é meu pai\nÉ meu senhor\nÉ meu braço forte é meu pai Xangô (2x)"
+    },
+    {
+      "id": "xango-13",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 12,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Se eu errei, aqui estou...",
+      "letra": "Se eu errei, aqui estou\nPedindo Maleme meu pai Xangô (2x)\nMandai a faísca de um raio pra me iluminar\nSegure a pedra na pedreira não deixa rolar"
+    },
+    {
+      "id": "xango-14",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 13,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Xangô Kaô meu pai...",
+      "letra": "Xangô Kaô meu pai,\nOs seus filhos bambeiam, mas não caem (2x)"
+    },
+    {
+      "id": "xango-15",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 14,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Ouvi um trovão na pedreira...",
+      "letra": "Ouvi um trovão na pedreira\nOuvi\nClareou toda a terra\nEu vi\nPassarada a revoar\nSenti uma alegria tão grande\nAo ver aquela imagem que logo reconheci\nChorei, implorei por justiça\nPai Xangô eu sou seu filho\nOlha o meu caminhar\n\nOh Pai, não me deixe andar sozinho\nQue ao lado do Senhor prometo que vou sempre estar (2x)"
+    },
+    {
+      "id": "xango-16",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 15,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Kaô Pai Xangô, é o meu pai...",
+      "letra": "Kaô Pai Xangô\nÉ o meu pai é o meu guia e protetor\nKaô Pai Xangô\nTodos seus filhos lhe adoram com amor\nSenhor da justiça e verdade\nCom a sua machadinha\nAs mirongas vai cortar\nSentado em seu trono coroado\nTire as pedras do caminho por onde eu vou passar"
+    },
+    {
+      "id": "xango-17",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 16,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Ele vem de Aruanda...",
+      "letra": "Ele vem de Aruanda\nEle vem trabalhar\nEle vence demanda\nEle é seu Airá (2x)\nKaô, Kaô, Kaô, Kaô\nA justiça chegou"
+    },
+    {
+      "id": "xango-18",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 17,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "No alto da pedreira...",
+      "letra": "No alto da pedreira\nXangô escreveu o seu nome (2x)\nEle é Xangô\nXangô, Xangô Airá\nQue a seus filhos\nEle veio abençoar (2x)"
+    },
+    {
+      "id": "xango-19",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 18,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Xangô é o rei da pedreira...",
+      "letra": "Xangô é o rei da pedreira\nRei do trovão e da justiça verdadeira\nXangô meu pai, sua proteção\nPara os seus filhos que pedem\nSua benção (2x)"
+    },
+    {
+      "id": "xango-20",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 19,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Pedra rola da pedreira...",
+      "letra": "Pedra rola da pedreira\nEm cima de quem errou\nJustiça quem faz é ele\nPor que ele é Xangô (2x)\n\nCom seu leão do lado\nCom seu machado na mão\nEle corta mironga\nPra seus filhos dá proteção"
+    },
+    {
+      "id": "xango-21",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 20,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Justiça maior é de meu pai Xangô...",
+      "letra": "Justiça maior é de meu pai Xangô\nJustiça verdadeira\nO seu brado é tão alto\nEcoa na pedreira (2x)"
+    },
+    {
+      "id": "xango-22",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 21,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Xangô meu pai na Umbanda...",
+      "letra": "Xangô meu pai na Umbanda\nVem de Aruanda ele é meu Orixá\nNo alto de uma pedreira\nEle faz justiça, pra seus filhos ajudar (2x)"
+    },
+    {
+      "id": "xango-23",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 22,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Xangô, na sua aldeia...",
+      "letra": "Xangô, na sua aldeia\nNão há maldades\nSó o amor pode reinar\nTu me ensinastes a\nFazer a caridade\nE pela terra\nA Umbanda exaltar\nMeu pai com sua machada\nEle não ataca\nÉ só para me guardar\nE no seu livro ele\nEscreva o meu destino\nMeu pai Xangô\nIlumina meus caminhos\n\nEle é Xangô\nKaô, Kaô\nVencedor de demanda\nEle é meu protetor (2x)"
+    },
+    {
+      "id": "xango-24",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 23,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Xangô é rei, é rei de Nagô...",
+      "letra": "Xangô é rei\nÉ rei de Nagô (2x)\nBate palmas pra coroa de Xangô (4x)"
+    },
+    {
+      "id": "xango-25",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 24,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Meu Pai, Meu Senhor...",
+      "letra": "Meu Pai, Meu Senhor\nDe joelhos eu peço a ti Pai Xangô\nQue me mande a faísca de um Raio Divino\nDefender meu Terreiro de um mal protetor (2x)"
+    },
+    {
+      "id": "xango-26",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 25,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Eu vi chover, chover...",
+      "letra": "Eu vi chover, chover\nVento que balanceou, balanceou\nVento bateu na pedreira\nFoi de encontro à cachoeira,\nÁgua rolou (2x)"
+    },
+    {
+      "id": "xango-27",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 26,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Ele é Xangô das Almas...",
+      "letra": "Ele é Xangô das Almas (4x)\nOh Almas, oh minhas almas\nSeu Agodô que venha nos valer (2x)"
+    },
+    {
+      "id": "xango-28",
+      "subcategoriaId": "sub-xango-pontos",
+      "ordem": 27,
+      "favorito": false,
+      "criadoEm": 1775840702821,
+      "titulo": "Meu pai São João Batista é Xangô...",
+      "letra": "Meu pai São João Batista é Xangô\nEle é dono do meu destino até o fim (2x)\nSe um dia me faltar a fé no meu senhor\nDerruba essa pedreira sobre mim (2x)\n\nÉ de xoroquê a porteira de entrada que Olorum te deu\nÉ de xorocô a madeira sagrada de Xangô (2x)\nPra quem tem licença a porteira do mundo nunca tranca\nPra quem tem a benção do dono da gameleira branca (2x)\n\nBate na porteira, Bará vai abrir\nFoi na gameleira, Coral e tauí\nJá deu na peneira de mãe Marcelina e pai Aurélio\nÉ cajá de espada, ninguém passa ali\nEssa é a minha estrada\nEu sei porque eu que vi\nQue ela foi riscada na árvore do Xangô mais velho\n\nMeu pai São João Batista ele é Xangô\nÉ dono do meu destino até o fim (2x)\nSe um dia me faltar a fé no meu senhor\nDerrube essa pedreira sobre mim (2x)"
     }
   ]
 }
