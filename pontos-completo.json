@@ -285,6 +285,13 @@
       "orixaId": "beijada",
       "ordem": 0,
       "criadoEm": 1775829769157
+    },
+    {
+      "id": "sub-omulu-pontos",
+      "nome": "Pontos",
+      "orixaId": "omulu",
+      "ordem": 0,
+      "criadoEm": 1775839257000
     }
   ],
   "pontos": [
@@ -2123,6 +2130,150 @@
       "criadoEm": 1775829769157,
       "titulo": "Bahia é terra de dois...",
       "letra": "Bahia é terra de dois\nÉ terra de dois irmãos\nGovernador da Bahia\nÉ São Cosme e São Damião (2x)"
+    },
+    {
+      "id": "omulu-1",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 0,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Meu pai Oxalá é o rei...",
+      "letra": "Meu pai Oxalá\nÉ o rei venha me valer (2x)\nO mestre Omulu Atoto Obaluaê (2x)\n\nAtoto Obaluaê, Atoto Baba\nAtoto Obaluaê, Atoto é Orixá (2x)"
+    },
+    {
+      "id": "omulu-2",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 1,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Oh! Como é belo este jardim...",
+      "letra": "Oh! Como é belo este jardim\nCom lindas flores enfeitadas em buquê (2x)\nOfertadas de todo coração\nAo mestre Obaluaê (2x)\n\nAs flores do meu velho\nAtôtô meu pai\nSão lindas e cheirosas\nAtôtô meu pai\nAs flores do meu velho\nAtôtô meu pai\nTambém são milagrosas"
+    },
+    {
+      "id": "omulu-3",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 2,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Que orixá é esse...",
+      "letra": "Que orixá é esse\nTodo coberto de palha (2x)\nÉ o seu Omulu meu senhor\nO rei da magia (2x)\n\nSeu Omulu\nSou o seu filho fé (2x)\nVim trazer flores brancas senhor\nPra receber seu axé (2x)"
+    },
+    {
+      "id": "omulu-4",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 3,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "É Obaluaê, é Obaluaê...",
+      "letra": "É Obaluaê, É Obaluaê\nÉ Atotô\nÉ Obaluaê, É Obaluaê\n\nSe você está sofrendo\nNo leito ou com frio e com dor\nCom pipoca e com dendê\nMuita gente ele curou\nSe seu corpo está ferido\nE não pode mais suportar\nPeça proteção a ele\nQue ele vai lhe ajudar\n\nObaluaê\nÉ Obaluaê, É Obaluaê\nÉ Atotô\nÉ Obaluaê, É Obaluaê\n\nConhece o segredo da vida\nDo começo, meio e fim\nO meu senhor das palhas\nTenha muita dó de mim\nNa procissão das almas\nQue partem pro infinito\nEle vai mostrando a elas\nOutro mundo mais bonito!"
+    },
+    {
+      "id": "omulu-5",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 4,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Casinha branca...",
+      "letra": "Casinha branca, casinha branca\nQue eu mandei fazer (2x)\nPara oferecer a meu pai Omulu\nSeu atotô Obaluaê (2x)"
+    },
+    {
+      "id": "omulu-6",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 5,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Salve mamãe Oxum...",
+      "letra": "Salve mamãe Oxum! E salve Nanã Buroquê\nSalve Atotô Obaluaê (2x)"
+    },
+    {
+      "id": "omulu-7",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 6,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Se ver um velho no caminho...",
+      "letra": "Se ver um velho no caminho\nPeça a benção (2x)\nDeus lhe abençoe, Obaluaê\nDeus lhe abençoe"
+    },
+    {
+      "id": "omulu-8",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 7,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Oxalá é rei do mundo...",
+      "letra": "Oxalá é rei do mundo\nOxalá é meu senhor\nOmulu é o meu santo\nO meu santo protetor (2x)"
+    },
+    {
+      "id": "omulu-9",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 8,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Atoto, Atoto, Atoto...",
+      "letra": "Atoto\nAtoto, Atoto, Atoto o atoto Obaluaê (2x)\n\nSenhor da terra\nSenhor da renovação\nTem o poder da cura\nE da regeneração\n\nSua veste é de palha\nSua casa é de sapê\nO senhor do meu destino\nAtoto Obaluaê (2x)\n\nQuando ele dança\nFaz bailar o seu filá\nO terreiro se encanta\nOmulu meu orixá\n\nVelho Omulu\nJovem Obaluaê"
+    },
+    {
+      "id": "omulu-10",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 9,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "As suas flores cobrem o chão...",
+      "letra": "As suas flores cobrem o chão do meu ilê\nSaravá Omulu, salve Obaluaê\nVou regar as suas flores com azeite de dendê (2x)"
+    },
+    {
+      "id": "omulu-11",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 10,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Atoto Obaluaê, salve a palha...",
+      "letra": "Atoto Obaluaê\nSalve a palha do senhor\nXaxará bateu na terra em seu louvor (2x)"
+    },
+    {
+      "id": "omulu-12",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 11,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Os filhos de Zambi...",
+      "letra": "Os filhos de Zambi\nHoje cantam zuelas\nEm seu louvor\nZuelas que contam\nA história da palha\nQue é sagrada ao senhor (Ô, ô, ô)\n\nA palha sagrada\nQue encobre a luz\nDe seu Atoto\nE os olhos dos homens\nJamais poderão\nVer a luz de Atoto\n\nAtoto Obaluaê\nAtoto Obaluaê\nAtoto meu pai é Obaluaê (2x)"
+    },
+    {
+      "id": "omulu-13",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 12,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "O velho mais velho...",
+      "letra": "O velho mais velho\nÉ dos orixás\nA terra ganhou\nA terra rezava\nOs seus filhos cantavam\nEm seu louvor (Ô, ô, ô)\n\nA palha da costa\nQue enfeita a casa de seu Atoto\nE os seus filhos cantavam\nA zuela que um dia a terra rezou"
+    },
+    {
+      "id": "omulu-14",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 13,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Omulu é tatá na sua dança...",
+      "letra": "Omulu é tatá na sua dança (2x)\nCom seu amuleto e sua bengala\nEle também dança (2x)"
+    },
+    {
+      "id": "omulu-15",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 14,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Obaluaê, seu terreiro está em festa...",
+      "letra": "Obaluaê, seu terreiro está em festa\nEnfeitado com pipoca\nPeneira palha da costa (2x)\n\nObaluaê,\nSaudamos sua coroa\nSaudamos os seus filhos\nNa casa de Oxalá (2x)"
+    },
+    {
+      "id": "omulu-16",
+      "subcategoriaId": "sub-omulu-pontos",
+      "ordem": 15,
+      "favorito": false,
+      "criadoEm": 1775839257000,
+      "titulo": "Silêncio, meu senhor está na terra...",
+      "letra": "Silêncio\nMeu senhor está na terra\nO Sol em forma de Orixá no terreiro baixou\nBradou seu ylá que zuniu feito a morte que berra\n\nCanta povo do ayê\nSalve meu pai atotô atotô Obaluaê\n\nOgum trançou seu maryô com as palhas da costa\nQue dançam aos sabor dos caprichos dos ventos de Oyá\nOs males e dores do mundo trás ele a resposta\nSegredo escondido na força do seu xaxará\nDerramei pipocas ao chão preparei seu Olubajé\nCom preto e o branco das contas fiz meu abadá\nOgã retumbou no atabaque um canto de fé\nEu vi meu Senhor embalado e trazendo Axé\n\nÉ ele o Senhor das doenças da febre que consome\nO filho que vem encantado nas mãos de Nanã\nEu peço licença a Olorum pra dizer o seu nome\nÉ Omolu, Obaluaê meu pai Xapanã"
     }
   ]
 }
