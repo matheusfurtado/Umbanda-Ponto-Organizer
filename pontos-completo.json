@@ -79,6 +79,14 @@
       "emoji": "🪷",
       "ordem": 9,
       "criadoEm": 1774882639699
+    },
+    {
+      "id": "beijada",
+      "nome": "Beijada",
+      "cor": "#f472b6",
+      "emoji": "👶",
+      "ordem": 10,
+      "criadoEm": 1775829769157
     }
   ],
   "subcategorias": [
@@ -270,6 +278,13 @@
       "nome": "Trabalho",
       "ordem": 2,
       "criadoEm": 1774882639699
+    },
+    {
+      "id": "sub-beijada-pontos",
+      "nome": "Pontos",
+      "orixaId": "beijada",
+      "ordem": 0,
+      "criadoEm": 1775829769157
     }
   ],
   "pontos": [
@@ -1910,6 +1925,204 @@
       "criadoEm": 1774882639699,
       "titulo": "Me lava Nanã, me lava...",
       "letra": "Me lava Nanã, me lava\nCom suas águas Nanã sagradas\nLave meus olhos para que eu possa ver\nA luz divina dos meus guias a me proteger\nLave meus ouvidos para que eu possa ouvir\nOs ensinamentos de bons caminhos a seguir\nLave minha boca para que eu possa dizer\nMensagens de amor a quem precisa receber\n\nLave Nanã o meu coração\nEncha ele de alegria e retire a aflição\nÔ Nanã Buruquê\nAs suas águas me dão forças pra vencer\nÔ Nanã Buruquê\nQuero em suas águas uma bênção receber"
+    },
+    {
+      "id": "beijada-1",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 0,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Antes de o sol nascer...",
+      "letra": "Antes de o sol nascer\nA lua se esconder\nMadrugada chegar (2x)\nA lua clareia a praia, ela é prateada\nE vê como clareia a beira mar\nEu vi\n\nEu vi as crianças brincando no banco de areia oh\nEram os 7 filhos de Iemanjá (2x)"
+    },
+    {
+      "id": "beijada-2",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 1,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Doun hoje é o seu dia...",
+      "letra": "Doun hoje é o seu dia, hoje tem alegria em todo terreiro\nDoun oh Doun\nSarava Zambi na linha de umbanda em todo terreiro (2x)"
+    },
+    {
+      "id": "beijada-3",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 2,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Mas quem é seu irmão...",
+      "letra": "Mas quem é seu irmão\nQuem é seu irmão\nQuem é seu irmão\nÉ Cosme Damião\nÉ Cosme Damião (2x)"
+    },
+    {
+      "id": "beijada-4",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 3,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Ele foi doutor...",
+      "letra": "Ele foi doutor\nEle foi doutor\nEle me curou\nNuma brincadeira que ele brincou\nEle me curou (2x)"
+    },
+    {
+      "id": "beijada-5",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 4,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Eram três crianças...",
+      "letra": "Eram três crianças\nEu me lembro bem\nO terreiro em festa\nEu me lembro bem\nVieram de um a um\nE era Cosme Damião e Doun (2x)"
+    },
+    {
+      "id": "beijada-6",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 5,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Eu vou chamar o meu pai...",
+      "letra": "Eu vou chamar o meu pai (2x)\nPra ele ver quem chegou (2x)\nE chegou para brincar (2x)\nCom as crianças também (2x)"
+    },
+    {
+      "id": "beijada-7",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 6,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Andorinha que voa no ar...",
+      "letra": "Andorinha que voa no ar\nChega pertinho do céu\nAvisa Papai Oxalá\nQue hoje é dia das crianças\n\nNós vamos brincar com as crianças\nCosme Damião e Doun (2x)"
+    },
+    {
+      "id": "beijada-8",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 7,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Pra que cocada branca...",
+      "letra": "Pra que cocada branca\nPra chorar, pra chorar (2x)\nSe não tiver guaraná\nEu vou chorar eu vou chorar (2x)"
+    },
+    {
+      "id": "beijada-9",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 8,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Papai me solta um balão...",
+      "letra": "Papai me solta um balão\npara todas as crianças que vem lá do céu (2x)\nTem doce mamãe, tem doce mamãe\nTem doce, lá no jardim (2x)"
+    },
+    {
+      "id": "beijada-10",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 9,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Cosme e Damião, Damião...",
+      "letra": "Cosme e Damião, Damião\nCadê Doum\nDoum ta passeando\nNo cavalo de Ogum"
+    },
+    {
+      "id": "beijada-11",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 10,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Ele é pequenininho...",
+      "letra": "Ele é pequenininho\nMora no fundo do mar\nSua madrinha é sereia\nSeu padrinho é beira mar (2x)\n\nNo fundo do mar, tem areia (2x)\nSeu padrinho é beira mar\nSua madrinha é sereia"
+    },
+    {
+      "id": "beijada-12",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 11,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Quando a lua brilha no céu...",
+      "letra": "Quando a lua brilha no céu\nClareia Umbanda (2x)\nClareia a Beijada\nQue vem\nLá de Aruanda (2x)"
+    },
+    {
+      "id": "beijada-13",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 12,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Tem bala de coco e peteca...",
+      "letra": "Tem bala de coco e peteca\nDeixa a Beijada brincar (2x)\nHoje é dia de festa\nBeijada vem sarava"
+    },
+    {
+      "id": "beijada-14",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 13,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Tem paciência, Dois Dois...",
+      "letra": "Tem paciência, Dois Dois\nEu to camisa azul\nE para o ano que vem\nDois Dois come caruru"
+    },
+    {
+      "id": "beijada-15",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 14,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Lá no céu tem três estrelas...",
+      "letra": "Lá no céu tem, três estrelas\nTodas as três em carreirinha (2x)\nUma é Cosme e Damião\nA outra é Mariazinha (2x)"
+    },
+    {
+      "id": "beijada-16",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 15,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Na Bahia tem um coco...",
+      "letra": "Na Bahia tem um coco\nCoco que faz a cocada (2x)\nCoco que faz o manjar\nPara dar para Beijada (2x)"
+    },
+    {
+      "id": "beijada-17",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 16,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Doum, Doum, Doum...",
+      "letra": "Doum, Doum, Doum, Doum, Cosme e Damião\nDoum, Doum, Doum, brinca sentado no chão (2x)"
+    },
+    {
+      "id": "beijada-18",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 17,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Fui no jardim colher as rosas...",
+      "letra": "Fui no jardim, colher as rosas\nA vovozinha deu-me a rosa mais formosa (2x)"
+    },
+    {
+      "id": "beijada-19",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 18,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Cosme e Damião ó Doum...",
+      "letra": "Cosme e Damião ó Doum\nCrispim, Crispiniano\nSão os filhos de Ogum (2x)"
+    },
+    {
+      "id": "beijada-20",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 19,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Filho de fé estava doente...",
+      "letra": "Filho de fé estava doente\nFilhos de fé estava chorando (2x)\nFilhos de fé viu Ibeijada\nFilhos de fé já está cantando"
+    },
+    {
+      "id": "beijada-21",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 20,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Que lindo cavalo branco...",
+      "letra": "Que lindo cavalo branco\nQue aquele menino vem montando\nDescendo naquela serra\nDizendo que é filho de soldado\n\nÉ Damião, é Damião\nÉ Damião no lindo cavalo de Ogum (2x)"
+    },
+    {
+      "id": "beijada-22",
+      "subcategoriaId": "sub-beijada-pontos",
+      "ordem": 21,
+      "favorito": false,
+      "criadoEm": 1775829769157,
+      "titulo": "Bahia é terra de dois...",
+      "letra": "Bahia é terra de dois\nÉ terra de dois irmãos\nGovernador da Bahia\nÉ São Cosme e São Damião (2x)"
     }
   ]
 }
