@@ -22,6 +22,7 @@ interface AppContextType {
   excluirPonto: (id: string) => void;
   toggleFavorito: (id: string) => void;
   reordenarPontos: (subcategoriaId: string, ids: string[]) => void;
+  reordenarMultiplosPontos: (mapa: Record<string, string[]>) => void;
   reordenarSubcategorias: (orixaId: string, ids: string[]) => void;
   reordenarOrixas: (ids: string[]) => void;
   moverPontoCima: (ponto: Ponto) => void;
@@ -200,6 +201,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [dados, atualizar]
   );
 
+  const reordenarMultiplosPontos = useCallback(
+    (mapa: Record<string, string[]>) => {
+      const pontos = dados.pontos.map((p) => {
+        const ids = mapa[p.subcategoriaId];
+        if (!ids) return p;
+        const idx = ids.indexOf(p.id);
+        return idx !== -1 ? { ...p, ordem: idx } : p;
+      });
+      atualizar({ ...dados, pontos });
+    },
+    [dados, atualizar]
+  );
+
   const reordenarSubcategorias = useCallback(
     (orixaId: string, ids: string[]) => {
       const subcategorias = dados.subcategorias.map((s) => {
@@ -290,6 +304,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         excluirPonto,
         toggleFavorito,
         reordenarPontos,
+        reordenarMultiplosPontos,
         reordenarSubcategorias,
         reordenarOrixas,
         moverPontoCima,

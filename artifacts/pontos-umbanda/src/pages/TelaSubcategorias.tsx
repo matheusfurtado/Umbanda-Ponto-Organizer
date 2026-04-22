@@ -1,4 +1,29 @@
-import { useState, useMemo, useCallback } from "react";
+import { CardPonto } from "@/components/CardPonto";
+import { ModalConfirmar } from "@/components/ModalConfirmar";
+import { ModalPonto } from "@/components/ModalPonto";
+import { ModalSubcategoria } from "@/components/ModalSubcategoria";
+import { Input } from "@/components/ui/input";
+import { useApp } from "@/context";
+import { Orixa, Ponto, Subcategoria } from "@/types";
+import {
+    closestCenter,
+    DndContext,
+    PointerSensor,
+    TouchSensor,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+    type DragStartEvent
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    useSortable,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { ChevronLeft, Edit2, GripVertical, Plus, Search, Trash2, Wand2, X } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 // Filtros rápidos de Exu
 const EXU_FILTERS = [
   "7 porterias",
@@ -30,34 +55,6 @@ function normalizeExuName(name: string) {
     .replace(/\s+/g, " ")
     .trim();
 }
-import { Plus, Edit2, Trash2, ChevronLeft, Search, X, Star, GripVertical } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useApp } from "@/context";
-import { ModalSubcategoria } from "@/components/ModalSubcategoria";
-import { ModalConfirmar } from "@/components/ModalConfirmar";
-import { ModalPonto } from "@/components/ModalPonto";
-import { Subcategoria, Ponto, Orixa } from "@/types";
-import { CardPonto } from "@/components/CardPonto";
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  DragOverlay,
-  type DragEndEvent,
-  type DragOverEvent,
-  type DragStartEvent,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-  arrayMove,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 
 const SUB_PREFIX = "sub:";
 
@@ -128,10 +125,11 @@ interface Props {
 }
 
 export function TelaSubcategorias({ orixa, onVoltar }: Props) {
-  const { dados, adicionarSubcategoria, editarSubcategoria, excluirSubcategoria, adicionarPonto, reordenarPontos, reordenarSubcategorias, moverPontoParaSubcategoria } = useApp();
+  const { dados, adicionarSubcategoria, editarSubcategoria, excluirSubcategoria, adicionarPonto, reordenarPontos, reordenarMultiplosPontos, reordenarSubcategorias, moverPontoParaSubcategoria } = useApp();
   const [busca, setBusca] = useState("");
   const [exuFiltro, setExuFiltro] = useState<string | null>(null);
   const [keywordFiltro, setKeywordFiltro] = useState<string | null>(null);
+  const [confirmarOrganizar, setConfirmarOrganizar] = useState(false);
   const [modalSubAberto, setModalSubAberto] = useState(false);
   const [subEditar, setSubEditar] = useState<Subcategoria | null>(null);
   const [confirmarExcluirSub, setConfirmarExcluirSub] = useState<Subcategoria | null>(null);
@@ -301,6 +299,37 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
     return grupos;
   }, [resultadosBusca, subcategorias]);
 
+  const organizarPorGrupo = useCallback(() => {
+    const mapa: Record<string, string[]> = {};
+    subcategorias.forEach((sub) => {
+      const pontos = (pontosPorSub[sub.id] ?? []).slice();
+      if (pontos.length === 0) return;
+
+      const grupoDoPonto = (p: Ponto) => {
+        const tituloNorm = normalizeExuName(p.titulo);
+        const letraNorm = normalizeExuName(p.letra);
+        for (let i = 0; i < KEYWORD_FILTERS.length; i++) {
+          const termos = KEYWORD_FILTERS[i].termos.map((t) => normalizeExuName(t));
+          if (termos.some((t) => tituloNorm.includes(t) || letraNorm.includes(t))) {
+            return i;
+          }
+        }
+        return KEYWORD_FILTERS.length; // outros
+      };
+
+      const ordenado = pontos
+        .map((p, idx) => ({ p, idx, g: grupoDoPonto(p) }))
+        .sort((a, b) => (a.g - b.g) || (a.idx - b.idx))
+        .map((x) => x.p.id);
+
+      mapa[sub.id] = ordenado;
+    });
+
+    if (Object.keys(mapa).length > 0) {
+      reordenarMultiplosPontos(mapa);
+    }
+  }, [subcategorias, pontosPorSub, reordenarMultiplosPontos]);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto">
@@ -325,6 +354,13 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
                 {subcategorias.length} subcategorias · {Object.values(pontosPorSub).flat().length} pontos
               </p>
             </div>
+            <button
+              onClick={() => setConfirmarOrganizar(true)}
+              className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-foreground active:scale-95 transition-transform"
+              title="Organizar pontos por grupo (Encruzilhada, Almas, Cemitério, Calunga)"
+            >
+              <Wand2 className="w-4 h-4" />
+            </button>
             <button
               onClick={() => { setSubEditar(null); setModalSubAberto(true); }}
               className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform"
@@ -502,6 +538,17 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
           setConfirmarExcluirSub(null);
         }}
         onCancelar={() => setConfirmarExcluirSub(null)}
+      />
+
+      <ModalConfirmar
+        aberto={confirmarOrganizar}
+        titulo="Organizar pontos por grupo?"
+        descricao="Os pontos de cada subcategoria serão reordenados em grupos: Encruzilhada, Almas, Cemitério, Calunga e por último os demais. Nenhum ponto muda de subcategoria."
+        onConfirmar={() => {
+          organizarPorGrupo();
+          setConfirmarOrganizar(false);
+        }}
+        onCancelar={() => setConfirmarOrganizar(false)}
       />
 
       <ModalPonto
