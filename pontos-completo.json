@@ -5,7 +5,7 @@
       "nome": "Exu",
       "cor": "#dc2626",
       "emoji": "🔥",
-      "ordem": 1,
+      "ordem": 9,
       "criadoEm": 1774882639699
     },
     {
@@ -13,7 +13,7 @@
       "nome": "Ogum",
       "cor": "#2563eb",
       "emoji": "⚔️",
-      "ordem": 2,
+      "ordem": 0,
       "criadoEm": 1774882639699
     },
     {
@@ -21,7 +21,7 @@
       "nome": "Oxóssi",
       "cor": "#16a34a",
       "emoji": "🏹",
-      "ordem": 0,
+      "ordem": 3,
       "criadoEm": 1774882639699
     },
     {
@@ -29,7 +29,7 @@
       "nome": "Xangô",
       "cor": "#d97706",
       "emoji": "⚡",
-      "ordem": 3,
+      "ordem": 4,
       "criadoEm": 1774882639699
     },
     {
@@ -37,7 +37,7 @@
       "nome": "Iansã",
       "cor": "#7c3aed",
       "emoji": "🌪️",
-      "ordem": 4,
+      "ordem": 1,
       "criadoEm": 1774882639699
     },
     {
@@ -53,7 +53,7 @@
       "nome": "Iemanjá",
       "cor": "#0891b2",
       "emoji": "🌊",
-      "ordem": 6,
+      "ordem": 2,
       "criadoEm": 1774882639699
     },
     {
@@ -61,7 +61,7 @@
       "nome": "Oxalá",
       "cor": "#94a3b8",
       "emoji": "☁️",
-      "ordem": 7,
+      "ordem": 10,
       "criadoEm": 1774882639699
     },
     {
@@ -69,7 +69,7 @@
       "nome": "Omulu",
       "cor": "#78350f",
       "emoji": "💀",
-      "ordem": 8,
+      "ordem": 6,
       "criadoEm": 1774882639699
     },
     {
@@ -77,7 +77,7 @@
       "nome": "Nanã",
       "cor": "#6d28d9",
       "emoji": "🪷",
-      "ordem": 9,
+      "ordem": 7,
       "criadoEm": 1774882639699
     },
     {
@@ -85,8 +85,16 @@
       "nome": "Beijada",
       "cor": "#f472b6",
       "emoji": "👶",
-      "ordem": 10,
+      "ordem": 8,
       "criadoEm": 1775829769157
+    },
+    {
+      "id": "1775858639849-ghm48sd",
+      "nome": "Defumaçao",
+      "cor": "#16a34a",
+      "emoji": "🌿",
+      "ordem": 11,
+      "criadoEm": 1775858639849
     }
   ],
   "subcategorias": [
@@ -115,14 +123,14 @@
       "id": "sub-oxossi-trabalho",
       "orixaId": "oxossi",
       "nome": "Caboclo - Trabalho",
-      "ordem": 3,
+      "ordem": 4,
       "criadoEm": 1774882639699
     },
     {
       "id": "sub-oxossi-curimba",
       "orixaId": "oxossi",
       "nome": "Caboclo - Curimba",
-      "ordem": 4,
+      "ordem": 3,
       "criadoEm": 1774882639699
     },
     {
@@ -164,14 +172,14 @@
       "id": "sub-iansa-demanda",
       "orixaId": "iansa",
       "nome": "Demanda",
-      "ordem": 2,
+      "ordem": 3,
       "criadoEm": 1774882639699
     },
     {
       "id": "sub-iansa-trabalho",
       "orixaId": "iansa",
       "nome": "Trabalho",
-      "ordem": 3,
+      "ordem": 2,
       "criadoEm": 1774882639699
     },
     {
@@ -280,25 +288,109 @@
       "criadoEm": 1774882639699
     },
     {
-      "id": "sub-beijada-pontos",
-      "nome": "Pontos",
-      "orixaId": "beijada",
-      "ordem": 0,
-      "criadoEm": 1775829769157
-    },
-    {
-      "id": "sub-omulu-pontos",
-      "nome": "Pontos",
-      "orixaId": "omulu",
-      "ordem": 0,
-      "criadoEm": 1775839257000
-    },
-    {
-      "id": "sub-xango-pontos",
-      "nome": "Pontos",
+      "id": "1775841100471-0j9hgq0",
       "orixaId": "xango",
+      "nome": "Chamada",
       "ordem": 0,
-      "criadoEm": 1775840702821
+      "criadoEm": 1775841100471
+    },
+    {
+      "id": "1775841124533-frx7gku",
+      "orixaId": "xango",
+      "nome": "Louvaçao",
+      "ordem": 1,
+      "criadoEm": 1775841124533
+    },
+    {
+      "id": "1775841149064-0h2e3vy",
+      "orixaId": "xango",
+      "nome": "Trabalho",
+      "ordem": 3,
+      "criadoEm": 1775841149064
+    },
+    {
+      "id": "1775842179978-8gyif4c",
+      "orixaId": "omulu",
+      "nome": "Chamada",
+      "ordem": 0,
+      "criadoEm": 1775842179978
+    },
+    {
+      "id": "1775843239112-hmxprsl",
+      "orixaId": "omulu",
+      "nome": "Louvaçao",
+      "ordem": 2,
+      "criadoEm": 1775843239112
+    },
+    {
+      "id": "1775843245835-00hls3q",
+      "orixaId": "omulu",
+      "nome": "Trabalho",
+      "ordem": 3,
+      "criadoEm": 1775843245835
+    },
+    {
+      "id": "1775843521340-i2pswph",
+      "orixaId": "beijada",
+      "nome": "Chamada",
+      "ordem": 0,
+      "criadoEm": 1775843521340
+    },
+    {
+      "id": "1775843761987-xcrsduo",
+      "orixaId": "beijada",
+      "nome": "Louvaçao",
+      "ordem": 1,
+      "criadoEm": 1775843761988
+    },
+    {
+      "id": "1775843767367-44ge7r4",
+      "orixaId": "beijada",
+      "nome": "Trabalho",
+      "ordem": 2,
+      "criadoEm": 1775843767367
+    },
+    {
+      "id": "sub-exu-trabalho",
+      "orixaId": "exu",
+      "nome": "Trabalho",
+      "ordem": 0,
+      "criadoEm": 1776706731197
+    },
+    {
+      "id": "sub-exu-demanda",
+      "orixaId": "exu",
+      "nome": "Demanda",
+      "ordem": 1,
+      "criadoEm": 1776706731197
+    },
+    {
+      "id": "sub-exu-louvacao",
+      "orixaId": "exu",
+      "nome": "Louvação",
+      "ordem": 2,
+      "criadoEm": 1776706731197
+    },
+    {
+      "id": "sub-exu-firmeza",
+      "orixaId": "exu",
+      "nome": "Firmeza",
+      "ordem": 3,
+      "criadoEm": 1776706731197
+    },
+    {
+      "id": "sub-exu-chegada",
+      "orixaId": "exu",
+      "nome": "Chegada",
+      "ordem": 4,
+      "criadoEm": 1776706731197
+    },
+    {
+      "id": "sub-exu-cura",
+      "orixaId": "exu",
+      "nome": "Cura",
+      "ordem": 5,
+      "criadoEm": 1776706731197
     }
   ],
   "pontos": [
@@ -377,7 +469,7 @@
     {
       "id": "lo-10",
       "subcategoriaId": "sub-oxossi-louvacao",
-      "ordem": 10,
+      "ordem": 11,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Seu arranca-toco é de aruanda...",
@@ -386,7 +478,7 @@
     {
       "id": "lo-11",
       "subcategoriaId": "sub-oxossi-louvacao",
-      "ordem": 11,
+      "ordem": 12,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Caboclo sete flechas nasceu...",
@@ -395,7 +487,7 @@
     {
       "id": "lo-12",
       "subcategoriaId": "sub-oxossi-louvacao",
-      "ordem": 0,
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Caboclo a sua mata é verde...",
@@ -404,7 +496,7 @@
     {
       "id": "ch-1",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 6,
+      "ordem": 7,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "São Miguel, São Miguel...",
@@ -422,7 +514,7 @@
     {
       "id": "ch-3",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 5,
+      "ordem": 6,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Ogã chama todos os caboclos...",
@@ -431,7 +523,7 @@
     {
       "id": "ch-4",
       "subcategoriaId": "sub-oxossi-louvacao",
-      "ordem": 1,
+      "ordem": 8,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Ele vem da mata, ele trouxe flecha...",
@@ -440,7 +532,7 @@
     {
       "id": "ch-5",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 9,
+      "ordem": 10,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Estava na beira do rio sem poder atravessar...",
@@ -449,7 +541,7 @@
     {
       "id": "ch-6",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 7,
+      "ordem": 8,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Ainda tem caboclo debaixo da samambaia...",
@@ -458,7 +550,7 @@
     {
       "id": "ch-7",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 4,
+      "ordem": 5,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Oxalá chamou e já mandou buscar...",
@@ -467,7 +559,7 @@
     {
       "id": "ch-9",
       "subcategoriaId": "sub-oxossi-trabalho",
-      "ordem": 10,
+      "ordem": 8,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "A sua flecha é carijó...",
@@ -476,7 +568,7 @@
     {
       "id": "cg-1",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 13,
+      "ordem": 14,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Uma rosa no jardim apareceu...",
@@ -485,7 +577,7 @@
     {
       "id": "cg-2",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 10,
+      "ordem": 11,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Ele vem da mata, ele vem girar...",
@@ -494,7 +586,7 @@
     {
       "id": "cg-3",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 11,
+      "ordem": 12,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Que cabocla é essa toda vestida de pena...",
@@ -503,7 +595,7 @@
     {
       "id": "cg-4",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 3,
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Lua que clareia o mundo...",
@@ -512,7 +604,7 @@
     {
       "id": "cg-5",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 2,
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Estava sentado na cadeira da jurema...",
@@ -539,7 +631,7 @@
     {
       "id": "cg-9",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 12,
+      "ordem": 13,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Ubirajara quando chegou...",
@@ -584,7 +676,7 @@
     {
       "id": "tr-7",
       "subcategoriaId": "sub-oxossi-trabalho",
-      "ordem": 15,
+      "ordem": 13,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Caboclo não tem caminho para caminhar...",
@@ -611,7 +703,7 @@
     {
       "id": "tr-13",
       "subcategoriaId": "sub-oxossi-trabalho",
-      "ordem": 16,
+      "ordem": 14,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Me perdi meu pai eu me perdi...",
@@ -620,7 +712,7 @@
     {
       "id": "tr-14",
       "subcategoriaId": "sub-oxossi-trabalho",
-      "ordem": 18,
+      "ordem": 15,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Caçador na beira do caminho...",
@@ -638,7 +730,7 @@
     {
       "id": "tr-16",
       "subcategoriaId": "sub-oxossi-chegada",
-      "ordem": 8,
+      "ordem": 9,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Caboclo mora nas matas...",
@@ -647,7 +739,7 @@
     {
       "id": "tr-17",
       "subcategoriaId": "sub-oxossi-trabalho",
-      "ordem": 17,
+      "ordem": 12,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Estrela matutina clareia a banda sem parar...",
@@ -656,7 +748,7 @@
     {
       "id": "tr-18",
       "subcategoriaId": "sub-oxossi-trabalho",
-      "ordem": 19,
+      "ordem": 16,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "No alto daquela serra, eu avistei uma vila",
@@ -665,7 +757,7 @@
     {
       "id": "tr-19",
       "subcategoriaId": "sub-oxossi-trabalho",
-      "ordem": 11,
+      "ordem": 6,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "No alto daquela serra, debaixo de um pe de anga",
@@ -674,20 +766,11 @@
     {
       "id": "tr-20",
       "subcategoriaId": "sub-oxossi-trabalho",
-      "ordem": 12,
+      "ordem": 9,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Oh, cadê gira mundo o Pemba...",
       "letra": "Oh, cadê gira mundo o Pemba\nOh, tá na pedreira o Pemba\nE seus cambones Pemba\nO veado no mato é corredor\nCadê meu mano caçador\nCadê o caboclo ventania\nEle é o nosso guia"
-    },
-    {
-      "id": "tr-21",
-      "subcategoriaId": "sub-oxossi-trabalho",
-      "ordem": 20,
-      "favorito": false,
-      "criadoEm": 1774882639699,
-      "titulo": "Eu vi a cabocla iara sentada na beira do rio...",
-      "letra": "Eu vi a cabocla iara sentada na beira do rio\nPegando peixe meu senhor\n(escrever esse ponto)"
     },
     {
       "id": "cu-1",
@@ -776,7 +859,7 @@
       "titulo": "Calunga ê, calunga â",
       "letra": "Calunga ê, calunga â\nchegou da calunga, pra trabalhar(2x)\n\nchegou da calunga ele é caboclo ele é flecheiro\nchegou da calunga é amarrador de feiticeiro",
       "favorito": false,
-      "ordem": 13,
+      "ordem": 10,
       "criadoEm": 1774889674435
     },
     {
@@ -785,25 +868,25 @@
       "titulo": "cabocla formosa a sua flecha ela atirou(PROCURAR)",
       "letra": "saiu da calunga iemanha foi quem mandou\n\nela mandou pra ajudar os filhos seus,\njandira, jacira iracema apareceu",
       "favorito": false,
-      "ordem": 21,
+      "ordem": 17,
       "criadoEm": 1774889853101
     },
     {
       "id": "1774889983708-ljmah2p",
-      "subcategoriaId": "sub-oxossi-trabalho",
+      "subcategoriaId": "sub-oxossi-louvacao",
       "titulo": "caboclo filho da pedreira",
       "letra": "caboclo filho da pedreira\nla da cachoeira, vem os seus filhos guiar\n\nfirma seu ponto caboclo\nquando na umbanda chegar\ncorumataí é o chefe do congar",
       "favorito": false,
-      "ordem": 7,
+      "ordem": 10,
       "criadoEm": 1774889983708
     },
     {
       "id": "1774890232438-1z3yjyb",
-      "subcategoriaId": "sub-oxossi-trabalho",
+      "subcategoriaId": "sub-oxossi-louvacao",
       "titulo": "la no topo do mundo",
       "letra": "la no topo do mundo\nna pedreira de tupã\num aimore estava sentado\nseu penacho é encarnado\no seu brado é entoado\no que é que ele faz la\n\nla no topo do mundo\nurubatão vem a terra girar ô ô\n\nvem a terra girar ô ô (3x)\n\nQuando vai se pondo o sol\nquando vai nascendo o dia\nquem faz o mundo girar\né o urubatão da guia ô ô\n\nvem a terra girar ô ô\nvem a terra girar ô ô\nvem a terra girar ô ô",
       "favorito": false,
-      "ordem": 3,
+      "ordem": 7,
       "criadoEm": 1774890232438
     },
     {
@@ -812,16 +895,16 @@
       "titulo": "Mas o seu manaca ja não da mais flor... PROCURAR",
       "letra": "Mas o seu manaca ja não da mais flor...\n\nele vai mandar plantar(2x)\n\numa semente la no seu jacuta\n\nmas como é lindo a madrugada\nfilho de umbanda veio trabalhar(2x)",
       "favorito": false,
-      "ordem": 14,
+      "ordem": 11,
       "criadoEm": 1774890328431
     },
     {
       "id": "1774890474827-z0b2gn9",
-      "subcategoriaId": "sub-oxossi-trabalho",
+      "subcategoriaId": "sub-oxossi-louvacao",
       "titulo": "é caçador, é caçador, é caçador ...",
       "letra": "é caçador, é caçador, é caçador  mas não é advinhador(2x)\nele é o caboclo da beira dagua\nna linha de umbanda ele vem trabalhar\nsegura o terreiro e seu jacuta",
       "favorito": false,
-      "ordem": 6,
+      "ordem": 5,
       "criadoEm": 1774890474827
     },
     {
@@ -830,7 +913,7 @@
       "titulo": "estava na mata caçando, no meio da mata caiapó...",
       "letra": "estava na mata caçando, no meio da mata caiapó\nmas era seu ubirajara que estava caçando a cobra cipó.",
       "favorito": false,
-      "ordem": 5,
+      "ordem": 4,
       "criadoEm": 1774890562289
     },
     {
@@ -839,7 +922,7 @@
       "titulo": "piava no alto da serra...",
       "letra": "piava no alto da serra\npiava de se admirar\n\nmas era uma enorme jiboia\nque estava presa no bodoque \nde tupinamba(2x)",
       "favorito": false,
-      "ordem": 4,
+      "ordem": 3,
       "criadoEm": 1774890646304
     },
     {
@@ -848,16 +931,16 @@
       "titulo": "O indio O indio O indio....",
       "letra": "O indio O indio O indio\nele é o indio aonde o sol nasceu\n\nja foi cacique\nja foi pajé\n\nHoje é guerreiro da tribo dos aimoré",
       "favorito": false,
-      "ordem": 8,
+      "ordem": 5,
       "criadoEm": 1774890726983
     },
     {
       "id": "1774891268778-xekpubu",
-      "subcategoriaId": "sub-oxossi-trabalho",
+      "subcategoriaId": "sub-oxossi-louvacao",
       "titulo": "eu vi no alto da serra, cabocla dando seu brado de guerra",
       "letra": "Eu vi no Alto da serra, Cabocla Jurema dando seu brado de guerra \nKiô, kiô, dentro da mata o seu brado ecoou  (2x)\n\nCom o seu arco e sua flecha e a sua lança de Indaiá, \nJurema dava o seu brado de guerra,\n anunciando que ia caçar, \nsete luas se passaram quando a Jurema voltou,\n toda a caça que ela trazia ao Cacique  entregou,\n e ele então alegre cantou em seu louvor, \n\nO o o Jurema, o o o Jurema, linda caçadora bela Cabocla de pena  (2x)",
       "favorito": false,
-      "ordem": 9,
+      "ordem": 7,
       "criadoEm": 1774891268778
     },
     {
@@ -875,7 +958,7 @@
       "titulo": "A mata estava escura...",
       "letra": "A mata estava escura\nveio um anjo e iluminou\nno meio da mata virgem\nraio de sol assuviou\n\nmas ele é o rei, ele é o rei, ele é o rei\nmas ele é o rei na umbanda ele é o rei (2x)",
       "favorito": false,
-      "ordem": 23,
+      "ordem": 18,
       "criadoEm": 1774891523453
     },
     {
@@ -983,7 +1066,7 @@
       "titulo": "eu vi a cabocla iara sentada na beira do rio",
       "letra": "Eu vi a cabocla Iara\nSentar na beira do rio\nEu vi a cabocla Iara\nSentar na beira do rio\nPegando peixe, meu senhor\nPegando peixe, meu senhor\nPra levar pra quem pediu\nPegando peixe, meu senhor\nPegando peixe, meu senhor\nPra levar pra quem pediu\nIara cabocla linda\nVem fazer sua obrigação\nIara cabocla linda\nVem fazer sua obrigação\nNo seu terreiro, meu senhor (2x)\nEla faz sua devoção\nNo seu terreiro, meu senhor (2x)\nEla faz sua devoção",
       "favorito": false,
-      "ordem": 23,
+      "ordem": 19,
       "criadoEm": 1774892562061
     },
     {
@@ -1010,7 +1093,7 @@
       "titulo": "Ela vem de sua mata vem de onde a cobra pia",
       "letra": "Ela vem de sua mata vem de onde a cobra pia {bis}\nSaravá seu Ubirajara, seu Sete Estrelas e a cabocla Jupira\nEla vem de sua mata vem de onde a cobra pia {bis}\nSaravá seu sete estrelas, seu Arranca-toco e a cabocla Jupira...",
       "favorito": false,
-      "ordem": 6,
+      "ordem": 9,
       "criadoEm": 1774894202777
     },
     {
@@ -1028,13 +1111,13 @@
       "titulo": "eu venho das matas...",
       "letra": "eu venho das matas, bem longe\nbem longe\naonde o galo, cantou \naonde a folha da jurema balanceou, balanceou",
       "favorito": false,
-      "ordem": 8,
+      "ordem": 10,
       "criadoEm": 1774894821785
     },
     {
       "id": "ia-cg-1",
       "subcategoriaId": "sub-iansa-chegada",
-      "ordem": 0,
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Deu um clarão no céu...",
@@ -1043,7 +1126,7 @@
     {
       "id": "ia-cg-2",
       "subcategoriaId": "sub-iansa-chegada",
-      "ordem": 1,
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Olha que o Céu clareou...",
@@ -1052,7 +1135,7 @@
     {
       "id": "ia-cg-3",
       "subcategoriaId": "sub-iansa-chegada",
-      "ordem": 2,
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Eparrêi Oyá, Deusa dos ventos...",
@@ -1061,20 +1144,11 @@
     {
       "id": "ia-cg-4",
       "subcategoriaId": "sub-iansa-chegada",
-      "ordem": 3,
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Raios cruzando o céu...",
-      "letra": "Raios cruzando o céu\nO mar começa a se agitar\nGuerreira com a espada na mão\nGirando num lindo bailar\nIansã mostrando sua força\nImpondo o seu grande poder\nDivina rainha da umbanda\nMinha mãe eu lhe imploro\nVenha me valer"
-    },
-    {
-      "id": "ia-cg-5",
-      "subcategoriaId": "sub-iansa-chegada",
-      "ordem": 4,
-      "favorito": false,
-      "criadoEm": 1774882639699,
-      "titulo": "Ô, ô, Ventania chegou...",
-      "letra": "Ô, ô\nÔ, ô, ô, ô, ô, ô, ô, ô, ô\nVentania chegou\nÔ, ô, ô, ô, ô, ô, ô, ô, ô\nVentania chegou\nTenho a certeza que com ela eu posso contar\nCom minha fé\nO mal irei derrotar\nO terreiro toca atabaque\nEm seu louvor\nLindas canções empenhadas\nCom muito amor\n\nEpahey, epahey, epahey\nO daí me forças mamãe Iansã epahey (2x)\n\nÔ, ô\nÔ, ô, ô, ô, ô, ô, ô, ô, ô\nVentania chegou\nÔ, ô, ô, ô, ô, ô, ô, ô, ô\nVentania chegou"
+      "letra": "Raios cruzando o céu\nO mar começa a se agitar\nGuerreira com a espada na mão\nGirando num lindo bailar\nIansã mostrando sua força\nImpondo o seu grande poder\nDivina rainha da umbanda\nMinha mãe eu lhe imploro\nVenha me valer\n\nÔ, ô\nÔ, ô, ô, ô, ô, ô, ô, ô, ô\nVentania chegou\nÔ, ô, ô, ô, ô, ô, ô, ô, ô\nVentania chegou\nTenho a certeza que com ela eu posso contar\nCom minha fé\nO mal irei derrotar\nO terreiro toca atabaque\nEm seu louvor\nLindas canções empenhadas\nCom muito amor\n\nEpahey, epahey, epahey\nO daí me forças mamãe Iansã epahey (2x)\n\nÔ, ô\nÔ, ô, ô, ô, ô, ô, ô, ô, ô\nVentania chegou\nÔ, ô, ô, ô, ô, ô, ô, ô, ô\nVentania chegou"
     },
     {
       "id": "ia-lo-1",
@@ -1082,13 +1156,13 @@
       "ordem": 0,
       "favorito": false,
       "criadoEm": 1774882639699,
-      "titulo": "Raios que cruzam o ar... (Bela Oyá)",
+      "titulo": "Raios que cruzam o ar... na furia da ventania,  vejo a força (Bela Oyá)",
       "letra": "Raios que cruzam o ar\nNa fúria da ventania\nVejo a força da Oyá\nE o poder que ela irradia\nEla é a rainha da lei,\nDo fogo ela é soberana,\nAo ouvir seu Eparrêi,\nMeu coração se engalana\n\nE Bela Oyá, E Bela Oyá\nEu sou filho da Matamba\nIansã eu vou louvar\nBela Oyá (x2)\n\nEla dança o aguêrê\nIansã, santa guerreira\nAtabaques e afoxé,\nZuelando a noite inteira\nVou louvar a minha mãe,\nEm forma de oração,\nE o vento que vai ventar,\nVai levar esta canção, Bela Oyá\n\nE Bela Oyá, E Bela Oyá\nEu sou filho da Matamba\nIansã eu vou louvar\nBela Oyá (x2)"
     },
     {
       "id": "ia-lo-2",
       "subcategoriaId": "sub-iansa-louvacao",
-      "ordem": 1,
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Guerreira, tens o bailar de um beija flor...",
@@ -1097,7 +1171,7 @@
     {
       "id": "ia-lo-3",
       "subcategoriaId": "sub-iansa-louvacao",
-      "ordem": 2,
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Iansã, meu orixá estrela guia...",
@@ -1105,8 +1179,8 @@
     },
     {
       "id": "ia-lo-4",
-      "subcategoriaId": "sub-iansa-louvacao",
-      "ordem": 3,
+      "subcategoriaId": "sub-iansa-chegada",
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Quando Iansã chegou, Saravou Yalorixá...",
@@ -1133,7 +1207,7 @@
     {
       "id": "ia-lo-7",
       "subcategoriaId": "sub-iansa-louvacao",
-      "ordem": 6,
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Relampejou lá no céu, deixa clarear...",
@@ -1142,10 +1216,10 @@
     {
       "id": "ia-lo-8",
       "subcategoriaId": "sub-iansa-louvacao",
-      "ordem": 7,
+      "ordem": 6,
       "favorito": false,
       "criadoEm": 1774882639699,
-      "titulo": "Eparrei ô, Eparrei á, força de Oyá...",
+      "titulo": "Eparrei ô, Eparrei á, força de Oyá... Ela é mais que temporal",
       "letra": "Eparrei ô, Eparrei á, Eparrei, força de Oyá (4x)\n\nEla é mais que temporal\nMuito mais que ventania\nUma força sem igual\nUm poder que arrepia\nA bravura de mil homens\nTudo em uma só mulher\nE por nós ela guerreia\nVenha o mal de onde vier\n\nEparrei ô, Eparrei á, Eparrei, força de Oyá (4x)\n\nFilha de santa guerreira\nMeu caminho eu mesma traço\nFui criada em fogo alto\nTenho minha alma de aço\nAgradeço à Iansã\nTudo o que ela me ensinou\nA coragem de Ogum\nE a justiça de Xangô"
     },
     {
@@ -1187,7 +1261,7 @@
     {
       "id": "ia-tr-3",
       "subcategoriaId": "sub-iansa-trabalho",
-      "ordem": 2,
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Raio de luz clarão no céu...",
@@ -1196,7 +1270,7 @@
     {
       "id": "ia-tr-4",
       "subcategoriaId": "sub-iansa-trabalho",
-      "ordem": 3,
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "No amanhecer é que essa estrela brilha...",
@@ -1232,7 +1306,7 @@
     {
       "id": "ym-cg-1",
       "subcategoriaId": "sub-yemanja-chegada",
-      "ordem": 0,
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Uma Dúzia de rosas...",
@@ -1241,7 +1315,7 @@
     {
       "id": "ym-cg-2",
       "subcategoriaId": "sub-yemanja-chegada",
-      "ordem": 1,
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Saia do mar, linda sereia...",
@@ -1250,7 +1324,7 @@
     {
       "id": "ym-cg-3",
       "subcategoriaId": "sub-yemanja-chegada",
-      "ordem": 2,
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Oh santa de azul...",
@@ -1259,7 +1333,7 @@
     {
       "id": "ym-cg-4",
       "subcategoriaId": "sub-yemanja-chegada",
-      "ordem": 3,
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Eu fui à beira da praia...",
@@ -1267,7 +1341,7 @@
     },
     {
       "id": "ym-lo-1",
-      "subcategoriaId": "sub-yemanja-louvacao",
+      "subcategoriaId": "sub-yemanja-chegada",
       "ordem": 0,
       "favorito": false,
       "criadoEm": 1774882639699,
@@ -1295,7 +1369,7 @@
     {
       "id": "ym-lo-4",
       "subcategoriaId": "sub-yemanja-louvacao",
-      "ordem": 3,
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Brilha o sol, Canta o rouxinol...",
@@ -1304,7 +1378,7 @@
     {
       "id": "ym-lo-5",
       "subcategoriaId": "sub-yemanja-louvacao",
-      "ordem": 4,
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Janaína minha deusa...",
@@ -1313,7 +1387,7 @@
     {
       "id": "ym-lo-6",
       "subcategoriaId": "sub-yemanja-louvacao",
-      "ordem": 5,
+      "ordem": 6,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Retira a jangada do mar...",
@@ -1322,7 +1396,7 @@
     {
       "id": "ym-lo-7",
       "subcategoriaId": "sub-yemanja-louvacao",
-      "ordem": 6,
+      "ordem": 8,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Eu vou à praia grande...",
@@ -1331,7 +1405,7 @@
     {
       "id": "ym-lo-8",
       "subcategoriaId": "sub-yemanja-louvacao",
-      "ordem": 7,
+      "ordem": 5,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Eu sou filha de Yabá...",
@@ -1340,7 +1414,7 @@
     {
       "id": "ym-lo-9",
       "subcategoriaId": "sub-yemanja-louvacao",
-      "ordem": 8,
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Mar, misterioso mar...",
@@ -1349,7 +1423,7 @@
     {
       "id": "ym-lo-10",
       "subcategoriaId": "sub-yemanja-louvacao",
-      "ordem": 9,
+      "ordem": 7,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Seu colar é de conchas...",
@@ -1403,7 +1477,7 @@
     {
       "id": "og-cg-1",
       "subcategoriaId": "sub-ogum-chegada",
-      "ordem": 0,
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Se meu Pai é Ogum, Ogum...",
@@ -1412,7 +1486,7 @@
     {
       "id": "og-cg-2",
       "subcategoriaId": "sub-ogum-chegada",
-      "ordem": 1,
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Pisa na linha de Umbanda...",
@@ -1430,7 +1504,7 @@
     {
       "id": "og-cg-4",
       "subcategoriaId": "sub-ogum-chegada",
-      "ordem": 3,
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Que cavaleiro é aquele...",
@@ -1439,7 +1513,7 @@
     {
       "id": "og-cg-5",
       "subcategoriaId": "sub-ogum-chegada",
-      "ordem": 4,
+      "ordem": 5,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Ogum é rei, É rei do cariri...",
@@ -1448,7 +1522,7 @@
     {
       "id": "og-cg-6",
       "subcategoriaId": "sub-ogum-chegada",
-      "ordem": 5,
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "É, seu Beira Mar...",
@@ -1457,7 +1531,7 @@
     {
       "id": "og-lo-1",
       "subcategoriaId": "sub-ogum-louvacao",
-      "ordem": 0,
+      "ordem": 9,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Filho de Pemba bebe água no rochedo...",
@@ -1466,7 +1540,7 @@
     {
       "id": "og-lo-2",
       "subcategoriaId": "sub-ogum-louvacao",
-      "ordem": 1,
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Salve Ogum Megê, Ogum Rompe Mato...",
@@ -1475,7 +1549,7 @@
     {
       "id": "og-lo-3",
       "subcategoriaId": "sub-ogum-louvacao",
-      "ordem": 2,
+      "ordem": 7,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "A sua espada brilha no raiar do dia...",
@@ -1484,7 +1558,7 @@
     {
       "id": "og-lo-4",
       "subcategoriaId": "sub-ogum-louvacao",
-      "ordem": 3,
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Eu não seria nada, Se não fosse Ogum...",
@@ -1493,7 +1567,7 @@
     {
       "id": "og-lo-5",
       "subcategoriaId": "sub-ogum-louvacao",
-      "ordem": 4,
+      "ordem": 5,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Ele é cavaleiro santo...",
@@ -1502,16 +1576,16 @@
     {
       "id": "og-lo-6",
       "subcategoriaId": "sub-ogum-louvacao",
-      "ordem": 5,
+      "ordem": 6,
       "favorito": false,
       "criadoEm": 1774882639699,
-      "titulo": "Mandei fazer um capacete de penas...",
+      "titulo": "Mandei fazer… um capacete de penas...para usar antes de alvorada",
       "letra": "Mandei fazer\nUm capacete de penas\nPara usar antes da alvorada (2x)\nVermelho e branco verde e azul\nEsse capacete tem as cores de Ogum (2x)\nDe Ogum Naruê de Ogum Matinata\nDe Ogum Naruê de Ogum Matinata\nQuando uso o capacete ouço o toque da alvorada (2x)"
     },
     {
       "id": "og-lo-7",
       "subcategoriaId": "sub-ogum-louvacao",
-      "ordem": 6,
+      "ordem": 8,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Quem me dera Ogum, Para ser meu guia...",
@@ -1520,7 +1594,7 @@
     {
       "id": "og-lo-8",
       "subcategoriaId": "sub-ogum-louvacao",
-      "ordem": 7,
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Eu vi, eu vi seu Rompe Mato no mar...",
@@ -1529,7 +1603,7 @@
     {
       "id": "og-lo-9",
       "subcategoriaId": "sub-ogum-louvacao",
-      "ordem": 8,
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "A Umbanda clareou...",
@@ -1538,7 +1612,7 @@
     {
       "id": "og-lo-10",
       "subcategoriaId": "sub-ogum-louvacao",
-      "ordem": 9,
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Eu sou filha de Naruê...",
@@ -1547,7 +1621,7 @@
     {
       "id": "og-tr-1",
       "subcategoriaId": "sub-ogum-trabalho",
-      "ordem": 0,
+      "ordem": 10,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Nesta casa de guerreiro (Ogum)...",
@@ -1556,7 +1630,7 @@
     {
       "id": "og-tr-2",
       "subcategoriaId": "sub-ogum-trabalho",
-      "ordem": 1,
+      "ordem": 6,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Ogum já venceu...",
@@ -1565,7 +1639,7 @@
     {
       "id": "og-tr-3",
       "subcategoriaId": "sub-ogum-trabalho",
-      "ordem": 2,
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Quem Beira Rio, Beira Rio...",
@@ -1574,7 +1648,7 @@
     {
       "id": "og-tr-4",
       "subcategoriaId": "sub-ogum-trabalho",
-      "ordem": 3,
+      "ordem": 9,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Oxalá está chamando Ogum lá no Humaitá...",
@@ -1583,7 +1657,7 @@
     {
       "id": "og-tr-5",
       "subcategoriaId": "sub-ogum-trabalho",
-      "ordem": 4,
+      "ordem": 5,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Na porta da Romaria...",
@@ -1592,7 +1666,7 @@
     {
       "id": "og-tr-6",
       "subcategoriaId": "sub-ogum-trabalho",
-      "ordem": 5,
+      "ordem": 7,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Ogum de Lei, Não me deixe sofrer...",
@@ -1601,25 +1675,25 @@
     {
       "id": "og-tr-7",
       "subcategoriaId": "sub-ogum-trabalho",
-      "ordem": 6,
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1774882639699,
-      "titulo": "Bandeira linda de Ogum...",
+      "titulo": "Bandeira linda de Ogum...esta içada la no humaita",
       "letra": "Bandeira linda de Ogum\nQue está içada lá no Humaitá (2x)\nRepresentando general de Umbanda\nPai Ogum venceu demanda lá nos campos do Humaitá (2x)"
     },
     {
       "id": "og-tr-8",
       "subcategoriaId": "sub-ogum-trabalho",
-      "ordem": 7,
+      "ordem": 8,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Ogum partiu pra guerra...",
-      "letra": "Ogum partiu pra guerra\nOgum tocou clarim (2x)\nDo seu exército todo\nEle é comandante sim\n\nSão dois irmãos\nNa madrugada\nSeu Ogum Iara seu Ogum Matinata (2x)"
+      "letra": "Ogum partiu pra guerra\nOgum tocou clarim (2x)\nDo seu exército todo\nEle é comandante sim\n\nSão dois irmãos\nNa madrugada\nSeu Ogum Iara seu Ogum Matinata (2x)\nNa beira da praia ogum sete ondas\nOgum beiramar"
     },
     {
       "id": "og-tr-9",
       "subcategoriaId": "sub-ogum-trabalho",
-      "ordem": 8,
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "General, general, meu general...",
@@ -1628,19 +1702,19 @@
     {
       "id": "og-tr-10",
       "subcategoriaId": "sub-ogum-trabalho",
-      "ordem": 9,
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1774882639699,
-      "titulo": "Ogum guerreiro de umbanda...",
+      "titulo": "Ogum guerreiro de umbanda...seu ponto veio firmar",
       "letra": "Ogum guerreiro de umbanda\nSeu ponto veio firmar (2x)\nEle pede ao Sol e a Lua\nO Paranga, para clarear (2x)\nA coroa de ouro é mariwô (2x)\nOgum é tatá, é tatá\nA coroa de ouro é mariwô (2x)"
     },
     {
       "id": "og-tr-11",
       "subcategoriaId": "sub-ogum-trabalho",
-      "ordem": 10,
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1774882639699,
-      "titulo": "Ogum, meu guerreiro de umbanda...",
+      "titulo": "Ogum, meu guerreiro de umbanda...cavaleiro supremo",
       "letra": "Ogum, meu guerreiro de umbanda\nCavaleiro supremo é vencedor de demandas\nÉ sentinela de pai Oxalá\nÉ remador, de Iemanjá\n\nSenhor da lua, ilumina meus caminhos\nToma conta da minha vida\nE me livre dos perigos (2x)"
     },
     {
@@ -1718,7 +1792,7 @@
     {
       "id": "ox-lo-2",
       "subcategoriaId": "sub-oxum-louvacao",
-      "ordem": 1,
+      "ordem": 6,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Foi na beira do rio aonde Oxum chorou...",
@@ -1727,7 +1801,7 @@
     {
       "id": "ox-lo-3",
       "subcategoriaId": "sub-oxum-louvacao",
-      "ordem": 2,
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Caminhando pela mata...",
@@ -1736,7 +1810,7 @@
     {
       "id": "ox-lo-4",
       "subcategoriaId": "sub-oxum-louvacao",
-      "ordem": 3,
+      "ordem": 5,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Nuvem de poeira d'água...",
@@ -1754,7 +1828,7 @@
     {
       "id": "ox-lo-6",
       "subcategoriaId": "sub-oxum-louvacao",
-      "ordem": 5,
+      "ordem": 7,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Eu vi mamãe Oxum chorando...",
@@ -1763,7 +1837,7 @@
     {
       "id": "ox-lo-7",
       "subcategoriaId": "sub-oxum-louvacao",
-      "ordem": 6,
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Deusa das cachoeiras e cascatas...",
@@ -1772,7 +1846,7 @@
     {
       "id": "ox-lo-8",
       "subcategoriaId": "sub-oxum-louvacao",
-      "ordem": 7,
+      "ordem": 8,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Fonte de luz, No meio das matas...",
@@ -1781,7 +1855,7 @@
     {
       "id": "ox-lo-9",
       "subcategoriaId": "sub-oxum-louvacao",
-      "ordem": 8,
+      "ordem": 9,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Gorjeia a passarada...",
@@ -1790,7 +1864,7 @@
     {
       "id": "ox-lo-10",
       "subcategoriaId": "sub-oxum-louvacao",
-      "ordem": 9,
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Minha mãe é uma flor...",
@@ -1808,7 +1882,7 @@
     {
       "id": "ox-tr-2",
       "subcategoriaId": "sub-oxum-trabalho",
-      "ordem": 1,
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Se um dia eu fui feliz...",
@@ -1817,7 +1891,7 @@
     {
       "id": "ox-tr-3",
       "subcategoriaId": "sub-oxum-trabalho",
-      "ordem": 2,
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Mamãe Oxum tem proteção de Zambi...",
@@ -1826,7 +1900,7 @@
     {
       "id": "nn-cg-1",
       "subcategoriaId": "sub-nana-chegada",
-      "ordem": 0,
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Atraca-atraca que aí vem Nanã...",
@@ -1835,7 +1909,7 @@
     {
       "id": "nn-cg-2",
       "subcategoriaId": "sub-nana-chegada",
-      "ordem": 1,
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "O mar estava bem calmo naquela manhã...",
@@ -1853,7 +1927,7 @@
     {
       "id": "nn-lo-2",
       "subcategoriaId": "sub-nana-louvacao",
-      "ordem": 1,
+      "ordem": 6,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Fui chamado de cordeiro...",
@@ -1862,7 +1936,7 @@
     {
       "id": "nn-lo-3",
       "subcategoriaId": "sub-nana-louvacao",
-      "ordem": 2,
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Deusa das águas salobras...",
@@ -1871,7 +1945,7 @@
     {
       "id": "nn-lo-4",
       "subcategoriaId": "sub-nana-louvacao",
-      "ordem": 3,
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Salve Nanã, Salve senhora das águas...",
@@ -1879,8 +1953,8 @@
     },
     {
       "id": "nn-lo-5",
-      "subcategoriaId": "sub-nana-louvacao",
-      "ordem": 4,
+      "subcategoriaId": "sub-nana-chegada",
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Nanã É orixá de umbanda...",
@@ -1889,7 +1963,7 @@
     {
       "id": "nn-lo-6",
       "subcategoriaId": "sub-nana-louvacao",
-      "ordem": 5,
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "É na mesa de umbanda que eu vi Nanã...",
@@ -1898,7 +1972,7 @@
     {
       "id": "nn-lo-7",
       "subcategoriaId": "sub-nana-louvacao",
-      "ordem": 6,
+      "ordem": 5,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "São flores, Nanã, são flores...",
@@ -1906,11 +1980,11 @@
     },
     {
       "id": "nn-tr-1",
-      "subcategoriaId": "sub-nana-trabalho",
-      "ordem": 0,
+      "subcategoriaId": "sub-nana-chegada",
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1774882639699,
-      "titulo": "É Nanã, É Nanã auê...",
+      "titulo": "É Nanã, É Nanã auê... no rodar da sua saia",
       "letra": "É Nanã, É Nanã auê,\nÉ Nanã,\nÉ Nanã Buruquê (2x)\nAo rodar da sua saia\nManda forças pra nossa banda\nOs filhos que tanto lhe pedem\nNanã corta toda mironga\nNa barra da sua saia\nCarrega filhos de Umbanda\nCom suas águas sagradas\nDescarrega a nossa banda"
     },
     {
@@ -1934,7 +2008,7 @@
     {
       "id": "nn-tr-4",
       "subcategoriaId": "sub-nana-trabalho",
-      "ordem": 3,
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1774882639699,
       "titulo": "Me lava Nanã, me lava...",
@@ -1942,8 +2016,8 @@
     },
     {
       "id": "beijada-1",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 0,
+      "subcategoriaId": "1775843761987-xcrsduo",
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Antes de o sol nascer...",
@@ -1951,62 +2025,35 @@
     },
     {
       "id": "beijada-2",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 1,
-      "favorito": false,
-      "criadoEm": 1775829769157,
-      "titulo": "Doun hoje é o seu dia...",
-      "letra": "Doun hoje é o seu dia, hoje tem alegria em todo terreiro\nDoun oh Doun\nSarava Zambi na linha de umbanda em todo terreiro (2x)"
-    },
-    {
-      "id": "beijada-3",
-      "subcategoriaId": "sub-beijada-pontos",
+      "subcategoriaId": "1775843761987-xcrsduo",
       "ordem": 2,
       "favorito": false,
       "criadoEm": 1775829769157,
-      "titulo": "Mas quem é seu irmão...",
-      "letra": "Mas quem é seu irmão\nQuem é seu irmão\nQuem é seu irmão\nÉ Cosme Damião\nÉ Cosme Damião (2x)"
+      "titulo": "Doun hoje é o seu dia...",
+      "letra": "Doun hoje é o seu dia, hoje tem alegria em todo terreiro\nDoun oh Doun\nSarava Zambi na linha de umbanda em todo terreiro (2x)\n\nMas quem é seu irmão\nQuem é seu irmão\nQuem é seu irmão\nÉ Cosme Damião\nÉ Cosme Damião (2x)"
     },
     {
       "id": "beijada-4",
-      "subcategoriaId": "sub-beijada-pontos",
+      "subcategoriaId": "1775843767367-44ge7r4",
       "ordem": 3,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Ele foi doutor...",
-      "letra": "Ele foi doutor\nEle foi doutor\nEle me curou\nNuma brincadeira que ele brincou\nEle me curou (2x)"
-    },
-    {
-      "id": "beijada-5",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 4,
-      "favorito": false,
-      "criadoEm": 1775829769157,
-      "titulo": "Eram três crianças...",
-      "letra": "Eram três crianças\nEu me lembro bem\nO terreiro em festa\nEu me lembro bem\nVieram de um a um\nE era Cosme Damião e Doun (2x)"
+      "letra": "Ele foi doutor\nEle foi doutor\nEle me curou\nNuma brincadeira que ele brincou\nEle me curou (2x)\n\nEram três crianças\nEu me lembro bem\nO terreiro em festa\nEu me lembro bem\nVieram de um a um\nE era Cosme Damião e Doun (2x)"
     },
     {
       "id": "beijada-6",
-      "subcategoriaId": "sub-beijada-pontos",
+      "subcategoriaId": "1775843521340-i2pswph",
       "ordem": 5,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Eu vou chamar o meu pai...",
-      "letra": "Eu vou chamar o meu pai (2x)\nPra ele ver quem chegou (2x)\nE chegou para brincar (2x)\nCom as crianças também (2x)"
-    },
-    {
-      "id": "beijada-7",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 6,
-      "favorito": false,
-      "criadoEm": 1775829769157,
-      "titulo": "Andorinha que voa no ar...",
-      "letra": "Andorinha que voa no ar\nChega pertinho do céu\nAvisa Papai Oxalá\nQue hoje é dia das crianças\n\nNós vamos brincar com as crianças\nCosme Damião e Doun (2x)"
+      "letra": "Eu vou chamar o meu pai (2x)\nPra ele ver quem chegou (2x)\nE chegou para brincar (2x)\nCom as crianças também (2x)\n\nAndorinha que voa no ar\nChega pertinho do céu\nAvisa Papai Oxalá\nQue hoje é dia das crianças\n\nNós vamos brincar com as crianças\nCosme Damião e Doun (2x)"
     },
     {
       "id": "beijada-8",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 7,
+      "subcategoriaId": "1775843761987-xcrsduo",
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Pra que cocada branca...",
@@ -2014,8 +2061,8 @@
     },
     {
       "id": "beijada-9",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 8,
+      "subcategoriaId": "1775843521340-i2pswph",
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Papai me solta um balão...",
@@ -2023,17 +2070,17 @@
     },
     {
       "id": "beijada-10",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 9,
+      "subcategoriaId": "1775843761987-xcrsduo",
+      "ordem": 5,
       "favorito": false,
       "criadoEm": 1775829769157,
-      "titulo": "Cosme e Damião, Damião...",
+      "titulo": "Cosme e Damião, Damião cade doum",
       "letra": "Cosme e Damião, Damião\nCadê Doum\nDoum ta passeando\nNo cavalo de Ogum"
     },
     {
       "id": "beijada-11",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 10,
+      "subcategoriaId": "1775843761987-xcrsduo",
+      "ordem": 6,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Ele é pequenininho...",
@@ -2041,8 +2088,8 @@
     },
     {
       "id": "beijada-12",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 11,
+      "subcategoriaId": "1775843761987-xcrsduo",
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Quando a lua brilha no céu...",
@@ -2050,8 +2097,8 @@
     },
     {
       "id": "beijada-13",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 12,
+      "subcategoriaId": "1775843767367-44ge7r4",
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Tem bala de coco e peteca...",
@@ -2059,8 +2106,8 @@
     },
     {
       "id": "beijada-14",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 13,
+      "subcategoriaId": "1775843761987-xcrsduo",
+      "ordem": 7,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Tem paciência, Dois Dois...",
@@ -2068,8 +2115,8 @@
     },
     {
       "id": "beijada-15",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 14,
+      "subcategoriaId": "1775843761987-xcrsduo",
+      "ordem": 9,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Lá no céu tem três estrelas...",
@@ -2077,44 +2124,26 @@
     },
     {
       "id": "beijada-16",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 15,
+      "subcategoriaId": "1775843767367-44ge7r4",
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Na Bahia tem um coco...",
-      "letra": "Na Bahia tem um coco\nCoco que faz a cocada (2x)\nCoco que faz o manjar\nPara dar para Beijada (2x)"
-    },
-    {
-      "id": "beijada-17",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 16,
-      "favorito": false,
-      "criadoEm": 1775829769157,
-      "titulo": "Doum, Doum, Doum...",
-      "letra": "Doum, Doum, Doum, Doum, Cosme e Damião\nDoum, Doum, Doum, brinca sentado no chão (2x)"
+      "letra": "Na Bahia tem um coco\nCoco que faz a cocada (2x)\nCoco que faz o manjar\nPara dar para Beijada (2x)\nDoum, Doum, Doum, Doum, Cosme e Damião\nDoum, Doum, Doum, brinca sentado no chão (2x)"
     },
     {
       "id": "beijada-18",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 17,
+      "subcategoriaId": "1775843767367-44ge7r4",
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Fui no jardim colher as rosas...",
-      "letra": "Fui no jardim, colher as rosas\nA vovozinha deu-me a rosa mais formosa (2x)"
-    },
-    {
-      "id": "beijada-19",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 18,
-      "favorito": false,
-      "criadoEm": 1775829769157,
-      "titulo": "Cosme e Damião ó Doum...",
-      "letra": "Cosme e Damião ó Doum\nCrispim, Crispiniano\nSão os filhos de Ogum (2x)"
+      "letra": "Fui no jardim, colher as rosas\nA vovozinha deu-me a rosa mais formosa (2x)\n\nCosme e Damião ó Doum\nCrispim, Crispiniano\nSão os filhos de Ogum (2x)"
     },
     {
       "id": "beijada-20",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 19,
+      "subcategoriaId": "1775843767367-44ge7r4",
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Filho de fé estava doente...",
@@ -2122,8 +2151,8 @@
     },
     {
       "id": "beijada-21",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 20,
+      "subcategoriaId": "1775843521340-i2pswph",
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Que lindo cavalo branco...",
@@ -2131,8 +2160,8 @@
     },
     {
       "id": "beijada-22",
-      "subcategoriaId": "sub-beijada-pontos",
-      "ordem": 21,
+      "subcategoriaId": "1775843761987-xcrsduo",
+      "ordem": 8,
       "favorito": false,
       "criadoEm": 1775829769157,
       "titulo": "Bahia é terra de dois...",
@@ -2140,7 +2169,7 @@
     },
     {
       "id": "omulu-1",
-      "subcategoriaId": "sub-omulu-pontos",
+      "subcategoriaId": "1775842179978-8gyif4c",
       "ordem": 0,
       "favorito": false,
       "criadoEm": 1775839257000,
@@ -2149,7 +2178,7 @@
     },
     {
       "id": "omulu-2",
-      "subcategoriaId": "sub-omulu-pontos",
+      "subcategoriaId": "1775843245835-00hls3q",
       "ordem": 1,
       "favorito": false,
       "criadoEm": 1775839257000,
@@ -2158,8 +2187,8 @@
     },
     {
       "id": "omulu-3",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 2,
+      "subcategoriaId": "1775843239112-hmxprsl",
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1775839257000,
       "titulo": "Que orixá é esse...",
@@ -2167,8 +2196,8 @@
     },
     {
       "id": "omulu-4",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 3,
+      "subcategoriaId": "1775843245835-00hls3q",
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1775839257000,
       "titulo": "É Obaluaê, é Obaluaê...",
@@ -2176,89 +2205,44 @@
     },
     {
       "id": "omulu-5",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 4,
-      "favorito": false,
-      "criadoEm": 1775839257000,
-      "titulo": "Casinha branca...",
-      "letra": "Casinha branca, casinha branca\nQue eu mandei fazer (2x)\nPara oferecer a meu pai Omulu\nSeu atotô Obaluaê (2x)"
-    },
-    {
-      "id": "omulu-6",
-      "subcategoriaId": "sub-omulu-pontos",
+      "subcategoriaId": "1775843239112-hmxprsl",
       "ordem": 5,
       "favorito": false,
       "criadoEm": 1775839257000,
-      "titulo": "Salve mamãe Oxum...",
-      "letra": "Salve mamãe Oxum! E salve Nanã Buroquê\nSalve Atotô Obaluaê (2x)"
-    },
-    {
-      "id": "omulu-7",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 6,
-      "favorito": false,
-      "criadoEm": 1775839257000,
-      "titulo": "Se ver um velho no caminho...",
-      "letra": "Se ver um velho no caminho\nPeça a benção (2x)\nDeus lhe abençoe, Obaluaê\nDeus lhe abençoe"
+      "titulo": "Casinha branca...",
+      "letra": "Casinha branca, casinha branca\nQue eu mandei fazer (2x)\nPara oferecer a meu pai Omulu\nSeu atotô Obaluaê (2x)\n\nSalve mamãe Oxum! E salve Nanã Buroquê\nSalve Atotô Obaluaê (2x)"
     },
     {
       "id": "omulu-8",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 7,
+      "subcategoriaId": "1775843239112-hmxprsl",
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1775839257000,
       "titulo": "Oxalá é rei do mundo...",
-      "letra": "Oxalá é rei do mundo\nOxalá é meu senhor\nOmulu é o meu santo\nO meu santo protetor (2x)"
+      "letra": "Oxalá é rei do mundo\nOxalá é meu senhor\nOmulu é o meu santo\nO meu santo protetor (2x)\n\nAtoto\nAtoto, Atoto, Atoto o atoto Obaluaê (2x)"
     },
     {
       "id": "omulu-9",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 8,
+      "subcategoriaId": "1775843239112-hmxprsl",
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1775839257000,
-      "titulo": "Atoto, Atoto, Atoto...",
-      "letra": "Atoto\nAtoto, Atoto, Atoto o atoto Obaluaê (2x)\n\nSenhor da terra\nSenhor da renovação\nTem o poder da cura\nE da regeneração\n\nSua veste é de palha\nSua casa é de sapê\nO senhor do meu destino\nAtoto Obaluaê (2x)\n\nQuando ele dança\nFaz bailar o seu filá\nO terreiro se encanta\nOmulu meu orixá\n\nVelho Omulu\nJovem Obaluaê"
-    },
-    {
-      "id": "omulu-10",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 9,
-      "favorito": false,
-      "criadoEm": 1775839257000,
-      "titulo": "As suas flores cobrem o chão...",
-      "letra": "As suas flores cobrem o chão do meu ilê\nSaravá Omulu, salve Obaluaê\nVou regar as suas flores com azeite de dendê (2x)"
+      "titulo": "Senhor da terra, senhor da renovação",
+      "letra": "Senhor da terra\nSenhor da renovação\nTem o poder da cura\nE da regeneração\n\nSua veste é de palha\nSua casa é de sapê\nO senhor do meu destino\nAtoto Obaluaê (2x)\n\nQuando ele dança\nFaz bailar o seu filá\nO terreiro se encanta\nOmulu meu orixá\n\nVelho Omulu\nJovem Obaluaê\n\nAs suas flores cobrem o chão do meu ilê\nSaravá Omulu, salve Obaluaê\nVou regar as suas flores com azeite de dendê (2x)"
     },
     {
       "id": "omulu-11",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 10,
+      "subcategoriaId": "1775843239112-hmxprsl",
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1775839257000,
       "titulo": "Atoto Obaluaê, salve a palha...",
-      "letra": "Atoto Obaluaê\nSalve a palha do senhor\nXaxará bateu na terra em seu louvor (2x)"
-    },
-    {
-      "id": "omulu-12",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 11,
-      "favorito": false,
-      "criadoEm": 1775839257000,
-      "titulo": "Os filhos de Zambi...",
-      "letra": "Os filhos de Zambi\nHoje cantam zuelas\nEm seu louvor\nZuelas que contam\nA história da palha\nQue é sagrada ao senhor (Ô, ô, ô)\n\nA palha sagrada\nQue encobre a luz\nDe seu Atoto\nE os olhos dos homens\nJamais poderão\nVer a luz de Atoto\n\nAtoto Obaluaê\nAtoto Obaluaê\nAtoto meu pai é Obaluaê (2x)"
-    },
-    {
-      "id": "omulu-13",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 12,
-      "favorito": false,
-      "criadoEm": 1775839257000,
-      "titulo": "O velho mais velho...",
-      "letra": "O velho mais velho\nÉ dos orixás\nA terra ganhou\nA terra rezava\nOs seus filhos cantavam\nEm seu louvor (Ô, ô, ô)\n\nA palha da costa\nQue enfeita a casa de seu Atoto\nE os seus filhos cantavam\nA zuela que um dia a terra rezou"
+      "letra": "Atoto Obaluaê\nSalve a palha do senhor\nXaxará bateu na terra em seu louvor (2x)\n\nOs filhos de Zambi\nHoje cantam zuelas\nEm seu louvor\nZuelas que contam\nA história da palha\nQue é sagrada ao senhor (Ô, ô, ô)\n\nA palha sagrada\nQue encobre a luz\nDe seu Atoto\nE os olhos dos homens\nJamais poderão\nVer a luz de Atoto\n\nAtoto Obaluaê\nAtoto Obaluaê\nAtoto meu pai é Obaluaê (2x)\n\nO velho mais velho\nÉ dos orixás\nA terra ganhou\nA terra rezava\nOs seus filhos cantavam\nEm seu louvor (Ô, ô, ô)\n\nA palha da costa\nQue enfeita a casa de seu Atoto\nE os seus filhos cantavam\nA zuela que um dia a terra rezou"
     },
     {
       "id": "omulu-14",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 13,
+      "subcategoriaId": "1775843245835-00hls3q",
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1775839257000,
       "titulo": "Omulu é tatá na sua dança...",
@@ -2266,8 +2250,8 @@
     },
     {
       "id": "omulu-15",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 14,
+      "subcategoriaId": "1775843239112-hmxprsl",
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1775839257000,
       "titulo": "Obaluaê, seu terreiro está em festa...",
@@ -2275,8 +2259,8 @@
     },
     {
       "id": "omulu-16",
-      "subcategoriaId": "sub-omulu-pontos",
-      "ordem": 15,
+      "subcategoriaId": "1775843239112-hmxprsl",
+      "ordem": 6,
       "favorito": false,
       "criadoEm": 1775839257000,
       "titulo": "Silêncio, meu senhor está na terra...",
@@ -2284,26 +2268,17 @@
     },
     {
       "id": "xango-1",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 0,
-      "favorito": false,
-      "criadoEm": 1775840702821,
-      "titulo": "Pedra rolou Xangô...",
-      "letra": "Pedra rolou Xangô\nLá na pedreira\nSegura a pedra meu Pai\nNa cachoeira (2x)"
-    },
-    {
-      "id": "xango-2",
-      "subcategoriaId": "sub-xango-pontos",
+      "subcategoriaId": "1775841149064-0h2e3vy",
       "ordem": 1,
       "favorito": false,
       "criadoEm": 1775840702821,
-      "titulo": "Tenho o meu corpo fechado...",
-      "letra": "Tenho o meu corpo fechado\nXangô é meu protetor\nFirma o ponto meu filho\nPai de cabeça chegou (2x)"
+      "titulo": "Pedra rolou Xangô...",
+      "letra": "Pedra rolou Xangô\nLá na pedreira\nSegura a pedra meu Pai\nNa cachoeira (2x)\nTenho o meu corpo fechado\nXangô é meu protetor\nFirma o ponto meu filho\nPai de cabeça chegou (2x)"
     },
     {
       "id": "xango-3",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 2,
+      "subcategoriaId": "1775841124533-frx7gku",
+      "ordem": 5,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Ô Gino olha a sua banda...",
@@ -2311,8 +2286,8 @@
     },
     {
       "id": "xango-4",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 3,
+      "subcategoriaId": "1775841124533-frx7gku",
+      "ordem": 6,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Lá em cima daquela pedreira...",
@@ -2320,8 +2295,8 @@
     },
     {
       "id": "xango-5",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 4,
+      "subcategoriaId": "1775841100471-0j9hgq0",
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Kaô Xangô, deixa essa pedreira...",
@@ -2329,8 +2304,8 @@
     },
     {
       "id": "xango-6",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 5,
+      "subcategoriaId": "1775841149064-0h2e3vy",
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Quem rola as pedras na pedreira...",
@@ -2338,8 +2313,8 @@
     },
     {
       "id": "xango-7",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 6,
+      "subcategoriaId": "1775841149064-0h2e3vy",
+      "ordem": 5,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Xangô colocou pedra em meus caminhos...",
@@ -2347,8 +2322,8 @@
     },
     {
       "id": "xango-8",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 7,
+      "subcategoriaId": "1775841100471-0j9hgq0",
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Ele bradou na aldeia...",
@@ -2356,8 +2331,8 @@
     },
     {
       "id": "xango-9",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 8,
+      "subcategoriaId": "1775841124533-frx7gku",
+      "ordem": 7,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Dizem que Xangô mora na pedreira...",
@@ -2365,26 +2340,17 @@
     },
     {
       "id": "xango-10",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 9,
+      "subcategoriaId": "1775841124533-frx7gku",
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Por detrás daquela serra...",
-      "letra": "Por detrás daquela serra\nTem uma linda cachoeira (2x)\nÉ de meu pai Xangô\nQue arrebentou sete pedreiras (2x)"
-    },
-    {
-      "id": "xango-11",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 10,
-      "favorito": false,
-      "criadoEm": 1775840702821,
-      "titulo": "Foi água nascendo na fonte...",
-      "letra": "Foi água nascendo na fonte e o espinho na flor\nDo seu medo escondido nasceu a coragem\nDe ser vencedor\nPunhal na mão no peito um escudo mais fiel\nDe quem na terra concebeu ao céu\nSão sete pedreiras que ele aprendeu a quebrar\nNa faísca na fúria no raio na chuva\nA luz do luar\nLavou o corpo com o vinho amargo do suor\nE fez do próprio bem de todos males talvez o menor"
+      "letra": "Por detrás daquela serra\nTem uma linda cachoeira (2x)\nÉ de meu pai Xangô\nQue arrebentou sete pedreiras (2x)\nFoi água nascendo na fonte e o espinho na flor\nDo seu medo escondido nasceu a coragem\nDe ser vencedor\nPunhal na mão no peito um escudo mais fiel\nDe quem na terra concebeu ao céu\nSão sete pedreiras que ele aprendeu a quebrar\nNa faísca na fúria no raio na chuva\nA luz do luar\nLavou o corpo com o vinho amargo do suor\nE fez do próprio bem de todos males talvez o menor"
     },
     {
       "id": "xango-12",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 11,
+      "subcategoriaId": "1775841100471-0j9hgq0",
+      "ordem": 4,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Veja que pedreira linda...",
@@ -2392,44 +2358,26 @@
     },
     {
       "id": "xango-13",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 12,
+      "subcategoriaId": "1775841124533-frx7gku",
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Se eu errei, aqui estou...",
-      "letra": "Se eu errei, aqui estou\nPedindo Maleme meu pai Xangô (2x)\nMandai a faísca de um raio pra me iluminar\nSegure a pedra na pedreira não deixa rolar"
-    },
-    {
-      "id": "xango-14",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 13,
-      "favorito": false,
-      "criadoEm": 1775840702821,
-      "titulo": "Xangô Kaô meu pai...",
-      "letra": "Xangô Kaô meu pai,\nOs seus filhos bambeiam, mas não caem (2x)"
+      "letra": "Se eu errei, aqui estou\nPedindo Maleme meu pai Xangô (2x)\nMandai a faísca de um raio pra me iluminar\nSegure a pedra na pedreira não deixa rolar\nXangô Kaô meu pai,\nOs seus filhos bambeiam, mas não caem (2x)"
     },
     {
       "id": "xango-15",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 14,
+      "subcategoriaId": "1775841124533-frx7gku",
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Ouvi um trovão na pedreira...",
-      "letra": "Ouvi um trovão na pedreira\nOuvi\nClareou toda a terra\nEu vi\nPassarada a revoar\nSenti uma alegria tão grande\nAo ver aquela imagem que logo reconheci\nChorei, implorei por justiça\nPai Xangô eu sou seu filho\nOlha o meu caminhar\n\nOh Pai, não me deixe andar sozinho\nQue ao lado do Senhor prometo que vou sempre estar (2x)"
-    },
-    {
-      "id": "xango-16",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 15,
-      "favorito": false,
-      "criadoEm": 1775840702821,
-      "titulo": "Kaô Pai Xangô, é o meu pai...",
-      "letra": "Kaô Pai Xangô\nÉ o meu pai é o meu guia e protetor\nKaô Pai Xangô\nTodos seus filhos lhe adoram com amor\nSenhor da justiça e verdade\nCom a sua machadinha\nAs mirongas vai cortar\nSentado em seu trono coroado\nTire as pedras do caminho por onde eu vou passar"
+      "letra": "Ouvi um trovão na pedreira\nOuvi\nClareou toda a terra\nEu vi\nPassarada a revoar\nSenti uma alegria tão grande\nAo ver aquela imagem que logo reconheci\nChorei, implorei por justiça\nPai Xangô eu sou seu filho\nOlha o meu caminhar\n\nOh Pai, não me deixe andar sozinho\nQue ao lado do Senhor prometo que vou sempre estar (2x)\nKaô Pai Xangô\nÉ o meu pai é o meu guia e protetor\nKaô Pai Xangô\nTodos seus filhos lhe adoram com amor\nSenhor da justiça e verdade\nCom a sua machadinha\nAs mirongas vai cortar\nSentado em seu trono coroado\nTire as pedras do caminho por onde eu vou passar"
     },
     {
       "id": "xango-17",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 16,
+      "subcategoriaId": "1775841100471-0j9hgq0",
+      "ordem": 5,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Ele vem de Aruanda...",
@@ -2437,62 +2385,35 @@
     },
     {
       "id": "xango-18",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 17,
+      "subcategoriaId": "1775841124533-frx7gku",
+      "ordem": 1,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "No alto da pedreira...",
-      "letra": "No alto da pedreira\nXangô escreveu o seu nome (2x)\nEle é Xangô\nXangô, Xangô Airá\nQue a seus filhos\nEle veio abençoar (2x)"
-    },
-    {
-      "id": "xango-19",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 18,
-      "favorito": false,
-      "criadoEm": 1775840702821,
-      "titulo": "Xangô é o rei da pedreira...",
-      "letra": "Xangô é o rei da pedreira\nRei do trovão e da justiça verdadeira\nXangô meu pai, sua proteção\nPara os seus filhos que pedem\nSua benção (2x)"
+      "letra": "No alto da pedreira\nXangô escreveu o seu nome (2x)\nEle é Xangô\nXangô, Xangô Airá\nQue a seus filhos\nEle veio abençoar (2x)\nXangô é o rei da pedreira\nRei do trovão e da justiça verdadeira\nXangô meu pai, sua proteção\nPara os seus filhos que pedem\nSua benção (2x)"
     },
     {
       "id": "xango-20",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 19,
+      "subcategoriaId": "1775841149064-0h2e3vy",
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Pedra rola da pedreira...",
-      "letra": "Pedra rola da pedreira\nEm cima de quem errou\nJustiça quem faz é ele\nPor que ele é Xangô (2x)\n\nCom seu leão do lado\nCom seu machado na mão\nEle corta mironga\nPra seus filhos dá proteção"
-    },
-    {
-      "id": "xango-21",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 20,
-      "favorito": false,
-      "criadoEm": 1775840702821,
-      "titulo": "Justiça maior é de meu pai Xangô...",
-      "letra": "Justiça maior é de meu pai Xangô\nJustiça verdadeira\nO seu brado é tão alto\nEcoa na pedreira (2x)"
+      "letra": "Pedra rola da pedreira\nEm cima de quem errou\nJustiça quem faz é ele\nPor que ele é Xangô (2x)\n\nCom seu leão do lado\nCom seu machado na mão\nEle corta mironga\nPra seus filhos dá proteção\n\nJustiça maior é de meu pai Xangô\nJustiça verdadeira\nO seu brado é tão alto\nEcoa na pedreira (2x)"
     },
     {
       "id": "xango-22",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 21,
+      "subcategoriaId": "1775841100471-0j9hgq0",
+      "ordem": 0,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Xangô meu pai na Umbanda...",
-      "letra": "Xangô meu pai na Umbanda\nVem de Aruanda ele é meu Orixá\nNo alto de uma pedreira\nEle faz justiça, pra seus filhos ajudar (2x)"
-    },
-    {
-      "id": "xango-23",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 22,
-      "favorito": false,
-      "criadoEm": 1775840702821,
-      "titulo": "Xangô, na sua aldeia...",
-      "letra": "Xangô, na sua aldeia\nNão há maldades\nSó o amor pode reinar\nTu me ensinastes a\nFazer a caridade\nE pela terra\nA Umbanda exaltar\nMeu pai com sua machada\nEle não ataca\nÉ só para me guardar\nE no seu livro ele\nEscreva o meu destino\nMeu pai Xangô\nIlumina meus caminhos\n\nEle é Xangô\nKaô, Kaô\nVencedor de demanda\nEle é meu protetor (2x)"
+      "letra": "Xangô meu pai na Umbanda\nVem de Aruanda ele é meu Orixá\nNo alto de uma pedreira\nEle faz justiça, pra seus filhos ajudar (2x)\nXangô, na sua aldeia\nNão há maldades\nSó o amor pode reinar\nTu me ensinastes a\nFazer a caridade\nE pela terra\nA Umbanda exaltar\nMeu pai com sua machada\nEle não ataca\nÉ só para me guardar\nE no seu livro ele\nEscreva o meu destino\nMeu pai Xangô\nIlumina meus caminhos\n\nEle é Xangô\nKaô, Kaô\nVencedor de demanda\nEle é meu protetor (2x)"
     },
     {
       "id": "xango-24",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 23,
+      "subcategoriaId": "1775841124533-frx7gku",
+      "ordem": 8,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Xangô é rei, é rei de Nagô...",
@@ -2500,26 +2421,17 @@
     },
     {
       "id": "xango-25",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 24,
+      "subcategoriaId": "1775841149064-0h2e3vy",
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Meu Pai, Meu Senhor...",
-      "letra": "Meu Pai, Meu Senhor\nDe joelhos eu peço a ti Pai Xangô\nQue me mande a faísca de um Raio Divino\nDefender meu Terreiro de um mal protetor (2x)"
-    },
-    {
-      "id": "xango-26",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 25,
-      "favorito": false,
-      "criadoEm": 1775840702821,
-      "titulo": "Eu vi chover, chover...",
-      "letra": "Eu vi chover, chover\nVento que balanceou, balanceou\nVento bateu na pedreira\nFoi de encontro à cachoeira,\nÁgua rolou (2x)"
+      "letra": "Meu Pai, Meu Senhor\nDe joelhos eu peço a ti Pai Xangô\nQue me mande a faísca de um Raio Divino\nDefender meu Terreiro de um mal protetor (2x)\n\nEu vi chover, chover\nVento que balanceou, balanceou\nVento bateu na pedreira\nFoi de encontro à cachoeira,\nÁgua rolou (2x)"
     },
     {
       "id": "xango-27",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 26,
+      "subcategoriaId": "1775841100471-0j9hgq0",
+      "ordem": 3,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Ele é Xangô das Almas...",
@@ -2527,12 +2439,1416 @@
     },
     {
       "id": "xango-28",
-      "subcategoriaId": "sub-xango-pontos",
-      "ordem": 27,
+      "subcategoriaId": "1775841149064-0h2e3vy",
+      "ordem": 2,
       "favorito": false,
       "criadoEm": 1775840702821,
       "titulo": "Meu pai São João Batista é Xangô...",
-      "letra": "Meu pai São João Batista é Xangô\nEle é dono do meu destino até o fim (2x)\nSe um dia me faltar a fé no meu senhor\nDerruba essa pedreira sobre mim (2x)\n\nÉ de xoroquê a porteira de entrada que Olorum te deu\nÉ de xorocô a madeira sagrada de Xangô (2x)\nPra quem tem licença a porteira do mundo nunca tranca\nPra quem tem a benção do dono da gameleira branca (2x)\n\nBate na porteira, Bará vai abrir\nFoi na gameleira, Coral e tauí\nJá deu na peneira de mãe Marcelina e pai Aurélio\nÉ cajá de espada, ninguém passa ali\nEssa é a minha estrada\nEu sei porque eu que vi\nQue ela foi riscada na árvore do Xangô mais velho\n\nMeu pai São João Batista ele é Xangô\nÉ dono do meu destino até o fim (2x)\nSe um dia me faltar a fé no meu senhor\nDerrube essa pedreira sobre mim (2x)"
+      "letra": "Meu pai São João Batista é Xangô\nEle é dono do meu destino até o fim (2x)\nSe um dia me faltar a fé no meu senhor\nDerruba essa pedreira sobre mim (2x)\n\nMeu pai São João Batista ele é Xangô\nÉ dono do meu destino até o fim (2x)\nSe um dia me faltar a fé no meu senhor\nDerrube essa pedreira sobre mim (2x)"
+    },
+    {
+      "id": "1775842032614-0rud5n0",
+      "subcategoriaId": "1775841124533-frx7gku",
+      "titulo": "É de xoroque",
+      "letra": "É de xoroquê a porteira de entrada que Olorum te deu\nÉ de xorocô a madeira sagrada de Xangô (2x)\nPra quem tem licença a porteira do mundo nunca tranca\nPra quem tem a benção do dono da gameleira branca (2x)\n\nBate na porteira, Bará vai abrir\nFoi na gameleira, Coral e tauí\nJá deu na peneira de mãe Marcelina e pai Aurélio\nÉ cajá de espada, ninguém passa ali\nEssa é a minha estrada\nEu sei porque eu que vi\nQue ela foi riscada na árvore do Xangô mais velho",
+      "favorito": false,
+      "ordem": 4,
+      "criadoEm": 1775842032614
+    },
+    {
+      "id": "1775843394165-6ah3q30",
+      "subcategoriaId": "1775843245835-00hls3q",
+      "titulo": "Na pedra fria, no pe do morro",
+      "letra": "Na pedra fria, no pe do morro\nDizem que mora, um velho la\nEle é curador\nEle é rezador\nEle é xapana \nEle vai lhe curar",
+      "favorito": false,
+      "ordem": 3,
+      "criadoEm": 1775843394165
+    },
+    {
+      "id": "1775844149808-a5xfclt",
+      "subcategoriaId": "1775843521340-i2pswph",
+      "titulo": "Hoje eu to feliz, pq?",
+      "letra": "O quebra-mar devolveu \nO colar de conchinhas que mariazinha da praia me deu\n\nMariazinha, flor em botao \nVoce é a menina que cabe inteirinha o meu coração \nVou contar ladainhas\nVou louvar meu gongar\nE o colar de conchinhas\nSera para sempre o seu patua",
+      "favorito": false,
+      "ordem": 2,
+      "criadoEm": 1775844149809
+    },
+    {
+      "id": "1775844298359-loye6qm",
+      "subcategoriaId": "1775843761987-xcrsduo",
+      "titulo": "Cosme e damiao a sua casa cheira",
+      "letra": "Cheira cravo, cheira rosa\nCheira flor de laranjeira",
+      "favorito": false,
+      "ordem": 10,
+      "criadoEm": 1775844298359
+    },
+    {
+      "id": "1775844392430-w6fkkak",
+      "subcategoriaId": "1775843767367-44ge7r4",
+      "titulo": "Titia me deu cocada, tio me deu guarana2x",
+      "letra": "Gostei foi do caruru, que a mamae mandou preparar 2x\n\nMamae me deu caruru\nE eu comi caruru de mamae(4x)",
+      "favorito": false,
+      "ordem": 5,
+      "criadoEm": 1775844392430
+    },
+    {
+      "id": "1775844443816-kqazxow",
+      "subcategoriaId": "1775843761987-xcrsduo",
+      "titulo": "Criança quando vem de aruanda",
+      "letra": "Criança é quem manda\nEles vem dizendo aue aue\nAo romper da aurora\nOs quindim os quidim as crianças chegam assim",
+      "favorito": false,
+      "ordem": 3,
+      "criadoEm": 1775844443816
+    },
+    {
+      "id": "1775845080198-fedeh1p",
+      "subcategoriaId": "1775843767367-44ge7r4",
+      "titulo": "Eu quero doce, eu quero bala..",
+      "letra": "Eu quero acucar pra passar na sua cara\nEu quero doce o me da doce eu quero bala\nEu quero acucar pra passar na sua cara",
+      "favorito": false,
+      "ordem": 0,
+      "criadoEm": 1775845080198
+    },
+    {
+      "id": "1775845312975-kb54p6i",
+      "subcategoriaId": "1775843761987-xcrsduo",
+      "titulo": "Mariazinha da beira da praia, como é",
+      "letra": "Que sacode a saia\nÉ assim, é assim é assim que sacode a saia\n\nMariazinha da cachoeira, como é que sacode a poeira\nÉ assim, é assim é assim que sacode a poeira",
+      "favorito": false,
+      "ordem": 11,
+      "criadoEm": 1775845312975
+    },
+    {
+      "id": "1775845532542-v4c2v1m",
+      "subcategoriaId": "1775843521340-i2pswph",
+      "titulo": "Criança vem de aruanda, criança vamos brincar, criança vem no gongar, para salvar sua banda",
+      "letra": "Criança vem no gongar\nPara salvar sua banda",
+      "favorito": false,
+      "ordem": 3,
+      "criadoEm": 1775845532542
+    },
+    {
+      "id": "1775855287512-ew2hzcb",
+      "subcategoriaId": "sub-oxum-trabalho",
+      "titulo": "Aguas que invadem o meu viver",
+      "letra": "",
+      "favorito": false,
+      "ordem": 1,
+      "criadoEm": 1775855287512
+    },
+    {
+      "id": "1775856085613-ws3q3fl",
+      "subcategoriaId": "1775843521340-i2pswph",
+      "titulo": "Rosinha, rosinha, rosinha vem ai",
+      "letra": "",
+      "favorito": false,
+      "ordem": 1,
+      "criadoEm": 1775856085613
+    },
+    {
+      "id": "1776394991728-mtuydne",
+      "subcategoriaId": "sub-oxossi-louvacao",
+      "titulo": "Seu iambuga vem das matas onde a lua clareia",
+      "letra": "",
+      "favorito": false,
+      "ordem": 0,
+      "criadoEm": 1776394991728
+    },
+    {
+      "id": "1776395032751-52iyedl",
+      "subcategoriaId": "sub-oxossi-louvacao",
+      "titulo": "Que lindo caboclo de pena o panaia",
+      "letra": "",
+      "favorito": false,
+      "ordem": 1,
+      "criadoEm": 1776395032752
+    },
+    {
+      "id": "1776455557130-netpw04",
+      "subcategoriaId": "sub-oxossi-chamada",
+      "titulo": "Caboclinho da jurema, onde é que voce vai",
+      "letra": "",
+      "favorito": false,
+      "ordem": 3,
+      "criadoEm": 1776455557130
+    },
+    {
+      "id": "1776455647688-vk3s9xi",
+      "subcategoriaId": "sub-oxossi-chegada",
+      "titulo": "Iara quando vem traz uma rosa",
+      "letra": "",
+      "favorito": false,
+      "ordem": 2,
+      "criadoEm": 1776455647688
+    },
+    {
+      "id": "exu-1776706731197-0",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Odara morador da encruzilhada...",
+      "letra": "Odara morador da encruzilhada\nFirma seu ponto com sete facas cruzadas (2x)\nFilho de umbanda peça com fé\nQue seu Exu\nVai lhe dar o que você quer",
+      "favorito": false,
+      "ordem": 0,
+      "criadoEm": 1776706731198
+    },
+    {
+      "id": "exu-1776706731197-4",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "De capa e cartola caminha na madrugada...",
+      "letra": "De capa e cartola caminha na madrugada\nAndarilho da estrada sempre combatendo o mal\nSeu Tranca Rua é amigo e camarada\nDando forte gargalhada me livra de todo mal\n\nLaroiê exu é mojuba\nMelhor que Tranca Rua das Almas não há (2x)\n\nSete marafos coloquei na encruzilhada\nSete velas e charuto também levei um padê\nA meia noite chamei por seu Tranca Rua\nOuvi forte gargalhada ele veio me valer\n\nLaroiê exu é mojuba\nMelhor que Tranca Rua das Almas não há (2x)\n\nFaço um pedido no meio da encruzilhada\nA Tranca Rua das Almas antes do galo cantar\nSe o galo canta é sinal que ta na hora\nFirma gira meu ogã que Tranca Ruas chega agora\n\nLaroiê exu é mojuba\nMelhor que Tranca Rua das Almas não há (2x)",
+      "favorito": false,
+      "ordem": 1,
+      "criadoEm": 1776706731202
+    },
+    {
+      "id": "exu-1776706731197-8",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "No portão do cemitério...",
+      "letra": "No portão do cemitério\nEu vi um moleque lá\nPulava de cova em cova\nCatatumba balanceou (2x)\n\nQue moleque é esse\nÉ exu Marabô (4x)",
+      "favorito": false,
+      "ordem": 2,
+      "criadoEm": 1776706731206
+    },
+    {
+      "id": "exu-1776706731197-9",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Seu tranca ruas me cobriu com sua capa...",
+      "letra": "Seu tranca ruas me cobriu com sua capa\nQuem tem sua capa escapa\nQuem tem sua capa escapa\nA sua capa é um manto de caridade\nSua capa cobre tudo, só não cobre a falsidade",
+      "favorito": false,
+      "ordem": 3,
+      "criadoEm": 1776706731207
+    },
+    {
+      "id": "exu-1776706731197-10",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "O sino da igrejinha...",
+      "letra": "O sino da igrejinha\nFaz Belém blem blom (2x)\nDeu meia noite o galo já cantou\nSeu tranca ruas é dono da gira\nOi corre gira que Ogum mandou",
+      "favorito": false,
+      "ordem": 4,
+      "criadoEm": 1776706731208
+    },
+    {
+      "id": "exu-1776706731197-12",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Exu que tem duas cabeças...",
+      "letra": "Exu que tem duas cabeças\nEle olha sua banda com fé (2x)\nUma é bom Jesus Nazaré\nA outra é de exu Lúcifer (2x)",
+      "favorito": false,
+      "ordem": 5,
+      "criadoEm": 1776706731210
+    },
+    {
+      "id": "exu-1776706731197-17",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Exú firma seu ponto aqui neste terreiro...",
+      "letra": "EXÚ FIRMA SEU PONTO\nAQUI NESTE TERREIRO (2x)\nDEU MEIA NOITE NA LUA\nDEU MEIO DIA NO SOL",
+      "favorito": false,
+      "ordem": 6,
+      "criadoEm": 1776706731215
+    },
+    {
+      "id": "exu-1776706731197-20",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Se tem problema a resolver...",
+      "letra": "Se tem problema a resolver (ô, luar)\nE encontra dificuldade (ô, luar)\nDepois das leis do universo (ô, luar)\nExu também faz caridade (ô, luar)\n\nÔ, luar, ô, luar (ô, luar)\nEle é dono da rua (ô, luar)\nQuem cometeu as suas falhas (ô, luar)\nPeça perdão à Tranca Rua (ô, luar)",
+      "favorito": false,
+      "ordem": 7,
+      "criadoEm": 1776706731218
+    },
+    {
+      "id": "exu-1776706731197-22",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Abre a roda...",
+      "letra": "Abre a roda\ndeixa pomba gira trabalhar (2x)\n\nela tem peito de aço\nela tem peito de aço\ne coração para amar (2X)",
+      "favorito": false,
+      "ordem": 8,
+      "criadoEm": 1776706731220
+    },
+    {
+      "id": "exu-1776706731197-25",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Exú a lala ô...",
+      "letra": "EXÚ A LALA Ô\nA LALA Ô É MOJUBÁ (2X)\n\nELE É EXU É DE QUERÊR QUERÊR\nELE É EXU É DE QUERÊR QUERA",
+      "favorito": false,
+      "ordem": 9,
+      "criadoEm": 1776706731223
+    },
+    {
+      "id": "exu-1776706731197-26",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Me disseram que essa casa ia cair...",
+      "letra": "ME DISSERAM QUE ESSA CASA IA CAIR\nME DISSERAM QUE ESSA CASA IA CAIR\n\nMAS ESSA CASA É DE MADEIRA\nQUE NÃO DÁ CUPIM [2X]",
+      "favorito": false,
+      "ordem": 10,
+      "criadoEm": 1776706731224
+    },
+    {
+      "id": "exu-1776706731197-34",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Eu juro que vou matar essa andorinha...",
+      "letra": "EU JURO QUE VOU MATAR\nESSA ANDORINHA\nEU JURO QUE VOU AMAR\nESSA MULHER [2X]\n\nESSA MULHER\nESTA FAZENDO MORADA NA MINHA CALUNGA\nEU JURO QUE VOU AMAR ESSA MULHER [2X]",
+      "favorito": false,
+      "ordem": 11,
+      "criadoEm": 1776706731232
+    },
+    {
+      "id": "exu-1776706731197-37",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Quando passar naquela encruza...",
+      "letra": "QUANDO PASSAR NAQUELA ENCRUZA\nNÃO SE ESQUEÇA DE OLHAR PRA TRÁS [2X]\n\nOLHA QUE LÁ, TEM MORADOR\nEXU VELUDO É QUEM MORA LÁ",
+      "favorito": false,
+      "ordem": 12,
+      "criadoEm": 1776706731235
+    },
+    {
+      "id": "exu-1776706731197-38",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Ela gira no ar...",
+      "letra": "Ela gira no ar\nEla gira na praça\nEla gira na rua (ê,ê,ê)\nEla canta ela dança\nEla vive sorrindo em noite de lua (ê,ê)\nEla é sincera\nEla é de verdade\nMas cuidado amigo que ela não gosta de falsidade",
+      "favorito": false,
+      "ordem": 13,
+      "criadoEm": 1776706731236
+    },
+    {
+      "id": "exu-1776706731197-43",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Bará tu me acompanha...",
+      "letra": "Bará tu me acompanha\nBará tu és um nagô (2x)\nBará tu me acompanha\nBara, Bara naue nago",
+      "favorito": false,
+      "ordem": 14,
+      "criadoEm": 1776706731241
+    },
+    {
+      "id": "exu-1776706731197-44",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Eu tenho um guerreiro na porta do ilê plantado...",
+      "letra": "Eu tenho um guerreiro na porta do ilê plantado (2x)\nEle é Bará, ele é Bará, ele é quem corta demanda\nExu corgeua (2x)",
+      "favorito": false,
+      "ordem": 15,
+      "criadoEm": 1776706731242
+    },
+    {
+      "id": "exu-1776706731197-48",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Sete é protetora é mensageira do amor...",
+      "letra": "Sete é protetora é mensageira do amor (2x)\n\nEstá no alto\nA sete está no alto\nE la do alto\nEla olha por nós\nLevante os braços\nFirme seu pensamento\nNeste momento\nEla vai lhe ajudar\n\nA sete reina sobre a terra\nA sete reina sobre o mar\nSete diz que aqui na terra\nO seu poema é amar\n\nA sete trabalha\nA sete não falha\nEu agradeço a minha amiga sete (2x)",
+      "favorito": false,
+      "ordem": 16,
+      "criadoEm": 1776706731246
+    },
+    {
+      "id": "exu-1776706731197-64",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Salve Exu, salve o rei da encruzilhada...",
+      "letra": "Salve Exu, salve o rei da encruzilhada\nToma conta e presta conta\nNo romper da madruga (2x)\n\nPombo gire\nPombo gira\nSem a força de exu,\nNão se pode trabalhar (2x)\n\nSete faca encravadas em cima daquela mesa\nSarava seu Arranca Toco e a pomba gira Altesa",
+      "favorito": false,
+      "ordem": 17,
+      "criadoEm": 1776706731262
+    },
+    {
+      "id": "exu-1776706731197-66",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Exu afirma seu ponto aqui neste terreiro...",
+      "letra": "Exu afirma seu ponto aqui neste terreiro\nDeu meia noite na lua\nDeu meio dia no sol (2x)",
+      "favorito": false,
+      "ordem": 18,
+      "criadoEm": 1776706731264
+    },
+    {
+      "id": "exu-1776706731197-70",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Exu bebe marafa meu povo...",
+      "letra": "Exu bebe marafa meu povo\nPra tomar conta do que tem (2x)\nTomar conta do que tem (2x)\nExu bebe marafo pra tomar conta do que tem",
+      "favorito": false,
+      "ordem": 19,
+      "criadoEm": 1776706731268
+    },
+    {
+      "id": "exu-1776706731197-72",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Leve na encruzilhada cigarro, marafo e vela...",
+      "letra": "Leve na encruzilhada cigarro, marafo e vela\nFaça seu pedido moço\nPensando nela (2x)\nSe você merecer, ela vai lhe atender (2x)",
+      "favorito": false,
+      "ordem": 20,
+      "criadoEm": 1776706731270
+    },
+    {
+      "id": "exu-1776706731197-74",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Quem nesse mundo nunca ouviu dizer...",
+      "letra": "Quem nesse mundo nunca ouviu dizer\nE nesse mundo nunca ouviu falar (2x)\nDe uma cigana que mora naquela estrada\nEla fez sua morada sobre o clarão do luar (2x)\ncigana da estrada\nmoça poderosa\nMe de proteção e axé ciganinha formosa (2x)",
+      "favorito": false,
+      "ordem": 21,
+      "criadoEm": 1776706731272
+    },
+    {
+      "id": "exu-1776706731197-77",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Amigo, joguem flores e perfumes...",
+      "letra": "Amigo, joguem flores e perfumes, Joguem flores e perfumes\nQue a cigana está em festa (2x)\nCastanhola, violinos e pandeiros\nO sonho de um amor verdadeiro (2x)\nÔ, ô, ô, ô, ô, ô, ô, ô povo cigano\nÔ, ô, ô, ô, ô, ô, ô, ô povo da estrada\n\nAlupande, pande povo cigano\nAlupande, povo da estrada (2x)",
+      "favorito": false,
+      "ordem": 22,
+      "criadoEm": 1776706731275
+    },
+    {
+      "id": "exu-1776706731197-80",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Boa noite banda...",
+      "letra": "Boa noite banda\nComo vai, como passou (2x)\n\nVai muito bem banda\nVai muito bem banda (2x)",
+      "favorito": false,
+      "ordem": 23,
+      "criadoEm": 1776706731278
+    },
+    {
+      "id": "exu-1776706731197-81",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Primeiro ela me deu boa noite...",
+      "letra": "Primeiro ela me deu boa noite\nBoa noite banda\nQuando ela chega ela vai La\nLa, laia, Laia (2x)\nEla se veste de cartola\nLa, laia, laia\nE tocava castanhola\n\nComo ela chorou, como ela chorou\nAquele noite e dia\nQue meu amor lhe entregou (2x)",
+      "favorito": false,
+      "ordem": 24,
+      "criadoEm": 1776706731279
+    },
+    {
+      "id": "exu-1776706731197-82",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Girou, girou, girou exu Giramundo...",
+      "letra": "Girou, girou, girou exu Giramundo\nGirou, girou pomba gira que vence demanda\nRainha da encruza sarava umbanda\nÊ, ê, ê\nSarava umbanda(3x)",
+      "favorito": false,
+      "ordem": 25,
+      "criadoEm": 1776706731280
+    },
+    {
+      "id": "exu-1776706731197-90",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Auê, meu santo Antônio...",
+      "letra": "Auê, meu santo Antônio\nVenha me ajudar a trabalhar\nAue todo exu ta trabalhando\nToda demanda eles vão levar\nPra encruzilhada",
+      "favorito": false,
+      "ordem": 26,
+      "criadoEm": 1776706731288
+    },
+    {
+      "id": "exu-1776706731197-93",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Que pompa gira formosa...",
+      "letra": "Que pompa gira formosa\nQue pomba gira assanhada\nFirma seu ponto na gira\nE também na encruzilhada",
+      "favorito": false,
+      "ordem": 27,
+      "criadoEm": 1776706731291
+    },
+    {
+      "id": "exu-1776706731197-94",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Ela é bonita, protetora das mulheres...",
+      "letra": "Ela é bonita, protetora das mulheres\nTrabalhou no cais\nNo pesado sim senhor\nEu pedi uma flor\nEla me deu um jardim\nJogou fagulhas de luz\nNos meus caminhos\n\nAté agora, esqueci de perguntar\nNa estrada da vida moça\nComo eu posso lhe chamar (2x)\n\nMoça qual é o seu nome,\nNa beira do mar sou Maria Homem (2x)",
+      "favorito": false,
+      "ordem": 28,
+      "criadoEm": 1776706731292
+    },
+    {
+      "id": "exu-1776706731197-95",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "O lua é de madrugada...",
+      "letra": "O lua é de madrugada\nMe diga aonde anda 7 Encruzilhadas\n\nEle está, no meio da rua\nEle é quimbandeiro\nDe sua morada (2x)",
+      "favorito": false,
+      "ordem": 29,
+      "criadoEm": 1776706731293
+    },
+    {
+      "id": "exu-1776706731197-99",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Nem se eu colhesse todas as rosas...",
+      "letra": "Nem se eu colhesse todas as rosas\nQue nascem nos mais lindos jardins\nNão teria a magia\nDo perfume que você transmite em mim\nOh cigana!\nOh cigana! Con sua saia rodada\nEnfeitada de várias cores\nTrazendo seus mistérios\nQue um rainha possui\nCom todos seus esplendores (bis)",
+      "favorito": false,
+      "ordem": 30,
+      "criadoEm": 1776706731297
+    },
+    {
+      "id": "exu-1776706731197-101",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "A meia noite ao cair da madrugada...",
+      "letra": "A meia noite ao cair\nDa madrugada\nGalo canta é alvorada\nPia Itatuité\nNão sei de onde\nComeçou a caminhada\nEncruzada longa estrada\nVenha de onde vieram\nEle é o mago\nSenhor das oferendas\nO homem das velhas lendas\nQue faz o sangue gelar\nEle é o bruxo\nQue faz cura\nFaz feitiço\nEm macumba de catiço\nInaína mojubá.\n\nExú Marabô\nExú Marabô\nExú Marabô\nEle é lêbara, ele é larô.",
+      "favorito": false,
+      "ordem": 31,
+      "criadoEm": 1776706731299
+    },
+    {
+      "id": "exu-1776706731197-102",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "É a hora, é chegada a hora...",
+      "letra": "É A HORA\nÉ CHEGADA A HORA\nDE FIRMAR NOSSA PORTEIRA\nCOM A FORÇA DA FALANGE DOS CAVEIRAS [2X]\n\nVAMOS TODOS BATER PALMAS\nPARA QUANDO EXÚ CHEGAR\nQUERO VER SUA GARGALHADA\nATÉ O DIA CLAREAR\n\nELE VEM DO CEMITÉRIO\nELE VEM LÁ DA CALUNGA\nSARAVÁ JOÃO CAVEIRA\nE SEU SETE CATACUMBAS\n\nÉ A HORA\nÉ CHEGADA A HORA\nDE FIRMAR NOSSA PORTEIRA\nCOM A FORÇA DA FALANGE DOS CAVEIRAS [2X]\n\nO PRIMEIRO ENVIADO É O SEU TATA CAVEIRA\nVOU CHAMAR seu sete covas\nE TAMBÉM SETE PORTEIRAS\nTODOS ELES MENSAGEIROS\nDO NOSSO PAI OMULÚ\nPOR ISSO HOJE A NA GIRA\nVAMOS SARAVÁ EXÚ\n\nÉ A HORA\nÉ CHEGADA A HORA\nDE FIRMAR NOSSA PORTEIRA\nCOM A FORÇA DA FALANGE DOS CAVEIRAS [2X]",
+      "favorito": false,
+      "ordem": 32,
+      "criadoEm": 1776706731300
+    },
+    {
+      "id": "exu-1776706731197-103",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Era madrugada, quando uma gargalhada na encruza ecoou...",
+      "letra": "Era madrugada, quando uma gargalhada na encruza ecoou\na lua brilhava, a lua iluminava, os caminhos por onde exu passou\nquando o galo canta, é hora\nsete vezes o sino bateu\ncom sua capa bem exuberante\nhomem nobre elegante\nseu 7 encruza apareceu\nfeitiços e mandingas ele é quem vai desmanchar\nele corta demanda na força do seu axé\n\n7 facas fincadas na encruza eu encontrei\nele é o seu 7 o dono da rua aonde ele é rei(2x)\n\n7 vezes no caminho, 7 vidas 1 destino\n7 amores são a historia desse exu trabalhador\ncom ele sempre ao meu lado\nsei que estarei de pé\nsalve 7 encruzilhadas\no meu amigo de fé",
+      "favorito": false,
+      "ordem": 33,
+      "criadoEm": 1776706731301
+    },
+    {
+      "id": "exu-1776706731197-104",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Eu vi, de preto e vermelho...",
+      "letra": "Eu vi, de preto e vermelho\nwhisky charuto, nobre elegante\nna boemia, sempre bem trajado\nmulheres ao lado\nquase a todo instante\nhoje, ele é coroado\nO advogado, na linha de oxala\nE na encruza eu vou louvar\n\né doutor na quimbanda ele é rei\naue 7 encruzilhadas(2x)\n7 vezes eu amei, 7 vezes eu chorei\n7 vezes me apaixonei",
+      "favorito": false,
+      "ordem": 34,
+      "criadoEm": 1776706731302
+    },
+    {
+      "id": "exu-1776706731197-105",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Vou jogar dendê no luar...",
+      "letra": "Vou jogar dendê no luar(3x)\nÉ Maria Quitéria que vem trabalhar\n\nÔh, luar(3x)\nÉ Maria Quitéria que vem trabalhar",
+      "favorito": false,
+      "ordem": 35,
+      "criadoEm": 1776706731303
+    },
+    {
+      "id": "exu-1776706731197-106",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Sacode o pó...",
+      "letra": "Sacode o pó\nSuas mandingas são\nCercadas de mistérios\nSaravá a Pomba Gira\nQue vem lá do cemitério\n\nSe diz que faz é melhor não duvidar\nPorque a Rosa Caveira\nPromete para não faltar\n\nLevo uma rosa quando vou ao seu axé\nFalo com Rosa Caveira\nPorque nela eu tenho fé\n\nTudo o que peço nunca me deixou faltar\nEla é muito formosa Ena Ena Mojubá",
+      "favorito": false,
+      "ordem": 36,
+      "criadoEm": 1776706731304
+    },
+    {
+      "id": "exu-1776706731197-109",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Vi um menino sentado na encruza...",
+      "letra": "vi um menino sentado na encruza\nperguntei o que que foi, perguntei o que que faz(2x)\nEu vim aqui desmanchar feitiço\nMas pra Calunga, eu já vou voltar…..\n\nvi um menino sentado na encruza\nperguntei o que que foi, perguntei o que que faz(2x)\nEu sou Exú Mirim, e aprendi a trabalhar\nQuem me ensinou, foi Seu Tranca Ruas\nO seu feitiço, eu vou quebrar…..\n\nvi um menino sentado na encruza\nperguntei o que que foi, perguntei o que que faz(2x)\nQuero um marafo pra beber\nE um charuto pra fumar\no seu feitiço eu mandei embora\npara nunca mais voltar",
+      "favorito": false,
+      "ordem": 37,
+      "criadoEm": 1776706731307
+    },
+    {
+      "id": "exu-1776706731197-114",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Rainha das 7 encruzilhadas...",
+      "letra": "Rainha das 7 encruzilhadas\nÉ pombo gira formosa\nRainha das 7 encruzilhadas\nÉ pombo gira formosa\n\nUsa uma saia encarnada\nUm dia deu-me uma rosa\nUsa uma saia encarnada\nUm dia deu-me uma rosa\n\nEla é mulher, ela tem axé\nE nela eu tenho fé\nEla é mulher, ela tem axé\nE nela eu tenho fé\n\nGira na encruzilhada\nGira gira no terreiro\nGira em Santa Catarina\nE gira lá em Juazeiro",
+      "favorito": false,
+      "ordem": 38,
+      "criadoEm": 1776706731312
+    },
+    {
+      "id": "exu-1776706731197-116",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Sou mais uma maria...",
+      "letra": "sou mais uma maria\nmais a maria que voce pode ter fé\nsou mais uma maria\neu ja fui rainha, hoje sou da noite mulambo mulher\nsou do cemiterio, eu sou do lixo, sou da encruza, sou da estrada\nnão, eu nao sou sua, mas se merecer estarei contigo em sua caminhada",
+      "favorito": false,
+      "ordem": 39,
+      "criadoEm": 1776706731314
+    },
+    {
+      "id": "exu-1776706731197-117",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Laroiê, Laroiê, ela é mulher de fé...",
+      "letra": "Laroiê, Laroiê, Laroiê, Ela é mulher de fé, Laroiê\nFoi na madrugada\nQue a Navalha deu a sua gargalhada\n\nEla traz uma navalha\nQue corta o mal e a injustiça\nProtegida de Zé Pilintra\nMaria Navalha não brinca\n\nCaminhou de rua em rua\nEm busca de moradia\nFoi na beira do cais\nQue conheceu a boemia\n\nEla é de laroiê\nEla é de mojubá\nEla é Maria Navalha\nQue vem aqui nos ajudar\n\nLaroiê\nLaroiê, Laroiê\nEla é mulher de fé\nLaroiê\nFoi na madrugada\nQue a Navalha deu a sua gargalhada\n\nTrabalhava na madrugada\nTrabalhava lá no cais\nMaria Navalha da Calunga\nFaz o que você não faz\n\nFoi na subida de uma serra\nQue eu a vi trabalhar\nJunto com Zé Pilintra\nPara todo mal levar\n\nEla é uma malandra de fé\nEla é uma malandra de luz\nEla é Maria Navalha\nQue não teme a mal nenhum",
+      "favorito": false,
+      "ordem": 40,
+      "criadoEm": 1776706731315
+    },
+    {
+      "id": "exu-1776706731197-120",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Eu entrei lá na calunga...",
+      "letra": "EU ENTREI LÁ NA CALUNGA, E PAREI LÁ NO CRUZEIRO,\nVENHO UM VENTO FORTE E LEVANTOU POEIRA,\n\nZUA ZUO, ZUA ZUEIRA,\nAQUELE VENTO ERA EXU CAVEIRA (2X)\n\nMARIMBONDO PEQUENINO, NÃO TEM MEDO DE NINGUÉM,\nELE É EXU CAVEIRA E SÓ TRABALHA PARA O BEM,\nSE VOCÊ NÃO ACREDITA É MELHOR ACREDITAR,\nELE É EXU CAVEIRA, AQUI E EM QUALQUER LUGAR,\n\nZUA ZUO, ZUA ZUEIRA,\nAQUELE VENTO ERA EXU CAVEIRA (2X)\n\nVENTO FORTE, VENTO FRACO, NA CALUNGA TEM PODER,\nESSA POEIRA É DO CAVEIRA,\nELE VEM NOS DEFENDER, (2X)\n\nZUA ZUO, ZUA ZUEIRA,\nAQUELE VENTO ERA EXU CAVEIRA (2X)",
+      "favorito": false,
+      "ordem": 41,
+      "criadoEm": 1776706731318
+    },
+    {
+      "id": "exu-1776706731197-121",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Escuto ao longe uma gargalhada...",
+      "letra": "Escuto ao longe uma Gargalhada,\nNa madrugada o galo cantou,\nEle é o homem da Encruzilhada,\nQuem vem chegando é seu Marabô.\n\nA sua capa é que me protege,\nCom os seus olhos eu vou caminhar,\nE o feitiço que no meu caminho aparecer,\nSeu Marabô quem vai desmanchar.\n\nA lua brilha clareando a Umbanda,\nA noite fria ele vai aquecer,\nCom seu tridente ele firma seu ponto,\nSeu Marabô, Exu a Laroye,\nSeu Marabô, Exu a Laroye.",
+      "favorito": false,
+      "ordem": 42,
+      "criadoEm": 1776706731319
+    },
+    {
+      "id": "exu-1776706731197-123",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Capa e cartola preta, anel de ouro no dedo...",
+      "letra": "Capa e cartola preta, anel de ouro no dedo\nCharuto, fumaça clara, conhaque de casta rara\nÉ ele Seu Marabô\nTrabalha com mano e mana, pisa certo iao\nNão brinca com Marabô\nPisa certo iao, não brinca com Marabô\nPisa certo iao, não brinca com Marabô\n\nMarabô, futuro e presente\nMarabô, presente e passado\nMarabô, a vida da gente, em cada búzio jogado\nMarabô, futuro e presente\nMarabô, presente e passado\nMarabô, a vida da gente, em cada búzio jogado\n\nAh ha há, ele trabalha é protetor\nAh ha há, capa e bengala é Marabô\nAh ha há, ele trabalha é protetor\nAh ha há, capa e bengala é Marabô",
+      "favorito": false,
+      "ordem": 43,
+      "criadoEm": 1776706731321
+    },
+    {
+      "id": "exu-1776706731197-124",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Hoje vou passar no cemitério...",
+      "letra": "Hoje vou passar no cemiterio\nsempre foi maior misterio\nsaber que ela mora la(2x)\ncova 66 corredor 40\npadilha levantou eu quero ver quem guenta",
+      "favorito": false,
+      "ordem": 44,
+      "criadoEm": 1776706731322
+    },
+    {
+      "id": "exu-1776706731197-125",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Onde tem almas, onde tem cruz e catatumbas...",
+      "letra": "ONDE TEM ALMAS,\nONDE TEM CRUZ E CATATUMBAS\nÉ LA QUE MORA A RAINHA DA CALUNGA (X2)\nFOI OMULÚ QUE ANUNCIOU,\nFOI O CAVEIRA QUE É O DONO DA PORTEIRA,\nFOI A PADILHA, ADANA E A PUERÊ,\nFOI O SEU SETE, A MULAMBO E A MULAMBÉ\nque ANUNCIOU\nÔOOO CALUNGA!\nÔOOO CALUNGA!(X4)",
+      "favorito": false,
+      "ordem": 45,
+      "criadoEm": 1776706731323
+    },
+    {
+      "id": "exu-1776706731197-126",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Na sua panela de fogo...",
+      "letra": "Na sua panela de fogo\nela vai trabalhar\nna sua panela de fogo\nmacumba hoje vai rolar(2x)\n\nquero ver, quero ver\na padilha mexer com dende(2x)\n\nmoço eu posso lhe dizer\no perigo que ela é\ntem encanto e tem magia\no feitiço dessa mulher\nte leva de um mundo ao outro\ncom apenas um pade\nseus inimigos tombam\nsem ao menos perceber\n\nquero ver, quero ver\na padilha mexer com dende(2x)",
+      "favorito": false,
+      "ordem": 46,
+      "criadoEm": 1776706731324
+    },
+    {
+      "id": "exu-1776706731197-127",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Duquesa do oriente...",
+      "letra": "DUQUESA DO ORIENTE\nAMANTE DO EXU\nPRINCESA DO UNIVERSO\nRAINHA DE OMULÚ\nPROPIETARIA DO JARDIM\nAMANTE DA MADRUGADA\nPOMBAGIRA ROSA CAVEIRA\nGIRA NA LOMBA E NA ENCRUZILHADA! (X2)",
+      "favorito": false,
+      "ordem": 47,
+      "criadoEm": 1776706731325
+    },
+    {
+      "id": "exu-1776706731197-128",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Quando eu não tinha mais nada...",
+      "letra": "Quando eu não tinha mais nada\nQuando eu chegava ao fim\nQuando eu não acreditava\nEu pedi meu Pai Ogum\nPra vir aqui lutar por mim\n\nOh, lua de prata\nClareia sobre mim\nEu sou filho de Ogum e não posso viver assim\n\nOh, lua de prata\nClareia sobre mim\nEu sou filho de Ogum e não posso viver assim\n\nMas foi......\n\nFoi numa noite bela\nFoi numa estrada sem fim\nFoi sobre a luz de uma vela que eu chamei Exú das Almas e ele respondeu assim\n\nOh, filho de fé\nEu sou seu protetor\nEu me chamo Tranca Rua\nFoi Ogum quem me mandou",
+      "favorito": false,
+      "ordem": 48,
+      "criadoEm": 1776706731326
+    },
+    {
+      "id": "exu-1776706731197-129",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "Exú, Maria Padilha trabalha na encruzilhada...",
+      "letra": "Exú, Maria Padilha trabalha na encruzilhada\nToma conta, presta conta ao romper da madrugada\nPomba Gira, minha senhora, que trabalha noite e dia\nÉ por isso que eu zombo com sua feitiçaria",
+      "favorito": false,
+      "ordem": 49,
+      "criadoEm": 1776706731327
+    },
+    {
+      "id": "exu-1776706731197-1",
+      "subcategoriaId": "sub-exu-demanda",
+      "titulo": "Oh sete, oh sete...",
+      "letra": "Oh sete, oh sete\nO sete Encruzilhadas\nToma conta e presta conta\nNo romper da madrugada (2x)\n\nNinguém pode comigo\nEu posso com tudo\nLa na encruzilhada\nEle é seu exu Veludo",
+      "favorito": false,
+      "ordem": 0,
+      "criadoEm": 1776706731199
+    },
+    {
+      "id": "exu-1776706731197-28",
+      "subcategoriaId": "sub-exu-demanda",
+      "titulo": "Bem que eu lhe avisei...",
+      "letra": "BEM QUE EU LHE AVISEI\nPRA VOCÊ NÃO JOGAR\nESSA CARTADA COMIGO [2X]\nVOCÊ JOGOU COM VALETE\nE EU JOGUEI COM A DAMA\n\nOLHA VOCE MEU AMIGO,\nPOMBO-GIRA CIGANA É POMBO-GIRA DE FAMA [2X]",
+      "favorito": false,
+      "ordem": 1,
+      "criadoEm": 1776706731226
+    },
+    {
+      "id": "exu-1776706731197-36",
+      "subcategoriaId": "sub-exu-demanda",
+      "titulo": "Olha pisa no toco...",
+      "letra": "Olha pisa no toco\nPisa no galho\nO galho quebra e exu não cai o ganga\n\nExu, olha pisa num toco de um galho só (2x)",
+      "favorito": false,
+      "ordem": 2,
+      "criadoEm": 1776706731234
+    },
+    {
+      "id": "exu-1776706731197-40",
+      "subcategoriaId": "sub-exu-demanda",
+      "titulo": "O mar roncou e a terra tremeu...",
+      "letra": "O mar roncou\nE a terra tremeu (2x)\nMaior que exu Maré na terra\nÈ Deus, É Deus (2x)",
+      "favorito": false,
+      "ordem": 3,
+      "criadoEm": 1776706731238
+    },
+    {
+      "id": "exu-1776706731197-61",
+      "subcategoriaId": "sub-exu-demanda",
+      "titulo": "Quem viu, não devia ver...",
+      "letra": "Quem viu, não devia ver\nQuem tem não merece ter (2x)\nDa onde eu vim, pra onde eu vou\nAonde eu moro e quem eu sou\nQuem é você, pomba gira\nQuem somos nós (2x)",
+      "favorito": false,
+      "ordem": 4,
+      "criadoEm": 1776706731259
+    },
+    {
+      "id": "exu-1776706731197-63",
+      "subcategoriaId": "sub-exu-demanda",
+      "titulo": "Exu Caveira é homem...",
+      "letra": "Exu Caveira é homem\nPromete pra não faltar\nQuatorze carros de lenha\nPra cozinhar um gambá (2x)\n\nA lenha já se queimou\nE o gambá não cozinhou (2x)\n\nDizem que o céu é perto\nNas nuvens não chegar\nOs anjos do céu tão rindo\nDo tombo que ele vai levar (2x)",
+      "favorito": false,
+      "ordem": 5,
+      "criadoEm": 1776706731261
+    },
+    {
+      "id": "exu-1776706731197-68",
+      "subcategoriaId": "sub-exu-demanda",
+      "titulo": "Vou fazer figa para quem de mim falar...",
+      "letra": "Vou fazer figa para quem de mim falar\nZum, zum, zum Gira - Mundo vamos girar\nO meu pai falou que um dia\nNa língua de candomblé\nA língua que fala muito\nA gente pisa com o pé\nEnquanto o sujeito dorme\nO meu pai ta na curimba\nZum, zum, zum Gira – Mundo\nVou botar uma pedra em cima",
+      "favorito": false,
+      "ordem": 6,
+      "criadoEm": 1776706731266
+    },
+    {
+      "id": "exu-1776706731197-78",
+      "subcategoriaId": "sub-exu-demanda",
+      "titulo": "Quando exu se casou...",
+      "letra": "Quando exu se casou\nUm grande banquete ele deu\nTinha escama de peixe o ganga\nZum, zum, zum\nQuem tem olho ruim\nNão olha pra eu (2x)",
+      "favorito": false,
+      "ordem": 7,
+      "criadoEm": 1776706731276
+    },
+    {
+      "id": "exu-1776706731197-97",
+      "subcategoriaId": "sub-exu-demanda",
+      "titulo": "Pelos erros cometidos...",
+      "letra": "Pelos erros cometidos\nHá muito tempo atrás\nO pó já virou poeira\nÉ filho de João Caveira (2x)\n\nA poeira virou brasa\nNa poeira ninguém se vê\nEle é filho de Omulu\nTrabalha pra exu Caveira\nPisa na estrada que La vai poeira\nPisa na estrada que La vai poeira\nPisa na estrada que La vai poeira\nPisa na estrada que La vai poeira (2x)",
+      "favorito": false,
+      "ordem": 8,
+      "criadoEm": 1776706731295
+    },
+    {
+      "id": "exu-1776706731197-2",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Portão de ferro...",
+      "letra": "Portão de ferro\nCadeado de madeira (2x)\nNo portão do cemitério\nSalve ele\nExu Caveira",
+      "favorito": false,
+      "ordem": 0,
+      "criadoEm": 1776706731200
+    },
+    {
+      "id": "exu-1776706731197-5",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Deu um clarão na encruzilhada...",
+      "letra": "Deu um clarão na encruzilhada\nE do clarão surgiu uma gargalhada (2x)\nNão era o Sol, não era a lua\nO que brilhava era o mestre Tranca Ruas",
+      "favorito": false,
+      "ordem": 1,
+      "criadoEm": 1776706731203
+    },
+    {
+      "id": "exu-1776706731197-6",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Ele é Capitão da encruzilhada...",
+      "letra": "Ele é\nCapitão da encruzilhada\nEle é\ntambém é ordenança de Ogum\nSua divisa quem lhe deu\nFoi Olorum\nSua coroa quem lhe deu Foi Oxalá\nOi salve o céu\n\nSalve o sol e Salve a lua\nSaravá seu Tranca Ruas\nQuebrando mandinga no meio da rua (2x)",
+      "favorito": false,
+      "ordem": 2,
+      "criadoEm": 1776706731204
+    },
+    {
+      "id": "exu-1776706731197-13",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Ê Caveira, afirma ponto na folha da bananeira...",
+      "letra": "Ê Caveira\nAfirma a ponto na folha da bananeira (2x)\n\nQuando o galo canta é madrugada\nFoi Exú na encruzilhada, batizado com dendê\nRezo uma oração de tras pra frente\nqueimo fogo a chama ardente, aquece Exú ah laroiê\neu ouço a gargalhada do diabo\né Caveira o enviado, do principe lucifer,\né ele quem comanda o cemitério\ncatacumba tem mistério, seu feitiço tem axé,\n\nÊ Caveira\nAfirma seu ponto na folha da bananeira (2x)\n\nE na calunga quando ele aparece,\nCada encruza eu rezo prece pra o Exu dono da rua\nSinto a força desse momento\nE firmo meus pensamentos nos quatro cantos da rua\nE peço a ele que me proteja onde quer que eu esteja\nao longo dessa caminhada\npois eu confio em sua ajuda verdadeira\nEle é o exu Caveira, senhor da encruzilhada\n\nÊ Caveira\nfirma seu ponto na folha da bananeira (2x)",
+      "favorito": false,
+      "ordem": 3,
+      "criadoEm": 1776706731211
+    },
+    {
+      "id": "exu-1776706731197-14",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Ê puerê, ê poeira...",
+      "letra": "Ê puerê, ê poeira\nÊ puerê, ê poeira\n\nOlha mosca barejeira\nsalve Exu caveira (2x)",
+      "favorito": false,
+      "ordem": 4,
+      "criadoEm": 1776706731212
+    },
+    {
+      "id": "exu-1776706731197-15",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Eu passei no cemitério...",
+      "letra": "Eu passei no cemitério\nÀs onze horas do dia\nexu se levantou\nE a catatumba tremia (2x)\n\nDim, dim dong, o sino de La batia\nZum, zum, zum e a catatumba tremia (2x)",
+      "favorito": false,
+      "ordem": 5,
+      "criadoEm": 1776706731213
+    },
+    {
+      "id": "exu-1776706731197-24",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "É meia noite em ponto e o galo cantou...",
+      "letra": "É meia noite em ponto e o galo cantou (2x)\nCantou pra anunciar que Tiriri chegou (2x)\n\nEle vem da Calunga de capa\nCartola e tridente na mão\nEsse Exú de fé é quem nos trás Axé e nos dá proteção\nEle é Exú Odara e vem nos ajudar\nCom seu punhal ele fura, ele corta demanda\nEle salva, ele cura\nExú é mojubá\nLaroiê\n\nLaroiê Exú, Exú Amojubá\nEu perguntei a ele o que é Exú ele vem me falar (2x)\n\nExú é caminho, é energia, é vida, é determinação\nÉ cumpridor da Lei, Exú é esperto, Exú é guardião\nExú é trabalho, é alegria veloz, Exú é viver, é a magia\nÉ o encanto, é o fogo, é o sangue na veia vibrando\nExú é prazer\nlaroiê\n\nAlaruê Exú, Exú Amojubá\nTrás sua falange Exú Tiriri para trabalhar\nLaroiê Exú\nLaroiê Exú, Exú Amojubá\nTras sua falange Exú Tiriri para trabalhar.\nVem seu Tranca-Ruas, Maria Padilha e Exú Marabô\nSete Encruzilhadas, seu Zé Pilintra aqui chegou\nMaria Mulambo, Maria Farrapo e Dona Figueira\nDona Sete Saias, Pombogira menina e Rosa Vermelha\nSete Catacumbas, Exú Caveira firmam ponto aqui\nE o Exú Capa Preta anunciou a festa é do Exú Tiriri\nDeu meia noite em ponto!",
+      "favorito": false,
+      "ordem": 6,
+      "criadoEm": 1776706731222
+    },
+    {
+      "id": "exu-1776706731197-29",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Lá na encruza, existe um homem valente...",
+      "letra": "LÁ NA ENCRUZA\nEXISTE UM HOMEM VALENTE\nCOM SUA CAPA E CARTOLA\nCOM SEU PUNHAL e tridente\nCOM SUA CAPA E CARTOLA\nCOM SEU PUNHAL E tridente\n\nÉ MADRUGADA…\n\nÉ MADRUGADA\nE ELE ESTÁ DO MEU LADO [2X]\nPOR ISSO EU LHE PEÇO, TRANCA-RUA\nSEJA O MEU ADVOGADO [2X]",
+      "favorito": false,
+      "ordem": 7,
+      "criadoEm": 1776706731227
+    },
+    {
+      "id": "exu-1776706731197-30",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Ele se chama Tranca Rua...",
+      "letra": "ELE SE CHAMA TRANCA RUA\n\nQUE NASCEU NO MATO-GROSSO\nSE CRIOU COM NAZARÉ\n\nELE É FILHO DE UM XAVANTE\nÉ NETO DE UM NAVEGANTE\nÉ TRANCA-RUA DE EMBARÉ\n\nÉ DE EMBARÉ, É DE EMBARÉ\n\nÉ DE EMBARÉ, É DE EMBARÉ\n\nSEU TRANCA-RUA DE EMBARÉ [2X]",
+      "favorito": false,
+      "ordem": 8,
+      "criadoEm": 1776706731228
+    },
+    {
+      "id": "exu-1776706731197-31",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Foi em uma estrada velha...",
+      "letra": "FOI EM UMA ESTRADA VELHA\nNA SUBIDA DE UMA SERRA\nNUMA NOITE DE LUAR\nDE LUAR DE LUAR\n\nPOMBO-GIRA DA FIGUEIRA\nMOÇA BELA E FACEIRA\nDAVA O SEU GARGALHAR\n\nELA É MOJUBÁ\nELA É MOJUBÁ\nELA É MOJUBÁ\nELA É MOJUBÁ",
+      "favorito": false,
+      "ordem": 9,
+      "criadoEm": 1776706731229
+    },
+    {
+      "id": "exu-1776706731197-32",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Deu meia-noite, a lua se escondeu...",
+      "letra": "DEU MEIA-NOITE\nA LUA SE ESCONDEU\nLÁ NA ENCRUZILHADA, DANDO A SUA GARGALHADA\nMARIA PADILHA APARECEU [2X]\n\nLAROIÊ, LAROIÊ, LAROIÊ\nÉ MOJUBÁ, É MOJUBÁ, É MOJUBÁ\nELA É ODARA, QUEM TEM FÉ NA MARIA PADILHA\nÉ SÓ PEDIR QUE ELA VAI DAR [2X]",
+      "favorito": false,
+      "ordem": 10,
+      "criadoEm": 1776706731230
+    },
+    {
+      "id": "exu-1776706731197-35",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Foi nas almas que eu conheci Exu...",
+      "letra": "FOI NAS ALMAS,\n\nFOI NAS ALMAS QUE EU CONHECI EXU (2X)\n\nFOI NAS ALMAS QUE EU CONHECI SETE PORTEIRAS\n\nFOI NAS ALMAS QUE CONHECI EXU (2X)",
+      "favorito": false,
+      "ordem": 11,
+      "criadoEm": 1776706731233
+    },
+    {
+      "id": "exu-1776706731197-50",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Seu Sete, meu amigo de alma...",
+      "letra": "Seu Sete\nMeu amigo de alma\nSeu Sete, meu irmão quimbandeiro\n\nGira, todo mundo gira\nSete porteiras é\nMensageiro de Oxalá (2x)",
+      "favorito": false,
+      "ordem": 12,
+      "criadoEm": 1776706731248
+    },
+    {
+      "id": "exu-1776706731197-54",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Oh dizem que a Padilha é uma rosa...",
+      "letra": "Oh dizem que a Padilha é uma rosa\nQue a Padilha é uma rosa\nQue nasceu na beira de um caminho\nOh dizem que a Padilha é uma rosa\nQue a Padilha é uma rosa\nQue abre os meus caminhos (2x)\n\nPombogire, pombo gira, sem a força da Padilha não se pode trabalhar\nSete faca encravadas\nEm cima daquela mesa, sarava seu arranca toco e a pomba gira altesa",
+      "favorito": false,
+      "ordem": 13,
+      "criadoEm": 1776706731252
+    },
+    {
+      "id": "exu-1776706731197-55",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "O que caminho tão escuro...",
+      "letra": "O que caminho tão escuro\nQue vem saindo aquela linda moça\nCom seu vestido de xita\nQuebrando osso por osso (2x)\nMas ela é Maria Padilha\nRainha de tanto alvoroço",
+      "favorito": false,
+      "ordem": 14,
+      "criadoEm": 1776706731253
+    },
+    {
+      "id": "exu-1776706731197-56",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "É maloqueira é da lixeira...",
+      "letra": "É maloqueira é da lixeira\nÉ da pá virada (2x)\nEla Maria Mulambo e não me deve nada (2x)\nÉ do luxo ao lixo, É do trapo ao pó\nEla é Maria Mulambo, Ela é farrapo só\nQuem não lhe conhece vai lhe conhecer\nEla é Maria Mulambo com muito prazer (2x)\n\nEla nasceu no lixo na boca da lixeira\nEla nasceu no lixo na boca da lixeira\nEla é Maria Mulambo\nEla não é de brincadeira (2x)",
+      "favorito": false,
+      "ordem": 15,
+      "criadoEm": 1776706731254
+    },
+    {
+      "id": "exu-1776706731197-57",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Padilha soberana das almas...",
+      "letra": "Padilha soberana das almas\nRainha da encruzilhada\nÉ mulher de muito axé\nSuprema é a mulher de negro\nA rainha do terreiro\nSeu feitiço tem axé\n\nMas ela é\nEla é, ela é\nA rainha da encruza\nÉ mulher de muito axé (2x)",
+      "favorito": false,
+      "ordem": 16,
+      "criadoEm": 1776706731255
+    },
+    {
+      "id": "exu-1776706731197-58",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Rosa vermelha, rosa vermelha sagrada...",
+      "letra": "Rosa vermelha,\nRosa vermelha sagrada\nRosa vermelha, a pomba gira\nRainha das sete encruzilhadas\nQuando ela vem\nEla bebe e da risada (2x)\n\nEla é a pomba gira rainha das sete encruzilhadas (2x)",
+      "favorito": false,
+      "ordem": 17,
+      "criadoEm": 1776706731256
+    },
+    {
+      "id": "exu-1776706731197-59",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "E calungueiro, quem manda na calunga...",
+      "letra": "E calungueiro, quem manda na calunga é calungueiro (2x)\nQuem manda na calunga é calungueiro\nJoão Caveira é feiticeiro (2x)",
+      "favorito": false,
+      "ordem": 18,
+      "criadoEm": 1776706731257
+    },
+    {
+      "id": "exu-1776706731197-62",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "No meio da mata virgem...",
+      "letra": "No meio da mata virgem\nEla fez sua morada\nEla é dama da noite\nRainha da madrugada (2x)\n\nLe, Le, Le, Le\nDama da noite não pode faltar\nLe, Le, Le, La\nSe ela faltar eu mesmo vou buscar (2x)\n\nSacudindo a sua saia para todo mal levar (2x)",
+      "favorito": false,
+      "ordem": 19,
+      "criadoEm": 1776706731260
+    },
+    {
+      "id": "exu-1776706731197-67",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "De dia quem manda é sol...",
+      "letra": "De dia quem manda é sol\nA noite quem manda é a lua (2x)\nNa praia exu Maré\nNa rua seu Tranca Ruas (2x)\nÉ, é, é Exu Maré é de fé (2x)",
+      "favorito": false,
+      "ordem": 20,
+      "criadoEm": 1776706731265
+    },
+    {
+      "id": "exu-1776706731197-69",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Da onde eu vim, atravessei sete pedreiras...",
+      "letra": "Da onde eu vim\nAtravessei sete pedreiras\nTambém passei por cachoeiras\nAonde mora Yeyeo\nE nas campinas\nAonde a lua é prateada\nEla é cigana de alvorada\nÉ Sayonara eu sou mais (2x)",
+      "favorito": false,
+      "ordem": 21,
+      "criadoEm": 1776706731267
+    },
+    {
+      "id": "exu-1776706731197-75",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Ganhei uma barraca velha...",
+      "letra": "Ganhei uma barraca velha\nFoi a Cigana quem me deu (2x)\nO que é meu é da Cigana (ciganinha)\nO que é dela não é meu (2x)\nA cigana mujere, mujere, mujere (2x)",
+      "favorito": false,
+      "ordem": 22,
+      "criadoEm": 1776706731273
+    },
+    {
+      "id": "exu-1776706731197-84",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "O meu amor é tão grande por ti, oh cigana...",
+      "letra": "O meu amor é tão grande por ti\nOh, cigana\nA minha vida é a sua também\nO seu olhar me facina (2x)\n\nOh cigana tu é meu bem querer\nMeu bem querer\nAs estrelas do céu são seu olhar\nSeu olhar\nVem a lua e te cobre o cigana\nAonde você está",
+      "favorito": false,
+      "ordem": 23,
+      "criadoEm": 1776706731282
+    },
+    {
+      "id": "exu-1776706731197-86",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "O morro de santa tereza está de luto...",
+      "letra": "O morro de santa tereza está de luto\nMataram Zé pelintra, na porta de um cabaré\nPor causa de uma mulher\nEle chorava, ele chorava, ele chorava\nPor uma mulher que não lhe amava",
+      "favorito": false,
+      "ordem": 24,
+      "criadoEm": 1776706731284
+    },
+    {
+      "id": "exu-1776706731197-87",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Quando ela era menina...",
+      "letra": "Quando ela era menina\nFoi jogada na porta\nDe um cabaré\nVolta pra casa menina,\nAqui não entra criança\nAqui so entra mulher (2x)\n\nViva aleluia, viva aleluia\nEla deixou de ser criança\nAgora é\nMulher da rua (2x)",
+      "favorito": false,
+      "ordem": 25,
+      "criadoEm": 1776706731285
+    },
+    {
+      "id": "exu-1776706731197-88",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Seu olhar é sereno...",
+      "letra": "Seu olhar é sereno\nSeu olhar me fascina (2x)\n\nEla vem girando na linha das almas\nMaria Padilha (2x)\n\nQuando eu toco o tambor\nEu toco essa gira pra ela(2x)\n\nEla vem girando na linha das almas\nMaria Padilha (2x)",
+      "favorito": false,
+      "ordem": 26,
+      "criadoEm": 1776706731286
+    },
+    {
+      "id": "exu-1776706731197-89",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Ô, marinheiro marinheiro...",
+      "letra": "Ô, marinheiro marinheiro - marinheiro só\nÔ, quem te ensinou a nadar - marinheiro só\nOu foi o tombo do navio - marinheiro só\nOu foi o balanço do mar - marinheiro só (2x)\n\nLá vem, lá vem - marinheiro só\nComo ele vem faceiro - marinheiro só\nTodo de branco - marinheiro só\nCom o seu bonezinho - marinheiro só (2x)",
+      "favorito": false,
+      "ordem": 27,
+      "criadoEm": 1776706731287
+    },
+    {
+      "id": "exu-1776706731197-91",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Você ta vendo aquela casa pequenina...",
+      "letra": "Você ta vendo aquela casa pequenina?????\nLa no alto da colina\nque ele mandou fazer\nÉ a igreja do martírio\nNa porta do sofrimento\nAonde mora Zé Pelintra",
+      "favorito": false,
+      "ordem": 28,
+      "criadoEm": 1776706731289
+    },
+    {
+      "id": "exu-1776706731197-92",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "O Zé, quando for lá pra lagoa...",
+      "letra": "O Zé, quando for La pra lagoa\nToma cuidado com o balançar da canoa\n\nO Zé, faça tudo que quiser\nSó não maltrate o coração desta mulher (2x)",
+      "favorito": false,
+      "ordem": 29,
+      "criadoEm": 1776706731290
+    },
+    {
+      "id": "exu-1776706731197-107",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Na família da Maria...",
+      "letra": "Na família da Maria\nSó não entra quem não quer\nNa família da Maria\nSó não entra quem não quer\nÉ Maria Farrapo, Maria Quitéria, Maria Mulambo, Maria Mulher\nMaria Farrapo, Maria Padilha, Maria Mulambo, Maria Mulher",
+      "favorito": false,
+      "ordem": 30,
+      "criadoEm": 1776706731305
+    },
+    {
+      "id": "exu-1776706731197-110",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "É negra, é soberana e poderosa...",
+      "letra": "É negra\nÉ soberana e poderosa\nÉ a mais linda das rosas\nQue encanta o jardim(2x)\n\nLá na calunga\nÉ luz que nos dá caminho\nNunca nos deixa sozinho\nSempre pronta pra nos ajudar(2x)\n\nÉ rica de energia e de beleza\nÉ fonte de alegria aonde houver tristeza\nSua missão é praticar a caridade\nDemonstrando lealdade\nTrabalhando para o bem\nAjudando a quem precisa\nE a quem não precisa também\n\nMas se você não acredita\nUm dia há de acreditar\nQuando passar pela calunga\nE Rosa Negra estiver lá(2x)\n\nIquaquá, iquaquá\nÉ Pombo-Gira Rosa Negra\nNa calunga a gargalhar\nIquaquá, iquaquá\nÉ Pombo-Gira Rosa Negra\nIna, ina, mojubá",
+      "favorito": false,
+      "ordem": 31,
+      "criadoEm": 1776706731308
+    },
+    {
+      "id": "exu-1776706731197-112",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Madrugada linda, que ilumina a estrada de Maria Farrapo...",
+      "letra": "Madrugada linda\nQue ilumina a estrada\nDe Maria Farrapo\n\nNoite de solidão\nCoração vazio\nAmargurado de ilusão\n\nMadrugada linda\nQue ilumina a estrada\nDe Maria Farrapo\n\nNoite de solidão\nCoração vazio\nAmargurado de ilusão\n\nAndo pelo mundo afora\nQuerendo só ser amada\nDesilusão doce senhora\nDesabrochou, rainha da madrugada\n\nEm cada copo, gargalhada\nAdeus, Maria, amargurada\nAgora mais amada\nDe alma e roupa surradas\n\nQuem foi que disse que meu trapo não é de lei\nTrapo é trapo eu sou farrapo\nEu sou mulher de um grande rei\n\nCacos e almas\nDestroços de coração\nRemendando vida a vida\nMinha sina, minha missão\n\nQuem foi que disse que meu trapo não é de lei\nTrapo é trapo eu sou farrapo\nEu sou mulher de um grande rei\n\nCacos e almas\nDestroços de coração\nRemendando vida a vida\nMinha sina, minha missão",
+      "favorito": false,
+      "ordem": 32,
+      "criadoEm": 1776706731310
+    },
+    {
+      "id": "exu-1776706731197-113",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Cálice encantado de mistérios transbordou...",
+      "letra": "Cálice encantado de mistérios transbordou\nRosa Caveira é a mais bela\nNo jardim de Atotô(2x)\n\nMoça que caminha na calunga\nPor onde passa irradia a sua luz\nSabedoria do sagrado feminino\nSenhora do meu destino\nAquela que me conduz\n\nAo seu redor rosas florescem então\nNo jardim do campo santo enquanto\nFaz sua oração\n\nCálice encantado de mistérios transbordou\nRosa Caveira é a mais bela\nNo jardim de Atotô(2x)\n\nSenhora agradeço todo dia\nPor me livrar da magia\nDe quem me deseja dor\n\nE em suas mãos traz o sentido da vida\nNa caveira morre a intriga\nE na rosa renasce o amor\nDo coração tira o fel e traz o mel\nTão linda dama da noite sempre\nA ti serei fiel",
+      "favorito": false,
+      "ordem": 33,
+      "criadoEm": 1776706731311
+    },
+    {
+      "id": "exu-1776706731197-115",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Fui acusado de trair Maria Navalha...",
+      "letra": "Fui acusado de trair Maria Navalha\nNuma noite em plena Lapa, com a Padilha do Cabaré\nMas, na verdade, estava no meu carteado\nMuito bem acompanhado com meus amigos de fé\nVoltei pra casa quando já era dia\nLá na rua já se ouvia: malandro traiu a mulher\n\nMas falador pode falar o que quiser\nMalandro que é Malandro respeita a mulher\nMas falador pode falar o que quiser\nSamba no fio da Navalha pra tu vê comé que é",
+      "favorito": false,
+      "ordem": 34,
+      "criadoEm": 1776706731313
+    },
+    {
+      "id": "exu-1776706731197-118",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Da legião da justiça...",
+      "letra": "Da legião da justiça\nEle me observa, do alto da sua pedra\nPesando em minha consciência\nÉ que ele se faz presença\nPara eu não errar\n\nCaminhos e escolhas confusas,\nA força da encruza vem me ajudar\n\nPalavras simples, porém verdadeiras\nEssa canção é uma oração à Exu Pedreira\nPalavras simples, porém verdadeiras\nEssa canção é gratidão à Exu Pedreira",
+      "favorito": false,
+      "ordem": 35,
+      "criadoEm": 1776706731316
+    },
+    {
+      "id": "exu-1776706731197-119",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Vem veludo, vem...",
+      "letra": "Vem veludo, vem\nQuem caminha ao seu lado nunca vai temer ninguém (2×)\n\nLá na calunga o sino bate, anuncia o final de mais um dia\nO galo canta, ja é hora\nBate o tambor no terreiro\nO grande feiticeiro vai chegar agora\n\nO mudo falou, o surdo escutou\nQuando a gargalhada do veludo ecoou (2×)",
+      "favorito": false,
+      "ordem": 36,
+      "criadoEm": 1776706731317
+    },
+    {
+      "id": "exu-1776706731197-122",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "Êh Laroyê Exú, Marabô Mojubá...",
+      "letra": "ÊH LAROYÊ EXÚ, ÊH LAROYÊ EXÚ, MARABÔ MOJUBÁ\nMARABÔ MOJUBÁ",
+      "favorito": false,
+      "ordem": 37,
+      "criadoEm": 1776706731320
+    },
+    {
+      "id": "exu-1776706731197-3",
+      "subcategoriaId": "sub-exu-firmeza",
+      "titulo": "Deus salve as almas...",
+      "letra": "Deus salve as almas\nSalve a coroa e a fé (2x)\nVamos saravar seu exu das almas\nEle é\nSete Porteiras de fé",
+      "favorito": false,
+      "ordem": 0,
+      "criadoEm": 1776706731201
+    },
+    {
+      "id": "exu-1776706731197-11",
+      "subcategoriaId": "sub-exu-firmeza",
+      "titulo": "Santo Antonio de batalha...",
+      "letra": "Santo Antonio de batalha\nFaz de mim trabalhador (2x)\nCorre gira Santo Antonio\nSete porteiras e Marabô (2x)",
+      "favorito": false,
+      "ordem": 1,
+      "criadoEm": 1776706731209
+    },
+    {
+      "id": "exu-1776706731197-33",
+      "subcategoriaId": "sub-exu-firmeza",
+      "titulo": "Seu Tranca Rua, dá uma volta lá fora...",
+      "letra": "SEU TRANCA RUA\n\nDÁ UMA VOLTA LÁ FORA [2X]\n\nQUEM FOR BOM, BOTA PRA DENTRO\nE QUEM NÃO FOR DEIXA LÁ FORA [2X]",
+      "favorito": false,
+      "ordem": 2,
+      "criadoEm": 1776706731231
+    },
+    {
+      "id": "exu-1776706731197-51",
+      "subcategoriaId": "sub-exu-firmeza",
+      "titulo": "Quem é que chegou no reino...",
+      "letra": "Quem é que chegou no reino\nQuem é (2x)\nEle é Sete Porteira das almas\nEle é (2x)",
+      "favorito": false,
+      "ordem": 3,
+      "criadoEm": 1776706731249
+    },
+    {
+      "id": "exu-1776706731197-52",
+      "subcategoriaId": "sub-exu-firmeza",
+      "titulo": "Corre ronda correu...",
+      "letra": "Corre ronda correu\nSete porteira é mojuba (2x)",
+      "favorito": false,
+      "ordem": 4,
+      "criadoEm": 1776706731250
+    },
+    {
+      "id": "exu-1776706731197-53",
+      "subcategoriaId": "sub-exu-firmeza",
+      "titulo": "Agora sim a nossa está firmada...",
+      "letra": "Agora sim a nossa está firmada (2x)\nCom uma pemba na calunga\nE a outra na encruzilhada (2x)",
+      "favorito": false,
+      "ordem": 5,
+      "criadoEm": 1776706731251
+    },
+    {
+      "id": "exu-1776706731197-60",
+      "subcategoriaId": "sub-exu-firmeza",
+      "titulo": "Exu, tu é tatá de Umbanda...",
+      "letra": "Exu, tu é tatá de Umbanda\nA sua força é quem vai nos socorrer\nExu, vencedor de demandas\nCorre, corre, corre gira e de proteção pra nossa banda (2x)\n\nDeu uma ventania, levantou poeira\nQuem comanda gira\nÉ Exu Sete Porteiras (2x)",
+      "favorito": false,
+      "ordem": 6,
+      "criadoEm": 1776706731258
+    },
+    {
+      "id": "exu-1776706731197-83",
+      "subcategoriaId": "sub-exu-firmeza",
+      "titulo": "Corre, corre encruzilhada...",
+      "letra": "Corre, corre encruzilhada\nSete porteiras quem mandou (2x)\nFoi na porteira da calunga só\nNa gira de Marabô (2x)",
+      "favorito": false,
+      "ordem": 7,
+      "criadoEm": 1776706731281
+    },
+    {
+      "id": "exu-1776706731197-7",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Marabô, iê, Marabô ia...",
+      "letra": "Marabô, iê, Marabô ia, (2x)\n\nCadê Marabô, cadê Marabô, cadê Marabô\nMarabô ia (2x)",
+      "favorito": false,
+      "ordem": 0,
+      "criadoEm": 1776706731205
+    },
+    {
+      "id": "exu-1776706731197-16",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Eu vi exu dando gargalhada...",
+      "letra": "Eu vi exu dando gargalhada,\nCom tridente na mão e sua capa bordada (2x)\nEle é Exú Tiriri\nMorador lá da calunga,\nVem firma seu ponto aqui (2x)",
+      "favorito": false,
+      "ordem": 1,
+      "criadoEm": 1776706731214
+    },
+    {
+      "id": "exu-1776706731197-18",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Exu é de querer, querer...",
+      "letra": "Exu é de querer, querer\nDa sua banda eu queria ser (2x)\nMas quando é no romper da aurora\nSarava Sete porteiras sua banda lhe chama agora (2x)",
+      "favorito": false,
+      "ordem": 2,
+      "criadoEm": 1776706731216
+    },
+    {
+      "id": "exu-1776706731197-21",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Vinha caminhando a pé...",
+      "letra": "Vinha caminhando a pé\nPara ver se encontrava\na linda Cigana de Fé\nEla parou\nE leu minha mão\nE leu minha mão\nE disse toda a verdade\n\nEu só queria saber\nOnde andava\na Pomba Gira Cigana (2x)",
+      "favorito": false,
+      "ordem": 3,
+      "criadoEm": 1776706731219
+    },
+    {
+      "id": "exu-1776706731197-39",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Ele tem olho de fogo...",
+      "letra": "Ele tem olho de fogo\nSua capa de doutor\nNo mar ele vive ao longe\nE na beira ele é pescador (2x)\n\nPescador ele não é\nPorque vive de maré\nSe seu barco já virou\nExu Maré aqui chegou (2x)",
+      "favorito": false,
+      "ordem": 4,
+      "criadoEm": 1776706731237
+    },
+    {
+      "id": "exu-1776706731197-41",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Exu veludo quando vem...",
+      "letra": "Exu veludo quando vem (Lálaiá,\nEle faz a sua magia\nLálaiá\nPara saudar todos os seus filhos\nLálaiá\nE retirar feitiçaria (2x)\n\nPisa na umbanda exu Veludo eu quero ver\nPisa na umbanda exu Veludo pra valer (2x)",
+      "favorito": false,
+      "ordem": 5,
+      "criadoEm": 1776706731239
+    },
+    {
+      "id": "exu-1776706731197-42",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Exu, quando eu passei naquela estrada...",
+      "letra": "Exu, quando eu passei naquela estrada\nEu ouvi uma gargalhada eu parei pra ver quem é (2x)\n\nE aquele homem, de capa preta me falou\nBoa noite eu me chamo Marabô\nSe precisar, sabe onde eu estou\nSe quiser ser protegido eu serei seu protetor\n\nSeu Marabô, seu Marabô\nEsse exu, ele muito me ajudou\nSeu Marabô, seu Marabô\nVenha na umbanda, vem mostrar o seu valor",
+      "favorito": false,
+      "ordem": 6,
+      "criadoEm": 1776706731240
+    },
+    {
+      "id": "exu-1776706731197-45",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Olha meu amigo que por ele não da nada...",
+      "letra": "Olha meu amigo que por ele não da nada (2x)\nEle é exu Bará\nEle trabalha com espada (2x)\nVem na fé de Oxalá\nVem na fé de Omulu (2x)\nEle é exu Bará\nEle é exu Bará (2x)",
+      "favorito": false,
+      "ordem": 7,
+      "criadoEm": 1776706731243
+    },
+    {
+      "id": "exu-1776706731197-46",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Quando o sol aqui não mais brilhar...",
+      "letra": "QUANDO O SOL AQUI NÃO MAIS BRILHAR\nQUANDO A LUA SEU CLARÃO REFLETIR\nÉ SINAL QUE ESTÁ NA HORA\nÉ ELE QUE CHEGA AGORA JÁ DEU MEIA-NOITE\nTRANCA-RUA QUE CHEGA AQUI [2X]\n\nJUROU AMAR ALGUÉM NA ENCRUZILHADA\nJUROU FAZER O BEM DE MADRUGADA\nHOJE COM FÉ\nCOMPANHEIRO E AMIGO LEAL\nQUE QUEBRA FEITIÇO E TAMBÉM DESFAZ O MAL\n\nE TODA VEZ QUE NA RUA EU CAMINHAR\nE OUVIR AO LONGE SUA VOZ A ECOAR\nTENHO CERTEZA QUE AGORA NÃO ANDO SOZINHO\nSEU TRANCA-RUA É DONO DO MEU CAMINHO [2X]",
+      "favorito": false,
+      "ordem": 8,
+      "criadoEm": 1776706731244
+    },
+    {
+      "id": "exu-1776706731197-47",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Seu gangar não me engana...",
+      "letra": "Seu gangar não me engana, Seu gangar me falou\nSe essa é cigana, Atoto quem mandou (2x)\n\nNa beira da praia ela desce\nCom sua corrente de fé\nNa beira da praia ela sobe\nTrazendo a oxum da maré\nSanto Antonio entrou na dança\nDança de Omoloko\nDeu a Mao a uma criança\nEla é filha de Xangô\nO pandeiro tem magia\nA cigana leu a fé\nA 7 nuvens é um guia\nDo anel de são Miguel",
+      "favorito": false,
+      "ordem": 9,
+      "criadoEm": 1776706731245
+    },
+    {
+      "id": "exu-1776706731197-49",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Umbanda sua rainha chegou...",
+      "letra": "Umbanda sua rainha chegou\nUmbanda mais uma estrela brilhou (2x)\n\nSalve, salve dona sete nuvens\nQue veio da encruzilhada\nPara saudar nossa gira\nSalve seu ponteiro de aço\nSalve a sua tesoura que corta todo embaraço",
+      "favorito": false,
+      "ordem": 10,
+      "criadoEm": 1776706731247
+    },
+    {
+      "id": "exu-1776706731197-71",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Ele vem na umbanda ele vem na Quimbanda...",
+      "letra": "Ele vem na umbanda ele vem na Quimbanda\nSete catatumba\nEle vem La no Keto e vem no Candomblé (2x)\nLaroye exu, laroye exu\nExu é mojuba",
+      "favorito": false,
+      "ordem": 11,
+      "criadoEm": 1776706731269
+    },
+    {
+      "id": "exu-1776706731197-76",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Que bando é esse...",
+      "letra": "Que bando é esse,\nÉ um bando de cigano (2x)\nÉ caravana, é caravana, é caravana de cigano",
+      "favorito": false,
+      "ordem": 12,
+      "criadoEm": 1776706731274
+    },
+    {
+      "id": "exu-1776706731197-79",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Ela vem que vem mau...",
+      "letra": "Ela vem que vem mau\nVem quebrando madeira\nVem quebrando pau",
+      "favorito": false,
+      "ordem": 13,
+      "criadoEm": 1776706731277
+    },
+    {
+      "id": "exu-1776706731197-85",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Do buraco de onde vim...",
+      "letra": "Do buraco de onde vim\nAs mulheres me odeiam\nDo buraco onde eu vim\nOs homens me desejam\nFoi menina\nJá foi moça\nHoje ela é mulher\nEla é Maria Farrapo\nÉ dona de cabaré\n\nEla vem girando, girando, girando, girando, girando\nEla vem girando, girando, girando, girando, girando\nVem dando gargalhada é Maria Farrapo quem está chegando (2x)",
+      "favorito": false,
+      "ordem": 14,
+      "criadoEm": 1776706731283
+    },
+    {
+      "id": "exu-1776706731197-108",
+      "subcategoriaId": "sub-exu-chegada",
+      "titulo": "Arreda homem que aí vem mulher...",
+      "letra": "Arreda homem que aí vem mulher!(2x)\nEla é Maria Maria, rainha do cabaré(2x)\n\nSete porteiras veio na frente pra dizer quem ela é\nEla é Maria Padilha, rainha do cabaré(2x)",
+      "favorito": false,
+      "ordem": 15,
+      "criadoEm": 1776706731306
+    },
+    {
+      "id": "exu-1776706731197-19",
+      "subcategoriaId": "sub-exu-cura",
+      "titulo": "Rí quá quá quá...",
+      "letra": "Rí quá quá quá\nQue linda risada\na pomba gira vai dar (2x)\n\nEu estava muito doente\nQuando a pomba gira chegou\nEla me deu uma rosa\nE com essa rosa\nEla me curou (2x)",
+      "favorito": false,
+      "ordem": 0,
+      "criadoEm": 1776706731217
+    },
+    {
+      "id": "exu-1776706731197-23",
+      "subcategoriaId": "sub-exu-cura",
+      "titulo": "É, pois é, Exú dá caminho...",
+      "letra": "É, POIS É\nEXÚ DÁ CAMINHO\nÉ SÓ PEDIR COM FÉ (2X)\n\nA NOITE É LINDA NO CÉU BRILHA A LUA\nFAÇO UMA ORAÇÃO AO SEU TRANCA-RUAS\nHOMEM VALENTE, MEU PROTETOR\nREI DA ENCRUZILHADA É SEU MARABÔ\nO GALO CANTA DENTRO DA CALUNGA\nSAUDANDO A MAGIA DE SETE CATACUMBAS\nSUAS PALAVRAS SÃO VERDADEIRAS\nQUEM AVISA AMIGO É, DISSE SEU CAVEIRA\n\nÉ, POIS É\nEXÚ DÁ CAMINHO\nÉ SÓ PEDIR COM FÉ (2X)\n\nAO LADO DELE SEI QUE ESTOU SEGURO\nNÃO TENHO NADA A TEMER, ELE É EXÚ VELUDO\nSE ESTOU EM PERIGO, ELE VEM AGIR\nSALVE O EXÚ MENINO, SALVE SEU TIRIRI\nMEUS INIMIGOS NÃO TIRAM MEU SOSSEGO\nTENHO O OMBRO AMIGO DO EXÚ MORCEGO\nE AS MANDINGAS QUE JOGARAM EM MIM\nQUEM CORTOU BRINCANDO FOI EXÚ MIRÍM\n\nPODE ACREDITAR\nEXÚ VAI LHE AJUDAR\nÉ SÓ PEDIR COM FÉ\nQUE A SUA VIDA VAI MUDAR [2X]",
+      "favorito": false,
+      "ordem": 1,
+      "criadoEm": 1776706731221
+    },
+    {
+      "id": "exu-1776706731197-27",
+      "subcategoriaId": "sub-exu-cura",
+      "titulo": "Perambulava pelas ruas...",
+      "letra": "Perambulava pelas ruas\nJá sem saber o que fazer\nProcurava na noite\nUma solução pra tanta dor\nSofrimento e solidão\nEntão eu clamei ao povo da rua\nQue me enviasse no momento alguma ajuda\nPois eu já não tinha forças pra continuar\nQuando me virei, vi uma mulher\nNa beira da estrada\nTrazia uma rosa em sua mão\nUm feitiço no olhar\nNaquela bela noite de luar\nVislumbrei sua dança com sua saia a rodar\nEu me aproximei e lhe perguntei o que ela fazia na estrada\nEla respondeu: Moço, sou rainha, vim lhe ajudar, sou Maria Padilha!\n\nSalve Maria Padilha!\nQuando precisei, oh pombogira, você veio me ajudar\nTu deste outro rumo a minha vida\nHoje eu venho te louvar!\n\nSalve Maria Padilha, Salve Maria Padilha, Salve Maria Padilha,\nSalve Maria Padilha\nQuando precisei, oh pombogira, você veio me ajudar\nTu deste outro rumo a minha vida\nHoje eu venho te louvar!",
+      "favorito": false,
+      "ordem": 2,
+      "criadoEm": 1776706731225
+    },
+    {
+      "id": "exu-1776706731197-65",
+      "subcategoriaId": "sub-exu-cura",
+      "titulo": "Exu no terreiro é rei...",
+      "letra": "Exu no terreiro é rei, Na encruza ele é doutor (2x)\nSeu Exu faz a mironga\nSeu exu é curador (2x)",
+      "favorito": false,
+      "ordem": 3,
+      "criadoEm": 1776706731263
+    },
+    {
+      "id": "exu-1776706731197-73",
+      "subcategoriaId": "sub-exu-cura",
+      "titulo": "Ciganinha, ciganinha...",
+      "letra": "Ciganinha, ciganinha\nDa sandália de pau (2x)\nAonde a cigana passa\nEla faz o bem e carrega o mau",
+      "favorito": false,
+      "ordem": 4,
+      "criadoEm": 1776706731271
+    },
+    {
+      "id": "exu-1776706731197-96",
+      "subcategoriaId": "sub-exu-cura",
+      "titulo": "O moça, com todos seus encantos...",
+      "letra": "O moça, com todos seus encantos\nVenha acalmar o meus prantos\nVenha me socorrer (2x)\n\nO moça devo a muito a você\nMas tenho a certeza\nQue você vai me socorrer\n\nEu vou levar\nOferenda na encruzilhada\nUma saia rodada, pra ofertar (2x)",
+      "favorito": false,
+      "ordem": 5,
+      "criadoEm": 1776706731294
+    },
+    {
+      "id": "exu-1776706731197-98",
+      "subcategoriaId": "sub-exu-cura",
+      "titulo": "Moça quem é você...",
+      "letra": "Moça quem é você\nQue gira na encruzilhada\nQue ao romper do dia\nNa rua faz morada (2x)\n\nQuando eu caminhava\nSó e triste no cruzeiro\nEssa moça de vermelho\nSorrindo me apareceu\nCom sete rosas\nSua cabeça enfeitava\nCom marafo e cigarro\nEla gargalhava\nE sua saia rodada que girando não se vê\nSua coroa de ferro ela veio me valer\nCom seu abraço a tristeza foi sumindo\nE foi diminuindo até desaparecer\n\nBonita moça\nMoça encanta\nBonita moça que vem girando de madrugada (2x)",
+      "favorito": false,
+      "ordem": 6,
+      "criadoEm": 1776706731296
+    },
+    {
+      "id": "exu-1776706731197-100",
+      "subcategoriaId": "sub-exu-cura",
+      "titulo": "Maria Padilha fiel companheira...",
+      "letra": "Maria padilha fiel companheira de todas as horas\nme leve essa dor, que no meu peito mora\neu vou seguindo, vou caminhando pelo mundo a fora\nsanto antonio de pemba, maria padilha é quem me consola",
+      "favorito": false,
+      "ordem": 7,
+      "criadoEm": 1776706731298
+    },
+    {
+      "id": "exu-1776706731197-111",
+      "subcategoriaId": "sub-exu-cura",
+      "titulo": "Dizem que ele matou...",
+      "letra": "Dizem que ele matou\nMas na verdade ele curou(2x)\n\nEle curou um cego\nEle curou um cego\nUm aleijado sarou\nUm aleijado sarou\nE uma mulher grávida\nEle amparou\n\nEssa criança cresceu\nEssa criança cresceu\nÉ seu amigo fiel\nÉ seu amigo fiel\nPerguntou o nome dele\nÉ o Malandro Miguel\n\nDizem que ele matou\nMas na verdade ele curou\nDizem que ele matou\nMas na verdade ele curou\n\nEle é um amigo\nEle é um amigo\nQue estende a mão\nEle não derruba\nQuem já está no chão\n\nDizem que ele matou\nMas na verdade ele curou\nDizem que ele matou\nMas na verdade ele curou\n\nEle joga baralho\nEle joga baralho\nEle gosta de trinca\nEle gosta de trinca\nÉ o Malandro Miguel\nMané Soares\nE Zé Pilintra",
+      "favorito": false,
+      "ordem": 8,
+      "criadoEm": 1776706731309
+    },
+    {
+      "id": "ponto-1776711355735-ell192s",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "e mara e marabo e mojuba (2x)",
+      "letra": "e mara e marabo e mojuba (2x)\nsentinela de exu\nmarabo e mojuba",
+      "favorito": false,
+      "ordem": 38,
+      "criadoEm": 1776711355735
+    },
+    {
+      "id": "ponto-1776711355735-uw6bw3l",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "exu matou seu gado",
+      "letra": "exu matou seu gado\nmas nao quis comer sozinho\nele chamou seus camarados\npara comer um pedacinho",
+      "favorito": false,
+      "ordem": 39,
+      "criadoEm": 1776711355735
+    },
+    {
+      "id": "ponto-1776711355735-fo5gsuy",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "ia passando exu mulher",
+      "letra": "ia passando exu mulher\nna brincadeira tinha homem mulher",
+      "favorito": false,
+      "ordem": 40,
+      "criadoEm": 1776711355735
+    },
+    {
+      "id": "ponto-1776711355735-0o3hylm",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "nasceu no cruzeiro das almas uma roseira que ja deu flor",
+      "letra": "nasceu no cruzeiro das almas uma roseira que ja deu flor\nentre elas uma rosa que em uma linda mulher se transformou\npraticando sua caridade com muito amor\nexalando harmonia como o perfume da flor\n\nela e moca bonita, e faceira e formosa\npomba gira do cruzeiro e a mais bela das rosas",
+      "favorito": false,
+      "ordem": 41,
+      "criadoEm": 1776711355735
+    },
+    {
+      "id": "ponto-1776711355735-4bq3bhj",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "ela acorda contente da vida",
+      "letra": "ela acorda contente da vida\ncom o canto do seu sabia\nla fora beleza que encanta\nde toda beleza que ha\nseu jardim tem uma rosa\nque foi ela quem plantou\ne a rosa mais formosa que o mundo criou\ntem um jeito de menina\ntem um corpo de mulher\nela so quer seu amor na varanda\ncomo toda mulher quer\nvem rosa vermelha cheia de amor (3x)",
+      "favorito": false,
+      "ordem": 42,
+      "criadoEm": 1776711355735
+    },
+    {
+      "id": "ponto-1776711355735-enop812",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "descendo o morro para trabalhar",
+      "letra": "descendo o morro para trabalhar\no me levaram pra outros caminhos\n\ndizendo moca, voce vale ouro\nvoce cheira rosa, voce e meu tesouro (2x)\ne ai e ai\nai ela caiu na perdicao (2x)\nhoje e pomba gira que vive na rua da amargura",
+      "favorito": false,
+      "ordem": 50,
+      "criadoEm": 1776711355735
+    },
+    {
+      "id": "ponto-1776711355735-nkl9km9",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "com ele nao tem misterio",
+      "letra": "com ele nao tem misterio\nnao tem magia, nao tem segredo\nele e rei da calunga\no seu nome e exu morcego",
+      "favorito": false,
+      "ordem": 43,
+      "criadoEm": 1776711355735
+    },
+    {
+      "id": "ponto-1776711355735-dfpbyf0",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "7 facas em cima de uma mesa",
+      "letra": "7 facas em cima de uma mesa\n7 velas acesas la na encruzilhada\nseu encruzo e rei (laroye exu)\nseu encruzo e rei (laroye exu)\nseu encruzo e rei\nla na encruzilhada",
+      "favorito": false,
+      "ordem": 44,
+      "criadoEm": 1776711355735
+    },
+    {
+      "id": "ponto-1776711355735-xkga1oc",
+      "subcategoriaId": "sub-exu-trabalho",
+      "titulo": "exu mandou buscar",
+      "letra": "exu mandou buscar\n7 folhas de guine\ncomo e que eu vim de longe\npra gostar dessa mulher\nsarava coroa, sarava coroa\nla no cemiterio so tem nega boa\nsarava coroa sarava penacho\ne nega por cima, exu por baixo",
+      "favorito": false,
+      "ordem": 51,
+      "criadoEm": 1776711355735
+    },
+    {
+      "id": "ponto-1776711355735-kpgfvra",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "no cemiterio tinha um cachao lacrado",
+      "letra": "no cemiterio tinha um cachao lacrado\n7 velas ao seu lado, e nele estava escrito assim (2x)\n\nmorada de rosa caveira, ela quem conhece o comeco, meio e fim (2x)\n\nmas de repente cadeado estourou\na tampa levantou e a gargalhada ecoou (2x)\n\nque gargalhada e essa?\ne rosa caveira fazendo festa (2x)",
+      "favorito": false,
+      "ordem": 45,
+      "criadoEm": 1776711355735
+    },
+    {
+      "id": "ponto-1776711355735-k6ar1gw",
+      "subcategoriaId": "sub-exu-louvacao",
+      "titulo": "salve ele, que ilumina nossa banda",
+      "letra": "salve ele, que ilumina nossa banda\nsalve ele, que nos da a protecao\nele e, ordenanca de ogum\nele nos traz uma mensagem de amor\npor isso nos vamos cantar e bater palmas\ntranca-ruas das almas\nnosso amigo e protetor\nele ainda e mojuba, e mojuba\nele ainda e mojuba, e mojuba\nseu tranca-ruas das almas\nele ainda e mojuba\ncom a licenca de oxala",
+      "favorito": false,
+      "ordem": 46,
+      "criadoEm": 1776711355735
     }
   ]
 }

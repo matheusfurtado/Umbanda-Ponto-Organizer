@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { InstallBanner } from "@/components/InstallBanner";
 import { AppProvider } from "@/context";
 import { TelaOrixas } from "@/pages/TelaOrixas";
 import { TelaSubcategorias } from "@/pages/TelaSubcategorias";
-import { InstallBanner } from "@/components/InstallBanner";
 import { Orixa } from "@/types";
+import { useState } from "react";
 
 function AppInner() {
   const [orixaSelecionado, setOrixaSelecionado] = useState<Orixa | null>(null);

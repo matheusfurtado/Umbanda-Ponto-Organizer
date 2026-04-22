@@ -1,4 +1,35 @@
 import { useState, useMemo, useCallback } from "react";
+// Filtros rápidos de Exu
+const EXU_FILTERS = [
+  "7 porterias",
+  "Maria Padilha",
+  "7 Nuvens",
+  "Exu Caveira",
+  "Veludo",
+  "Marabo",
+  "Quiteria",
+  "7 encruzilhadas",
+];
+
+// Filtros por palavra-chave (busca em titulo/letra) — disponíveis sempre
+// Cada filtro pode ter múltiplos termos equivalentes (ex.: encruzilhada/encruza)
+const KEYWORD_FILTERS: Array<{ label: string; termos: string[] }> = [
+  { label: "Encruzilhada", termos: ["encruzilhada", "encruza"] },
+  { label: "Calunga", termos: ["calunga"] },
+  { label: "Cemitério", termos: ["cemiterio"] },
+  { label: "Almas", termos: ["almas"] },
+];
+
+function normalizeExuName(name: string) {
+  // Normaliza para comparar "7" e "sete" (case-insensitive)
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\bsete\b/g, "7")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 import { Plus, Edit2, Trash2, ChevronLeft, Search, X, Star, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -99,6 +130,8 @@ interface Props {
 export function TelaSubcategorias({ orixa, onVoltar }: Props) {
   const { dados, adicionarSubcategoria, editarSubcategoria, excluirSubcategoria, adicionarPonto, reordenarPontos, reordenarSubcategorias, moverPontoParaSubcategoria } = useApp();
   const [busca, setBusca] = useState("");
+  const [exuFiltro, setExuFiltro] = useState<string | null>(null);
+  const [keywordFiltro, setKeywordFiltro] = useState<string | null>(null);
   const [modalSubAberto, setModalSubAberto] = useState(false);
   const [subEditar, setSubEditar] = useState<Subcategoria | null>(null);
   const [confirmarExcluirSub, setConfirmarExcluirSub] = useState<Subcategoria | null>(null);
@@ -189,6 +222,14 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
     [dados.subcategorias, orixa.id]
   );
 
+  const subPorId = useMemo(() => {
+    const mapa: Record<string, Subcategoria> = {};
+    subcategorias.forEach((sub) => {
+      mapa[sub.id] = sub;
+    });
+    return mapa;
+  }, [subcategorias]);
+
   const pontosPorSub = useMemo(() => {
     const mapa: Record<string, Ponto[]> = {};
     subcategorias.forEach((sub) => {
@@ -200,19 +241,65 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
   }, [dados.pontos, subcategorias]);
 
   const buscaAtiva = busca.trim().length > 0;
+  const exuAtivo = orixa.id === "exu";
+  const filtroResultadosAtivo = buscaAtiva || !!exuFiltro || !!keywordFiltro;
+
+  const keywordTermos = useMemo(() => {
+    if (!keywordFiltro) return [] as string[];
+    const found = KEYWORD_FILTERS.find((k) => k.label === keywordFiltro);
+    return (found?.termos ?? []).map((t) => normalizeExuName(t));
+  }, [keywordFiltro]);
 
   const resultadosBusca = useMemo(() => {
-    if (!buscaAtiva) return [];
+    if (!buscaAtiva && !exuFiltro && !keywordFiltro) return [];
     const q = busca.toLowerCase();
     const pontosDoOrixa = dados.pontos.filter((p) =>
       subcategorias.some((s) => s.id === p.subcategoriaId)
     );
-    return pontosDoOrixa.filter(
-      (p) => p.titulo.toLowerCase().includes(q) || p.letra.toLowerCase().includes(q)
-    );
-  }, [busca, buscaAtiva, dados.pontos, subcategorias]);
+    return pontosDoOrixa.filter((p) => {
+      const tituloNorm = normalizeExuName(p.titulo);
+      const letraNorm = normalizeExuName(p.letra);
+      let filtroOk = true;
+      if (exuFiltro) {
+        const filtroNorm = normalizeExuName(exuFiltro);
+        filtroOk = tituloNorm.includes(filtroNorm) || letraNorm.includes(filtroNorm);
+      }
+      let keywordOk = true;
+      if (keywordTermos.length > 0) {
+        keywordOk = keywordTermos.some(
+          (t) => tituloNorm.includes(t) || letraNorm.includes(t)
+        );
+      }
+      let buscaOk = true;
+      if (buscaAtiva) {
+        buscaOk = p.titulo.toLowerCase().includes(q) || p.letra.toLowerCase().includes(q);
+      }
+      return filtroOk && keywordOk && buscaOk;
+    }).sort((a, b) => {
+      const ordemSubA = subPorId[a.subcategoriaId]?.ordem ?? Number.MAX_SAFE_INTEGER;
+      const ordemSubB = subPorId[b.subcategoriaId]?.ordem ?? Number.MAX_SAFE_INTEGER;
+      if (ordemSubA !== ordemSubB) return ordemSubA - ordemSubB;
+      return a.ordem - b.ordem;
+    });
+  }, [busca, buscaAtiva, exuFiltro, keywordTermos, dados.pontos, subcategorias, subPorId]);
 
-  const nomeSub = (id: string) => subcategorias.find((s) => s.id === id)?.nome ?? "";
+  const resultadosBuscaAgrupados = useMemo(() => {
+    const grupos: Array<{ subcategoriaId: string; nome: string; pontos: Ponto[] }> = [];
+    const porSubId: Record<string, Ponto[]> = {};
+
+    resultadosBusca.forEach((ponto) => {
+      if (!porSubId[ponto.subcategoriaId]) porSubId[ponto.subcategoriaId] = [];
+      porSubId[ponto.subcategoriaId].push(ponto);
+    });
+
+    subcategorias.forEach((sub) => {
+      const pontos = porSubId[sub.id];
+      if (!pontos || pontos.length === 0) return;
+      grupos.push({ subcategoriaId: sub.id, nome: sub.nome, pontos });
+    });
+
+    return grupos;
+  }, [resultadosBusca, subcategorias]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -246,6 +333,49 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
             </button>
           </div>
 
+          {/* Filtros rápidos Exu */}
+          {exuAtivo && (
+            <div className="flex flex-wrap gap-2 mb-2">
+              {EXU_FILTERS.map((nome) => (
+                <button
+                  key={nome}
+                  className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors ${exuFiltro === nome ? "bg-primary text-white border-primary" : "bg-card border-border hover:bg-muted"}`}
+                  onClick={() => setExuFiltro(exuFiltro === nome ? null : nome)}
+                >
+                  {nome}
+                </button>
+              ))}
+              {exuFiltro && (
+                <button
+                  className="px-2 py-1 rounded-full border text-xs font-medium bg-muted border-border text-muted-foreground ml-2"
+                  onClick={() => setExuFiltro(null)}
+                >
+                  Limpar filtro
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Filtros por palavra-chave */}
+          <div className="flex flex-wrap gap-2 mb-2">
+            {KEYWORD_FILTERS.map((kw) => (
+              <button
+                key={kw.label}
+                className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors ${keywordFiltro === kw.label ? "bg-primary text-white border-primary" : "bg-card border-border hover:bg-muted"}`}
+                onClick={() => setKeywordFiltro(keywordFiltro === kw.label ? null : kw.label)}
+              >
+                {kw.label}
+              </button>
+            ))}
+            {keywordFiltro && (
+              <button
+                className="px-2 py-1 rounded-full border text-xs font-medium bg-muted border-border text-muted-foreground ml-2"
+                onClick={() => setKeywordFiltro(null)}
+              >
+                Limpar palavra
+              </button>
+            )}
+          </div>
           {/* Busca */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -267,23 +397,28 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
           </div>
         </div>
 
-        {/* Resultados de busca */}
-        {buscaAtiva ? (
+        {/* Resultados de busca/filtro */}
+        {filtroResultadosAtivo ? (
           <div className="px-4 pb-32">
             <p className="text-xs text-muted-foreground mb-3">
-              {resultadosBusca.length} {resultadosBusca.length === 1 ? "resultado" : "resultados"} para "{busca}"
+              {resultadosBusca.length} {resultadosBusca.length === 1 ? "resultado" : "resultados"}
+              {buscaAtiva ? ` para "${busca}"` : ""}
+              {exuFiltro ? ` em ${exuFiltro}` : ""}
+              {keywordFiltro ? ` (${keywordFiltro})` : ""}
             </p>
             {resultadosBusca.length === 0 ? (
               <div className="text-center py-10 text-muted-foreground">
                 <p className="text-3xl mb-2">🔍</p>
-                <p className="text-sm">Nenhum ponto encontrado</p>
+                <p className="text-sm">Nenhum ponto encontrado com esse filtro</p>
               </div>
             ) : (
               <div className="space-y-2">
-                {resultadosBusca.map((ponto) => (
-                  <div key={ponto.id}>
-                    <p className="text-xs text-muted-foreground mb-1 px-1">{nomeSub(ponto.subcategoriaId)}</p>
-                    <CardPonto ponto={ponto} busca={busca} />
+                {resultadosBuscaAgrupados.map((grupo) => (
+                  <div key={grupo.subcategoriaId} className="space-y-2">
+                    <p className="text-xs text-muted-foreground mb-1 px-1">{grupo.nome}</p>
+                    {grupo.pontos.map((ponto) => (
+                      <CardPonto key={ponto.id} ponto={ponto} busca={busca} />
+                    ))}
                   </div>
                 ))}
               </div>
