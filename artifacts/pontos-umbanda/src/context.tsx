@@ -8,6 +8,7 @@ interface AppContextType {
   subcategoriaSelecionada: Subcategoria | null;
   selecionarOrixa: (orixa: Orixa | null) => void;
   selecionarSubcategoria: (sub: Subcategoria | null) => void;
+  substituirDados: (dados: AppData) => void;
 
   adicionarOrixa: (nome: string, cor: string, emoji: string) => void;
   editarOrixa: (id: string, nome: string, cor: string, emoji: string) => void;
@@ -63,6 +64,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const selecionarSubcategoria = useCallback((sub: Subcategoria | null) => {
     setSubcategoriaSelecionada(sub);
   }, []);
+
+  // Substitui TODO o estado local (usado ao baixar os dados da conta neste aparelho).
+  const substituirDados = useCallback(
+    (novos: AppData) => {
+      atualizar(novos);
+      setOrixaSelecionado(null);
+      setSubcategoriaSelecionada(null);
+    },
+    [atualizar],
+  );
 
   const adicionarOrixa = useCallback(
     (nome: string, cor: string, emoji: string) => {
@@ -293,6 +304,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         subcategoriaSelecionada,
         selecionarOrixa,
         selecionarSubcategoria,
+        substituirDados,
         adicionarOrixa,
         editarOrixa,
         excluirOrixa,

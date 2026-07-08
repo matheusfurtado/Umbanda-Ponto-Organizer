@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      COREPACK_DEFAULT_TO_LATEST: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      # Usa o pnpm fixado em "packageManager" do package.json (10.34.4).
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck (monorepo)
+        run: pnpm run typecheck
+      - name: Build (todos os pacotes)
+        run: pnpm -r --if-present run build

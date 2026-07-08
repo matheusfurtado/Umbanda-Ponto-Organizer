@@ -1347,5 +1347,7 @@ export function importarDados(arquivo: File): Promise<void> {
 }
 
 export function gerarId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  // UUID v4 do navegador (secure context). Casa com as PKs uuid do servidor e permite
+  // criar offline sem colisão entre dispositivos.
+  return crypto.randomUUID();
 }

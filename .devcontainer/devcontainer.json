@@ -1,0 +1,107 @@
+// .devcontainer/devcontainer.json
+//
+// Requisito firme do dono do produto: TODA a infra local roda e é instalada
+// dentro deste dev container. Não instale Node/pnpm/Postgres no host — abra
+// o repo no VS Code e use "Reopen in Container" (ou o CLI @devcontainers/cli).
+{
+  "name": "Umbanda Ponto Organizer",
+
+  // Usa o docker-compose ao lado (app + Postgres + ferramentas opcionais).
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+
+  // Ao fechar o VS Code, derruba os containers do compose (o volume do
+  // Postgres persiste mesmo assim — só o container para).
+  "shutdownAction": "stopCompose",
+
+  "remoteUser": "node",
+
+  // Portas do monorepo: 3000 = vite (frontend), 3001 = api-server (Express),
+  // 5432 = Postgres. 8080/8081 = Adminer/pgweb (só sobem com --profile tools).
+  "forwardPorts": [3000, 3001, 5432, 8080, 8081],
+  "portsAttributes": {
+    "3000": {
+      "label": "Frontend (Vite - pontos-umbanda)",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "API server (Express)",
+      "onAutoForward": "silent"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "8080": {
+      "label": "Adminer (opcional)",
+      "onAutoForward": "ignore"
+    },
+    "8081": {
+      "label": "pgweb (opcional)",
+      "onAutoForward": "ignore"
+    }
+  },
+
+  // DATABASE_URL já resolvida para o serviço "db" do compose — nenhum .env
+  // manual é necessário para rodar Drizzle push/seed dentro do container.
+  "containerEnv": {
+    "DATABASE_URL": "postgresql://umbanda:umbanda@db:5432/umbanda",
+    "PORT": "3001",
+    "COREPACK_DEFAULT_TO_LATEST": "0"
+  },
+
+  // Roda uma única vez, na criação do container:
+  //   1) instala TODAS as deps do monorepo (respeita pnpm-workspace.yaml,
+  //      catalog, minimumReleaseAge e os overrides de esbuild linux-x64)
+  //   2) cria as tabelas do schema Drizzle no Postgres do compose (push-force = não-interativo)
+  //   3) semeia a biblioteca canônica (384 pontos) a partir de pontos-completo.json
+  "postCreateCommand": "pnpm install && pnpm --filter @workspace/db run push-force && pnpm --filter @workspace/db run seed",
+
+  // Roda toda vez que o container (re)inicia: reaplica o schema (idempotente, não-interativo).
+  // Os DADOS do Postgres persistem no volume umbanda-pgdata, então não re-semeia.
+  "postStartCommand": "pnpm --filter @workspace/db run push-force",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Lint/format
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "editorconfig.editorconfig",
+        // Tailwind 4 (autocomplete de classes, preview de cor)
+        "bradlc.vscode-tailwindcss",
+        // Drizzle ORM (visualização de schema)
+        "rphlmr.vscode-drizzle-orm",
+        // OpenAPI (lib/api-spec/openapi.yaml usado pelo pipeline Orval)
+        "42crunch.vscode-openapi",
+        // Postgres direto do editor
+        "ms-ossdata.vscode-pgsql",
+        // Qualidade de vida
+        "eamodio.gitlens",
+        "mikestead.dotenv",
+        "christian-kohler.path-intellisense"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "tailwindCSS.experimental.classRegex": [
+          ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+          ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+        ],
+        "files.watcherExclude": {
+          "**/node_modules/**": true,
+          "**/dist/**": true
+        }
+      }
+    }
+  },
+
+  // Não fecha nada extra: as portas 3000/3001/5432 já expostas pelo compose
+  // servem tanto o servidor dev quanto conexões diretas via psql/DBeaver do host.
+  "features": {}
+}

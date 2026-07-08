@@ -78,6 +78,14 @@ export default defineConfig({
     port,
     host: "0.0.0.0",
     allowedHosts: true,
+    // Dev: proxy same-origin de /api -> api-server (espelha o proxy da Vercel em produção).
+    // Assim o cookie de sessão httpOnly funciona sem CORS/SameSite=None.
+    proxy: {
+      "/api": {
+        target: process.env.VITE_API_TARGET || "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
     fs: {
       strict: true,
       deny: ["**/.*"],
