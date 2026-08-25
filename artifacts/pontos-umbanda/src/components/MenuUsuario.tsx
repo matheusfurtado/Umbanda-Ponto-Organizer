@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
+import { apelido, inicial } from "@/auth/apelido";
 
 // Entrada de auth no header: "Entrar" quando anônimo; avatar+nome quando logado.
 export function MenuUsuario() {
@@ -19,14 +20,14 @@ export function MenuUsuario() {
     );
   }
 
-  const inicial = (user.name || user.email || "?").charAt(0).toUpperCase();
+  const letra = inicial(user.email);
   return (
     <Link href="/conta">
       <Button variant="ghost" size="sm" className="gap-2" title="Minha conta">
         <span className="w-6 h-6 rounded-full bg-primary/30 text-primary flex items-center justify-center text-xs font-semibold">
-          {inicial}
+          {letra}
         </span>
-        <span className="max-w-[96px] truncate">{user.name || "Conta"}</span>
+        <span className="max-w-[96px] truncate">{apelido(user.email)}</span>
       </Button>
     </Link>
   );
