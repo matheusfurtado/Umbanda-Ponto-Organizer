@@ -78,15 +78,34 @@ export function TelaConta() {
         {entLoading ? (
           <div className="mb-6 h-16 rounded-xl bg-muted/40 animate-pulse" />
         ) : ent.acervoOrganizado ? (
-          <div className="mb-6 text-sm text-primary flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4" /> Plano <b className="capitalize">{ent.plano}</b> — acervo completo liberado.
+          <div className="mb-6 flex items-center gap-1.5 text-sm text-primary">
+            <Sparkles className="h-4 w-4" aria-hidden />
+            {ent.plano === "teste" ? (
+              <>
+                Teste ativo — {ent.diasRestantes ?? 0} dia
+                {(ent.diasRestantes ?? 0) === 1 ? "" : "s"} restante
+                {(ent.diasRestantes ?? 0) === 1 ? "" : "s"}.
+              </>
+            ) : (
+              <>
+                Plano <b className="capitalize">{ent.plano}</b> ativo.
+              </>
+            )}
           </div>
         ) : (
           <Link href="/planos">
-            <button className="w-full mb-6 text-left p-4 rounded-xl bg-primary/10 border border-primary/30 hover:bg-primary/15 transition-colors">
-              <span className="block font-semibold text-foreground">Desbloqueie o acervo completo 🕯️</span>
+            <button className="mb-6 w-full rounded-xl border border-primary/30 bg-primary/10 p-4 text-left transition-colors hover:bg-primary/15">
+              {/* NÃO vende o acervo. O texto anterior prometia "desbloqueie o
+                  acervo completo, 380+ pontos curados" — vendia o conteúdo
+                  religioso, exatamente o que o ADR 0002 decidiu não cobrar. E
+                  era falso: as letras já estão todas aqui, de graça. */}
+              <span className="block font-semibold text-foreground">
+                Organize a sua gira 🕯️
+              </span>
               <span className="block text-sm text-muted-foreground">
-                Seja Fundador (vitalício) e tenha os 380+ pontos curados, backup e sync. Ver planos →
+                As letras continuam grátis. O plano traz o acervo por orixá na ordem
+                da gira, o vídeo de cada ponto, o repertório e o uso offline. Ver
+                planos →
               </span>
             </button>
           </Link>

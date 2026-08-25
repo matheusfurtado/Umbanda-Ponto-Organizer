@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Route, Switch, Redirect } from "wouter";
 import { AvisoAcervo } from "@/components/AvisoAcervo";
+import { AvisoTeste } from "@/components/AvisoTeste";
 import { InstallBanner } from "@/components/InstallBanner";
 import { ModalMigracao } from "@/components/ModalMigracao";
 import { AppProvider } from "@/context";
@@ -22,6 +23,7 @@ function AppInner() {
   // dado veio do cache não pode custar o acesso à letra do ponto.
   return (
     <>
+      <AvisoTeste />
       <AvisoAcervo />
       {orixaSelecionado ? (
         <TelaSubcategorias orixa={orixaSelecionado} onVoltar={() => setOrixaSelecionado(null)} />

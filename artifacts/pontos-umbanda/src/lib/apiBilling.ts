@@ -11,6 +11,10 @@
 
 export interface Entitlements {
   plano: string;
+  /** Quando o acesso acaba. `null` = não acaba, ou não começou. */
+  expiraEm?: string | null;
+  /** Para avisar ANTES de cortar — descobrir no meio da gira é a pior hora. */
+  diasRestantes?: number | null;
   /** Hierarquia Orixá → Subcategoria, na ordem litúrgica. */
   acervoOrganizado?: boolean;
   /** Link do vídeo casado com o ponto. */
