@@ -14,6 +14,7 @@ import { TelaSubcategorias } from "@/pages/TelaSubcategorias";
 import { TelaLogin } from "@/pages/TelaLogin";
 import { TelaConta } from "@/pages/TelaConta";
 import { TelaPlanos } from "@/pages/TelaPlanos";
+import { TelaRepertorios } from "@/pages/TelaRepertorios";
 import { Orixa } from "@/types";
 
 const FLAG_MIGRACAO = "migracao-oferecida";
@@ -89,6 +90,11 @@ function App() {
             </Route>
             <Route path="/planos">
               <TelaPlanos />
+            </Route>
+            <Route path="/repertorios">
+              <RotaProtegida>
+                <TelaRepertorios />
+              </RotaProtegida>
             </Route>
             <Route path="/conta">
               <RotaProtegida>
