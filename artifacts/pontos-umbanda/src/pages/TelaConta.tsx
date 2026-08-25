@@ -77,7 +77,7 @@ export function TelaConta() {
 
         {entLoading ? (
           <div className="mb-6 h-16 rounded-xl bg-muted/40 animate-pulse" />
-        ) : ent.acessoAcervo ? (
+        ) : ent.acervoOrganizado ? (
           <div className="mb-6 text-sm text-primary flex items-center gap-1.5">
             <Sparkles className="w-4 h-4" /> Plano <b className="capitalize">{ent.plano}</b> — acervo completo liberado.
           </div>
