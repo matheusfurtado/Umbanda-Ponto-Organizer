@@ -78,11 +78,17 @@ export default defineConfig({
     port,
     host: "0.0.0.0",
     allowedHosts: true,
-    // Dev: proxy same-origin de /api -> api-server (espelha o proxy da Vercel em produção).
-    // Assim o cookie de sessão httpOnly funciona sem CORS/SameSite=None.
+    // Dev: proxy same-origin de /api -> API Python (FastAPI). Espelha o proxy
+    // que a hospedagem fará em produção. Same-origin não é preguiça: é o que
+    // deixa o cookie httpOnly de sessão funcionar na fase 2 sem CORS nem
+    // SameSite=None.
+    //
+    // Porta 8000 é a do uvicorn DENTRO do dev container, onde o vite também
+    // roda. (Do host, a mesma API responde na 8010 — a 8000 do host já é do
+    // dev container do ApuracaoAssistidade_IBS_CBS_v1.)
     proxy: {
       "/api": {
-        target: process.env.VITE_API_TARGET || "http://localhost:3001",
+        target: process.env.VITE_API_TARGET || "http://localhost:8000",
         changeOrigin: true,
       },
     },

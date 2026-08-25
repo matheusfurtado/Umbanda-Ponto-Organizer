@@ -5,6 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { useApp } from "@/context";
 import { ModalPonto } from "@/components/ModalPonto";
 import { ModalConfirmar } from "@/components/ModalConfirmar";
+import { LinkVideo } from "@/components/LinkVideo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Ponto } from "@/types";
 
@@ -108,6 +109,7 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
                 {destacar(ponto.letra, busca)}
               </pre>
             </div>
+            <LinkVideo ponto={ponto} />
             <div className="flex items-center gap-1 px-3.5 py-2 border-t border-border">
               <button
                 onClick={(e) => { e.stopPropagation(); toggleFavorito(ponto.id); }}

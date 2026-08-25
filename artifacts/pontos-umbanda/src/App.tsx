@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Route, Switch, Redirect } from "wouter";
+import { AvisoAcervo } from "@/components/AvisoAcervo";
 import { InstallBanner } from "@/components/InstallBanner";
 import { ModalMigracao } from "@/components/ModalMigracao";
 import { AppProvider } from "@/context";
@@ -17,11 +18,18 @@ const FLAG_MIGRACAO = "migracao-oferecida";
 function AppInner() {
   const [orixaSelecionado, setOrixaSelecionado] = useState<Orixa | null>(null);
 
-  if (orixaSelecionado) {
-    return <TelaSubcategorias orixa={orixaSelecionado} onVoltar={() => setOrixaSelecionado(null)} />;
-  }
-
-  return <TelaOrixas onSelectOrixa={setOrixaSelecionado} />;
+  // A faixa de estado fica ACIMA da tela, nunca no lugar dela: informar que o
+  // dado veio do cache não pode custar o acesso à letra do ponto.
+  return (
+    <>
+      <AvisoAcervo />
+      {orixaSelecionado ? (
+        <TelaSubcategorias orixa={orixaSelecionado} onVoltar={() => setOrixaSelecionado(null)} />
+      ) : (
+        <TelaOrixas onSelectOrixa={setOrixaSelecionado} />
+      )}
+    </>
+  );
 }
 
 // Oferece a migração uma única vez, logo após o login, se houver dados locais.
