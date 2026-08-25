@@ -5,15 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/auth/AuthContext";
-import { ErroApi, ErroRede } from "@/api/cliente";
+import { ehErroDeApi, ehErroDeRede } from "@/api/cliente";
 
 type Modo = "entrar" | "criar";
 
 const MINIMO_SENHA = 10;
 
 function traduzir(erro: unknown): string {
-  if (erro instanceof ErroRede) return "Sem conexão. Verifique a internet e tente de novo.";
-  if (erro instanceof ErroApi) {
+  if (ehErroDeRede(erro)) return "Sem conexão. Verifique a internet e tente de novo.";
+  if (ehErroDeApi(erro)) {
     if (erro.status === 401) return "E-mail ou senha incorretos.";
     if (erro.status === 409) return "Já existe uma conta com esse e-mail. Tente entrar.";
     if (erro.status === 422) return erro.detalhe;

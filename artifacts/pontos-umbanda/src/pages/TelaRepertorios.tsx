@@ -12,12 +12,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import {
   ArrowLeft,
+  CloudOff,
   GripVertical,
   Loader2,
   Music,
   Plus,
   Search,
   Trash2,
+  UploadCloud,
   Youtube,
 } from "lucide-react";
 import {
@@ -33,15 +35,19 @@ import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/context";
+import { ehErroDeRede } from "@/api/cliente";
 import { destacar, semAcento } from "@/lib/destacar";
+import { apagar, criar, type ItemRepertorio, type Repertorio } from "@/api/repertorio";
 import {
-  apagar,
-  criar,
-  definirItens,
-  listar,
-  type ItemRepertorio,
-  type Repertorio,
-} from "@/api/repertorio";
+  carregar as carregarRepertorios,
+  definirSequencia,
+  guardar,
+  ligarRetomadaAutomatica,
+  observarSincronia,
+  sincronizarAgora,
+  type EstadoSincronia,
+  type FonteRepertorios,
+} from "@/dados/repertorios";
 
 function ItemArrastavel({
   item,
@@ -162,7 +168,82 @@ function Adicionar({ aoEscolher }: { aoEscolher: (pontoId: string) => void }) {
   );
 }
 
+/**
+ * Diz de onde vieram os repertórios e se há mudança por subir.
+ *
+ * Nunca bloqueia: na gira, um aviso entre a pessoa e a sequência é pior que
+ * dado um pouco velho. A gira está no aparelho e continua.
+ */
+function FaixaSincronia({
+  fonte,
+  motivo,
+  sincronia,
+}: {
+  fonte: FonteRepertorios;
+  motivo?: string;
+  sincronia: EstadoSincronia;
+}) {
+  if (sincronia.pendentes > 0) {
+    return (
+      <div
+        role="status"
+        className="mb-3 flex items-center gap-2 rounded-lg border bg-muted/60 px-3 py-2 text-xs text-muted-foreground"
+      >
+        <UploadCloud className="h-4 w-4 shrink-0" aria-hidden />
+        <span className="flex-1">
+          {sincronia.enviando
+            ? "Salvando sua gira…"
+            : sincronia.ultimoErro
+              ? `Sua gira está salva neste aparelho, mas ainda não subiu — ${sincronia.ultimoErro}.`
+              : "Sua gira está salva neste aparelho e vai subir em instantes."}
+        </span>
+        {!sincronia.enviando && (
+          <button
+            type="button"
+            onClick={sincronizarAgora}
+            className="min-h-11 shrink-0 px-2 font-medium underline underline-offset-2"
+          >
+            Enviar agora
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  if (fonte === "cache") {
+    return (
+      <div
+        role="status"
+        className="mb-3 flex items-center gap-2 rounded-lg border bg-muted/60 px-3 py-2 text-xs text-muted-foreground"
+      >
+        <CloudOff className="h-4 w-4 shrink-0" aria-hidden />
+        <span className="flex-1">
+          Mostrando a gira guardada neste aparelho — {motivo}.
+        </span>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+/**
+ * Completa o item com o que o acervo local sabe.
+ *
+ * Ponto incluído SEM REDE volta do cache sem título — o servidor é quem o
+ * devolve, e ele não respondeu. Mas o acervo inteiro já está no aparelho, então
+ * o título sai dali. Sem isto, incluir um ponto na gira offline mostraria uma
+ * linha em branco, que é pior que não deixar incluir.
+ */
+function completar(item: ItemRepertorio, acervo: { id: string; titulo: string }[]): ItemRepertorio {
+  if (item.titulo) return item;
+  const doAcervo = acervo.find((p) => p.id === item.pontoId);
+  return doAcervo ? { ...item, titulo: doAcervo.titulo } : item;
+}
+
 export function TelaRepertorios() {
+  // O acervo local completa o título de ponto incluído sem rede.
+  const { dados } = useApp();
   // Os MESMOS sensores das outras telas. Sem configurá-los, o arraste
   // simplesmente não engata: o padrão do dnd-kit não tem distância de
   // ativação, e no toque o gesto vira rolagem da página antes de virar arraste
@@ -175,52 +256,36 @@ export function TelaRepertorios() {
   const [aberto, setAberto] = useState<Repertorio | null>(null);
   const [nome, setNome] = useState("");
   const [erro, setErro] = useState<string | null>(null);
-  const [salvando, setSalvando] = useState(false);
+  const [fonte, setFonte] = useState<FonteRepertorios>("servidor");
+  const [motivoFonte, setMotivoFonte] = useState<string | undefined>();
+  const [sincronia, setSincronia] = useState<EstadoSincronia>({ enviando: false, pendentes: 0 });
 
   const carregar = useCallback(async () => {
-    try {
-      const r = await listar();
-      setLista(r);
-      setAberto((atual) => (atual ? (r.find((x) => x.id === atual.id) ?? null) : null));
-    } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Falha ao carregar.");
-      setLista([]);
-    }
+    const r = await carregarRepertorios();
+    setLista(r.repertorios);
+    setFonte(r.fonte);
+    setMotivoFonte(r.motivo);
+    setAberto((atual) =>
+      atual ? (r.repertorios.find((x) => x.id === atual.id) ?? atual) : null,
+    );
   }, []);
 
   useEffect(() => {
     void carregar();
+    return ligarRetomadaAutomatica();
   }, [carregar]);
 
-  const salvarSequencia = async (rep: Repertorio, pontos: string[]) => {
-    // Otimista: a ordem muda na tela na hora, e o servidor confirma depois.
-    // Arrastar e esperar resposta a cada movimento seria intolerável na gira.
-    const antes = rep.itens;
-    setAberto({
-      ...rep,
-      itens: pontos.map((pontoId, ordem) => {
-        const existente = antes.find((i) => i.pontoId === pontoId);
-        return {
-          pontoId,
-          ordem,
-          titulo: existente?.titulo ?? null,
-          videoUrl: existente?.videoUrl ?? null,
-          videoStatus: existente?.videoStatus ?? null,
-        };
-      }),
-    });
-    setSalvando(true);
-    try {
-      setAberto(await definirItens(rep.id, pontos));
-      setErro(null);
-    } catch (problema) {
-      // Devolve o que estava: manter na tela uma ordem que o servidor recusou
-      // faria a pessoa ensaiar uma gira que não existe.
-      setAberto({ ...rep, itens: antes });
-      setErro(problema instanceof Error ? problema.message : "Falha ao salvar a ordem.");
-    } finally {
-      setSalvando(false);
-    }
+  useEffect(() => observarSincronia(setSincronia), []);
+
+  /**
+   * Grava a sequência. **Não espera o servidor.** O cache é atualizado de forma
+   * síncrona, então a tela fica certa mesmo sem rede — que é o caso da gira. O
+   * envio vai por fila e retoma sozinho quando a conexão volta.
+   */
+  const salvarSequencia = (rep: Repertorio, pontos: string[]) => {
+    const atualizados = definirSequencia(rep.id, pontos);
+    setLista(atualizados);
+    setAberto(atualizados.find((r) => r.id === rep.id) ?? rep);
   };
 
   const aoSoltar = (e: DragEndEvent) => {
@@ -231,7 +296,7 @@ export function TelaRepertorios() {
     const pontos = aberto.itens.map((i) => i.pontoId);
     const [movido] = pontos.splice(de, 1);
     pontos.splice(para, 0, movido);
-    void salvarSequencia(aberto, pontos);
+    salvarSequencia(aberto, pontos);
   };
 
   // ------------------------------------------------------------------ detalhe
@@ -250,12 +315,16 @@ export function TelaRepertorios() {
 
           <div className="mb-1 flex items-center gap-2">
             <h1 className="text-xl font-bold text-foreground">{aberto.nome}</h1>
-            {salvando && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+            {sincronia.enviando && (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden />
+            )}
           </div>
           <p className="mb-4 text-sm text-muted-foreground">
             {aberto.itens.length} ponto{aberto.itens.length === 1 ? "" : "s"} · arraste para
             mudar a ordem
           </p>
+
+          <FaixaSincronia fonte={fonte} motivo={motivoFonte} sincronia={sincronia} />
 
           {erro && (
             <p role="alert" className="mb-3 text-sm text-destructive">
@@ -266,7 +335,7 @@ export function TelaRepertorios() {
           <div className="mb-4">
             <Adicionar
               aoEscolher={(pontoId) =>
-                void salvarSequencia(aberto, [...aberto.itens.map((i) => i.pontoId), pontoId])
+                salvarSequencia(aberto, [...aberto.itens.map((i) => i.pontoId), pontoId])
               }
             />
           </div>
@@ -287,10 +356,10 @@ export function TelaRepertorios() {
                   {aberto.itens.map((item, n) => (
                     <ItemArrastavel
                       key={`${n}:${item.pontoId}`}
-                      item={item}
+                      item={completar(item, dados.pontos)}
                       posicao={n}
                       aoRemover={() =>
-                        void salvarSequencia(
+                        salvarSequencia(
                           aberto,
                           aberto.itens.filter((_, i) => i !== n).map((i) => i.pontoId),
                         )
@@ -321,6 +390,8 @@ export function TelaRepertorios() {
           A sequência de pontos da sua gira, na ordem em que serão cantados.
         </p>
 
+        <FaixaSincronia fonte={fonte} motivo={motivoFonte} sincronia={sincronia} />
+
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -329,10 +400,21 @@ export function TelaRepertorios() {
               const novo = await criar(nome.trim());
               setNome("");
               setErro(null);
-              setLista((l) => [...(l ?? []), novo]);
+              const atualizada = [...(lista ?? []), novo];
+              setLista(atualizada);
+              guardar(atualizada);
               setAberto(novo);
             } catch (problema) {
-              setErro(problema instanceof Error ? problema.message : "Falha ao criar.");
+              // Criar precisa de id do servidor. Inventar id local traria
+              // reconciliação para resolver um caso raro — ninguém batiza uma
+              // gira nova no meio dela. A mensagem diz o que dá para fazer.
+              setErro(
+                ehErroDeRede(problema)
+                  ? "Sem conexão. Para criar um repertório novo é preciso estar online — as giras que você já tem continuam funcionando."
+                  : problema instanceof Error
+                    ? problema.message
+                    : "Falha ao criar.",
+              );
             }
           }}
           className="mb-4 flex gap-2"
@@ -385,8 +467,21 @@ export function TelaRepertorios() {
                 </button>
                 <button
                   onClick={async () => {
-                    await apagar(r.id);
-                    void carregar();
+                    try {
+                      await apagar(r.id);
+                      const restantes = (lista ?? []).filter((x) => x.id !== r.id);
+                      setLista(restantes);
+                      guardar(restantes);
+                      setErro(null);
+                    } catch (problema) {
+                      setErro(
+                        ehErroDeRede(problema)
+                          ? "Sem conexão. Apagar um repertório precisa de internet."
+                          : problema instanceof Error
+                            ? problema.message
+                            : "Falha ao apagar.",
+                      );
+                    }
                   }}
                   aria-label={`Apagar ${r.nome}`}
                   className="min-h-11 px-3 text-muted-foreground hover:text-destructive"

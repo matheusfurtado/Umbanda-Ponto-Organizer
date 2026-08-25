@@ -6,7 +6,7 @@
  * token nenhum guardado aqui. É o que impede um XSS de virar sequestro de conta.
  */
 
-import { ErroApi, ErroRede } from "./cliente";
+import { ehErroDeApi, ErroApi, ErroRede } from "./cliente";
 
 export interface Usuario {
   id: string;
@@ -85,7 +85,7 @@ export async function quemSou(): Promise<Usuario | null> {
   try {
     return await chamar<Usuario>("/eu");
   } catch (erro) {
-    if (erro instanceof ErroApi && erro.status === 401) return null;
+    if (ehErroDeApi(erro) && erro.status === 401) return null;
     throw erro;
   }
 }
