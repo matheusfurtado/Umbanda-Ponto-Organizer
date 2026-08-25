@@ -180,6 +180,16 @@ export function TelaLogin() {
             >
               {criando ? "Já tenho conta" : "Criar uma conta"}
             </button>
+
+            {!criando && (
+              // Só em "entrar": oferecer recuperação a quem está criando conta
+              // não faz sentido, e ainda sugere que ela já existe.
+              <Link href="/recuperar">
+                <span className="block min-h-11 w-full py-2 text-center text-sm text-muted-foreground underline underline-offset-4">
+                  Esqueci minha senha
+                </span>
+              </Link>
+            )}
           </div>
         </form>
       </div>
