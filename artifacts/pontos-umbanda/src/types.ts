@@ -42,6 +42,14 @@ export interface AppData {
   pontos: Ponto[];
   /** Preferência de UI, não acervo. Fica só neste aparelho — nunca sincroniza. */
   ultimoOrixaId?: string;
+  /**
+   * Qual versão do acervo esta cópia representa.
+   *
+   * Vai de volta no envio para o servidor recusar gravação em cima de mudança
+   * que este aparelho não viu — a aba aberta há horas apagando o que o celular
+   * gravou, sem ninguém perceber.
+   */
+  versao?: string | null;
 }
 
 /** Em que pé está a carga do acervo. Antes disto o app só tinha "pronto". */
