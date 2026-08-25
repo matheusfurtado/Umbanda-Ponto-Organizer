@@ -1,9 +1,21 @@
 import { useState, type ReactNode } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowLeft, CloudUpload, Download, DownloadCloud, LogOut, Sparkles } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle2,
+  CloudUpload,
+  Download,
+  DownloadCloud,
+  Loader2,
+  LogOut,
+  MailCheck,
+  Sparkles,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
 import { apelido, inicial } from "@/auth/apelido";
+import { pedirVerificacao } from "@/api/conta";
 import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { exportarConta, baixarDadosDaConta } from "@/lib/apiConta";
@@ -19,6 +31,9 @@ export function TelaConta() {
   const [confirmandoBaixar, setConfirmandoBaixar] = useState(false);
   const [baixandoConta, setBaixandoConta] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [verificacao, setVerificacao] = useState<"parado" | "enviando" | "enviado" | "erro">(
+    "parado",
+  );
 
   const sair = async () => {
     await encerrarSessao();
@@ -109,6 +124,60 @@ export function TelaConta() {
               </span>
             </button>
           </Link>
+        )}
+
+        {/* Verificar o e-mail não é burocracia: é o que permite RECUPERAR a
+            conta depois. Sem endereço confirmado, esquecer a senha significa
+            perder o acervo montado — por isso o aviso fica aqui, visível, e não
+            escondido numa tela de configurações. */}
+        {user && !user.email_verificado && (
+          <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+            <p className="flex items-center gap-1.5 text-sm font-medium text-amber-200">
+              <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
+              E-mail ainda não confirmado
+            </p>
+            <p className="mt-1 text-xs leading-snug text-muted-foreground">
+              Confirmar é o que permite recuperar a conta se você esquecer a senha.
+              Sem isso, esquecer significa perder o acervo que você montou.
+            </p>
+            {verificacao === "enviado" ? (
+              <p className="mt-3 flex items-center gap-1.5 text-xs text-primary">
+                <MailCheck className="h-4 w-4 shrink-0" aria-hidden />
+                Link enviado. Confira sua caixa de entrada.
+              </p>
+            ) : (
+              <button
+                onClick={async () => {
+                  setVerificacao("enviando");
+                  try {
+                    await pedirVerificacao();
+                    setVerificacao("enviado");
+                  } catch {
+                    setVerificacao("erro");
+                  }
+                }}
+                disabled={verificacao === "enviando"}
+                className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-md border border-amber-500/40 px-4 text-sm font-medium text-amber-200"
+              >
+                {verificacao === "enviando" && (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                )}
+                Enviar link de confirmação
+              </button>
+            )}
+            {verificacao === "erro" && (
+              <p role="alert" className="mt-2 text-xs text-destructive">
+                Não consegui enviar agora. Tente de novo em instantes.
+              </p>
+            )}
+          </div>
+        )}
+
+        {user?.email_verificado && (
+          <p className="mb-6 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+            E-mail confirmado
+          </p>
         )}
 
         <div className="space-y-3">
