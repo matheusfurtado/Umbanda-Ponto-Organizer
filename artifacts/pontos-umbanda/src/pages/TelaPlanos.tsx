@@ -4,6 +4,7 @@ import { ArrowLeft, Check, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
 import { useEntitlements } from "@/billing/EntitlementsContext";
+import { registrarPagamentoPendente } from "@/billing/pagamentoPendente";
 import {
   criarCheckout,
   emReais,
@@ -65,6 +66,9 @@ export function TelaPlanos() {
     setErro(null);
     try {
       setCheckout(await criarCheckout(plano.id));
+      // A tela de retorno precisa saber QUAL plano esperar. Durante o teste os
+      // direitos já são os do pago, então "tem plano?" não distingue nada.
+      registrarPagamentoPendente(plano.id);
       // O plano NÃO está ativo ainda: quem libera é o webhook. Reconsultar é o
       // que faz a tela contar a verdade em vez de comemorar cedo demais.
       refetch();

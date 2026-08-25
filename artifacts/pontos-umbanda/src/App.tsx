@@ -17,6 +17,7 @@ import { TelaRedefinir } from "@/pages/TelaRedefinir";
 import { TelaVerificar } from "@/pages/TelaVerificar";
 import { TelaConta } from "@/pages/TelaConta";
 import { TelaPlanos } from "@/pages/TelaPlanos";
+import { TelaRetornoPagamento } from "@/pages/TelaRetornoPagamento";
 import { TelaRepertorios } from "@/pages/TelaRepertorios";
 import { Orixa } from "@/types";
 
@@ -106,6 +107,14 @@ function App() {
             </Route>
             <Route path="/planos">
               <TelaPlanos />
+            </Route>
+            {/* Para onde o Mercado Pago devolve quem pagou. Protegida: sem
+                sessão não há o que confirmar, e a tela precisa consultar os
+                direitos da conta. */}
+            <Route path="/assinatura/retorno">
+              <RotaProtegida>
+                <TelaRetornoPagamento />
+              </RotaProtegida>
             </Route>
             <Route path="/repertorios">
               <RotaProtegida>
