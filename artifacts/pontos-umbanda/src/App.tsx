@@ -14,6 +14,7 @@ import { TelaSubcategorias } from "@/pages/TelaSubcategorias";
 import { TelaLogin } from "@/pages/TelaLogin";
 import { TelaRecuperar } from "@/pages/TelaRecuperar";
 import { TelaRedefinir } from "@/pages/TelaRedefinir";
+import { TelaVerificar } from "@/pages/TelaVerificar";
 import { TelaConta } from "@/pages/TelaConta";
 import { TelaPlanos } from "@/pages/TelaPlanos";
 import { TelaRepertorios } from "@/pages/TelaRepertorios";
@@ -97,6 +98,11 @@ function App() {
                 conseguir entrar. */}
             <Route path="/redefinir">
               <TelaRedefinir />
+            </Route>
+            {/* Também não é protegida: o link do e-mail costuma abrir noutro
+                aparelho, onde não há sessão. */}
+            <Route path="/verificar">
+              <TelaVerificar />
             </Route>
             <Route path="/planos">
               <TelaPlanos />
