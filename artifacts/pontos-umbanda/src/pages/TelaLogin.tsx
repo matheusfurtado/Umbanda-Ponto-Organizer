@@ -17,6 +17,11 @@ function traduzir(erro: unknown): string {
     if (erro.status === 401) return "E-mail ou senha incorretos.";
     if (erro.status === 409) return "Já existe uma conta com esse e-mail. Tente entrar.";
     if (erro.status === 422) return erro.detalhe;
+    // 429: o servidor já manda "Muitas tentativas. Tente de novo em N minutos",
+    // com o tempo calculado. Repassar é melhor que inventar texto aqui — e o
+    // caso é explícito para uma mudança futura não engolir a mensagem sem
+    // querer, deixando a pessoa sem entender por que não consegue entrar.
+    if (erro.status === 429) return erro.detalhe;
     if (erro.status >= 500) return "O servidor teve um problema. Tente de novo em instantes.";
     return erro.detalhe;
   }
