@@ -65,7 +65,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [estado, setEstado] = useState<EstadoAcervo>("carregando");
   const [fonte, setFonte] = useState<FonteAcervo>("local");
   const [motivoFalha, setMotivoFalha] = useState<string | undefined>();
-  const [envio, setEnvio] = useState<EstadoEnvio>({ enviando: false, pendente: false });
+  const [envio, setEnvio] = useState<EstadoEnvio>({ enviando: false, pendente: false, conflito: false });
   const [orixaSelecionado, setOrixaSelecionado] = useState<Orixa | null>(null);
   const [subcategoriaSelecionada, setSubcategoriaSelecionada] = useState<Subcategoria | null>(null);
 

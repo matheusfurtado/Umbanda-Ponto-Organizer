@@ -110,6 +110,9 @@ export interface ResultadoEnvio {
 
 export function enviarAcervo(dados: AppData): Promise<ResultadoEnvio> {
   const corpo = {
+    // Vai junto: é o que permite ao servidor recusar gravação sobre mudança
+    // que este aparelho não viu.
+    versao: dados.versao ?? null,
     orixas: dados.orixas.map(
       ({ id, nome, cor, emoji, ordem, criadoEm }: Orixa) =>
         ({ id, nome, cor, emoji, ordem, criadoEm }),

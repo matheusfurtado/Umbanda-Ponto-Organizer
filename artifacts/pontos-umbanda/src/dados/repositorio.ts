@@ -66,13 +66,21 @@ export interface EstadoEnvio {
   /** Há mudança local que o servidor ainda não recebeu. */
   pendente: boolean;
   ultimoErro?: string;
+  /**
+   * O servidor recusou porque o acervo mudou em outro aparelho.
+   *
+   * Estado próprio, e não só uma mensagem de erro, porque exige DECISÃO: nem
+   * descartar o que a pessoa fez aqui, nem apagar o que veio de lá. A tela
+   * pergunta.
+   */
+  conflito: boolean;
 }
 
 let relogio: ReturnType<typeof setTimeout> | null = null;
 let aguardando: AppData | null = null;
 let enviando = false;
 const ouvintes = new Set<Ouvinte>();
-let estado: EstadoEnvio = { enviando: false, pendente: false };
+let estado: EstadoEnvio = { enviando: false, pendente: false, conflito: false };
 
 function anunciar(novo: Partial<EstadoEnvio>) {
   estado = { ...estado, ...novo };
@@ -94,11 +102,23 @@ async function empurrar() {
 
   try {
     await enviarAcervo(carga);
-    anunciar({ enviando: false, pendente: aguardando !== null, ultimoErro: undefined });
+    anunciar({
+      enviando: false,
+      pendente: aguardando !== null,
+      ultimoErro: undefined,
+      conflito: false,
+    });
   } catch (erro) {
-    // Falhou: o dado JÁ está no cache do aparelho, então nada se perdeu. Marca
-    // pendente e tenta de novo na próxima mudança ou quando a rede voltar.
+    // O dado JÁ está no cache do aparelho — nada se perdeu, aconteça o que
+    // acontecer aqui.
     aguardando = aguardando ?? carga;
+    if (ehErroDeApi(erro) && erro.status === 409) {
+      // Conflito: NÃO reenviar sozinho. Reenviar em laço apagaria o que o
+      // outro aparelho gravou, que é exatamente o que a versão veio impedir.
+      // Para de tentar e espera a pessoa decidir.
+      anunciar({ enviando: false, pendente: true, conflito: true, ultimoErro: undefined });
+      return;
+    }
     anunciar({ enviando: false, pendente: true, ultimoErro: descrever(erro) });
   } finally {
     enviando = false;
@@ -107,8 +127,32 @@ async function empurrar() {
 }
 
 function agendar() {
+  // Em conflito não reagenda: insistir sozinho é justamente o que apagaria o
+  // trabalho do outro aparelho.
+  if (estado.conflito) return;
   if (relogio) clearTimeout(relogio);
   relogio = setTimeout(empurrar, ESPERA_ENVIO_MS);
+}
+
+/**
+ * "Mandar as minhas assim mesmo": relê a versão atual e envia por cima.
+ *
+ * É uma decisão consciente da pessoa, com o servidor já mostrado a ela — não um
+ * reenvio automático.
+ */
+export async function forcarEnvio(): Promise<void> {
+  if (!aguardando) return;
+  const atual = await baixarAcervo();
+  aguardando = { ...aguardando, versao: atual.versao };
+  anunciar({ conflito: false });
+  await empurrar();
+}
+
+/** "Ficar com o que está no servidor": descarta o pendente daqui. */
+export function descartarPendente(): void {
+  aguardando = null;
+  if (relogio) clearTimeout(relogio);
+  anunciar({ conflito: false, pendente: false, ultimoErro: undefined });
 }
 
 /**

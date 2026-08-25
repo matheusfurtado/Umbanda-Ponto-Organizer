@@ -9,7 +9,8 @@
  * mostrar, e aí sim a tela precisa dizer isso.
  */
 
-import { AlertCircle, CloudOff, RefreshCw, UploadCloud } from "lucide-react";
+import { AlertCircle, CloudOff, GitCompare, RefreshCw, UploadCloud } from "lucide-react";
+import { descartarPendente, forcarEnvio } from "../dados/repositorio";
 import { useApp } from "../context";
 
 export function AvisoAcervo() {
@@ -49,6 +50,46 @@ export function AvisoAcervo() {
       >
         Mostrando os pontos guardados neste aparelho — {motivoFalha}.
       </Faixa>
+    );
+  }
+
+  // Conflito: os dois lados têm mudança e ninguém pode ser descartado em
+  // silêncio. A pessoa decide — por isso isto vem ANTES do aviso de pendência,
+  // e traz as duas saídas explícitas.
+  if (envio.conflito) {
+    return (
+      <div
+        role="alert"
+        className="mx-3 my-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-xs"
+      >
+        <p className="flex items-center gap-2 font-medium text-amber-200">
+          <GitCompare className="h-4 w-4 shrink-0" aria-hidden />
+          Seus pontos mudaram em outro aparelho
+        </p>
+        <p className="mt-1 leading-snug text-muted-foreground">
+          O que você fez aqui ainda não subiu, e o que veio do outro aparelho
+          está guardado. Nada foi perdido — escolha o que fica.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => void forcarEnvio()}
+            className="min-h-11 rounded-md border border-amber-500/40 px-3 font-medium text-amber-200"
+          >
+            Manter o deste aparelho
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              descartarPendente();
+              recarregar();
+            }}
+            className="min-h-11 rounded-md border px-3 font-medium text-muted-foreground"
+          >
+            Ficar com o do outro
+          </button>
+        </div>
+      </div>
     );
   }
 
