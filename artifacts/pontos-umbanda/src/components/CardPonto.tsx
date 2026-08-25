@@ -5,8 +5,10 @@ import { CSS } from "@dnd-kit/utilities";
 import { useApp } from "@/context";
 import { ModalPonto } from "@/components/ModalPonto";
 import { ModalConfirmar } from "@/components/ModalConfirmar";
+import { LinkVideo } from "@/components/LinkVideo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Ponto } from "@/types";
+import { destacar } from "@/lib/destacar";
 
 interface Props {
   ponto: Ponto;
@@ -14,19 +16,6 @@ interface Props {
   sortable?: boolean;
 }
 
-function destacar(texto: string, busca: string): React.ReactNode {
-  if (!busca.trim()) return texto;
-  const partes = texto.split(new RegExp(`(${busca.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"));
-  return partes.map((parte, i) =>
-    parte.toLowerCase() === busca.toLowerCase() ? (
-      <mark key={i} className="bg-yellow-400/30 text-yellow-200 rounded-sm px-0.5">
-        {parte}
-      </mark>
-    ) : (
-      parte
-    )
-  );
-}
 
 export function CardPonto({ ponto, busca, sortable = false }: Props) {
   const { dados, editarPonto, excluirPonto, toggleFavorito, moverPontoParaSubcategoria } = useApp();
@@ -108,6 +97,7 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
                 {destacar(ponto.letra, busca)}
               </pre>
             </div>
+            <LinkVideo ponto={ponto} />
             <div className="flex items-center gap-1 px-3.5 py-2 border-t border-border">
               <button
                 onClick={(e) => { e.stopPropagation(); toggleFavorito(ponto.id); }}
