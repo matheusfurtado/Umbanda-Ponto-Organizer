@@ -17,6 +17,38 @@ import {
   type Usuario,
 } from "@/api/conta";
 
+/**
+ * Quem estava logado da última vez que deu para perguntar.
+ *
+ * **Falha de rede não é logout.** Sem isto, abrir o app sem sinal jogava a
+ * pessoa na tela de login — e o cookie de sessão continuava lá, válido, no
+ * navegador. Na gira, isso significava perder o acesso ao repertório justamente
+ * na hora de cantar.
+ *
+ * Guarda só id e e-mail. A sessão em si é o cookie httpOnly, que o JavaScript
+ * não lê nem escreve — nada aqui autentica coisa alguma, e um dump deste cache
+ * não vale login nenhum.
+ */
+const CHAVE_USUARIO = "pontos-umbanda-usuario";
+
+function lembrar(usuario: Usuario | null): void {
+  try {
+    if (usuario) localStorage.setItem(CHAVE_USUARIO, JSON.stringify(usuario));
+    else localStorage.removeItem(CHAVE_USUARIO);
+  } catch {
+    /* cota cheia: segue sem lembrar */
+  }
+}
+
+function lembrado(): Usuario | null {
+  try {
+    const cru = localStorage.getItem(CHAVE_USUARIO);
+    return cru ? (JSON.parse(cru) as Usuario) : null;
+  } catch {
+    return null;
+  }
+}
+
 interface AuthContextType {
   session: { user: Usuario } | null;
   user: Usuario | null;
@@ -32,16 +64,28 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<Usuario | null>(null);
+  // Começa do lembrado, SÍNCRONO: sem isto a tela pisca "deslogado" por um
+  // instante antes de a resposta chegar, e o RotaProtegida chega a redirecionar.
+  const [user, setUser] = useState<Usuario | null>(() => lembrado());
   const [isPending, setIsPending] = useState(true);
 
   const recarregar = useCallback(async () => {
     try {
-      setUser(await quemSou());
+      const atual = await quemSou();
+      // `null` aqui é resposta do SERVIDOR (401): a sessão acabou de verdade.
+      setUser(atual);
+      lembrar(atual);
     } catch {
-      // Rede fora: trata como anônimo. O app funciona sem conta, então não há
-      // motivo para travar a tela por não conseguir perguntar quem é.
-      setUser(null);
+      // NÃO deslogar. Chegar aqui significa que não deu para PERGUNTAR quem é —
+      // rede fora, servidor reiniciando, proxy com soluço, tempo esgotado.
+      // Nada disso é "a sessão acabou": o cookie httpOnly continua no navegador
+      // e volta a valer sozinho.
+      //
+      // Só o 401 é logout, e ele NÃO passa por aqui: `quemSou()` devolve `null`
+      // nesse caso, tratado acima. Distinguir por tipo de erro era frágil
+      // demais — um 500 do gateway expulsava a pessoa para o login, e na gira
+      // isso custa o acesso ao repertório na hora de cantar.
+      setUser(lembrado());
     } finally {
       setIsPending(false);
     }
@@ -52,16 +96,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [recarregar]);
 
   const entrar = useCallback(async (email: string, senha: string) => {
-    setUser(await entrarNaApi(email, senha));
+    const u = await entrarNaApi(email, senha);
+    setUser(u);
+    lembrar(u);
   }, []);
 
   const cadastrar = useCallback(async (dados: DadosCadastro) => {
-    setUser(await cadastrarNaApi(dados));
+    const u = await cadastrarNaApi(dados);
+    setUser(u);
+    lembrar(u);
   }, []);
 
   const sair = useCallback(async () => {
     await sairDaApi();
     setUser(null);
+    // Esquece na hora: sair tem que valer mesmo se a rede cair no meio.
+    lembrar(null);
   }, []);
 
   return (

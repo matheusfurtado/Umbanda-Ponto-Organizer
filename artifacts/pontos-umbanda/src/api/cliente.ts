@@ -27,6 +27,26 @@ export class ErroRede extends Error {
   }
 }
 
+/**
+ * Reconhece falha de rede sem depender só de `instanceof`.
+ *
+ * `instanceof` compara identidade de classe, e duas cópias do mesmo módulo —
+ * fronteira de chunk, import dinâmico, dependência duplicada — produzem classes
+ * diferentes. A comparação falharia em silêncio.
+ *
+ * Aqui isso não seria um detalhe: quem decide se houve falha de rede é o
+ * AuthContext, e errar significa tratar "não deu para perguntar quem é" como
+ * "está deslogado" — expulsando a pessoa para o login no meio da gira.
+ */
+export function ehErroDeRede(erro: unknown): erro is ErroRede {
+  return erro instanceof ErroRede || (erro instanceof Error && erro.name === "ErroRede");
+}
+
+/** Mesma precaução para o erro de API, e dá acesso ao status com segurança. */
+export function ehErroDeApi(erro: unknown): erro is ErroApi {
+  return erro instanceof ErroApi || (erro instanceof Error && erro.name === "ErroApi");
+}
+
 const BASE = "/api/v1";
 
 // Na gira o celular costuma estar em rede ruim. Esperar 30s parado é pior que

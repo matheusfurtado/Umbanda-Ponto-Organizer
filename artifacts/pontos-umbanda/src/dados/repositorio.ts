@@ -15,7 +15,7 @@
  * e multi-aparelho, vira sync incremental — está registrado no ADR 0002.
  */
 
-import { baixarAcervo, enviarAcervo, ErroApi, ErroRede } from "../api/cliente";
+import { baixarAcervo, ehErroDeApi, ehErroDeRede, enviarAcervo } from "../api/cliente";
 import { carregarDados, salvarDados } from "../storage";
 import type { AppData, FonteAcervo } from "../types";
 
@@ -31,8 +31,8 @@ export interface ResultadoCarga {
 const ESPERA_ENVIO_MS = 1500;
 
 function descrever(erro: unknown): string {
-  if (erro instanceof ErroRede) return "sem conexão com o servidor";
-  if (erro instanceof ErroApi) return `servidor respondeu ${erro.status}`;
+  if (ehErroDeRede(erro)) return "sem conexão com o servidor";
+  if (ehErroDeApi(erro)) return `servidor respondeu ${erro.status}`;
   return "falha desconhecida";
 }
 
