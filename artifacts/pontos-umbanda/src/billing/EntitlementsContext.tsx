@@ -4,10 +4,11 @@ import { buscarEntitlements, type Entitlements } from "@/lib/apiBilling";
 
 export const ENTITLEMENTS_GRATIS: Entitlements = {
   plano: "gratis",
-  acessoAcervo: false,
-  downloadOffline: false,
-  syncNuvem: false,
-  colaboracaoTerreiro: false,
+  acervoOrganizado: false,
+  linksDeVideo: false,
+  repertorios: false,
+  sync: false,
+  offline: false,
 };
 
 interface Ctx {

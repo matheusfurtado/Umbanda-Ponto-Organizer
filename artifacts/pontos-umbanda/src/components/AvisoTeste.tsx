@@ -1,0 +1,50 @@
+/**
+ * A faixa do teste de 15 dias.
+ *
+ * Existe para a pessoa **nunca ser surpreendida**. Descobrir que o teste acabou
+ * no meio de uma gira, com o celular na mão e o terreiro esperando, é a pior
+ * hora possível — e é uma falha nossa, não dela.
+ *
+ * Por isso o aviso aparece o tempo todo, e fica mais firme perto do fim. Não
+ * bloqueia nada em momento nenhum.
+ */
+
+import { Clock } from "lucide-react";
+import { Link } from "wouter";
+import { useEntitlements } from "@/billing/EntitlementsContext";
+
+export function AvisoTeste() {
+  const { ent } = useEntitlements();
+  if (ent.plano !== "teste") return null;
+
+  const dias = ent.diasRestantes ?? 0;
+  const urgente = dias <= 3;
+
+  return (
+    <div
+      role="status"
+      className={`mx-3 my-2 flex items-center gap-2 rounded-lg border px-3 py-2 text-xs ${
+        urgente
+          ? "border-amber-500/40 bg-amber-500/10 text-amber-200"
+          : "border-border bg-muted/60 text-muted-foreground"
+      }`}
+    >
+      <Clock className="h-4 w-4 shrink-0" aria-hidden />
+      <span className="flex-1">
+        {dias === 0
+          ? "Seu teste termina hoje."
+          : dias === 1
+            ? "Falta 1 dia do seu teste."
+            : `Faltam ${dias} dias do seu teste.`}{" "}
+        {/* Diz o que continua, não só o que acaba: a letra nunca é tirada. */}
+        Depois, suas letras e os pontos que você escreveu continuam aqui — o que
+        sai é a organização por orixá, o link do vídeo e o repertório.
+      </span>
+      <Link href="/planos">
+        <span className="min-h-11 shrink-0 px-2 font-medium underline underline-offset-2">
+          Ver planos
+        </span>
+      </Link>
+    </div>
+  );
+}

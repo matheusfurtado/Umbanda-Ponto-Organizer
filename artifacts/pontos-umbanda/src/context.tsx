@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { AppData, EstadoAcervo, FonteAcervo, Orixa, Subcategoria, Ponto } from "./types";
 import { carregarDados, gerarId } from "./storage";
+import { useAuth } from "./auth/AuthContext";
 import {
   carregar,
   EstadoEnvio,
@@ -56,6 +57,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const { autenticado, isPending } = useAuth();
   // Começa do cache, SÍNCRONO. É o que faz o app abrir instantâneo e funcionar
   // sem rede: nenhum componente chega a ver estado vazio. O servidor atualiza
   // por cima logo em seguida.
@@ -79,10 +81,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setEstado(r.fonte === "local" && r.motivo ? "erro" : "pronto");
   }, []);
 
+  // Rebusca quando o login muda. O acervo que o servidor manda DEPENDE de quem
+  // está perguntando: anônimo recebe a lista corrida, assinante recebe a
+  // hierarquia e os vídeos. Buscar só na montagem deixava quem acabou de entrar
+  // vendo a versão de anônimo — "0 orixás" logo depois de logar.
   useEffect(() => {
+    if (isPending) return; // ainda não se sabe se há sessão
     void buscarDoServidor();
-    return ligarRetomadaAutomatica();
-  }, [buscarDoServidor]);
+  }, [buscarDoServidor, isPending, autenticado]);
+
+  useEffect(() => ligarRetomadaAutomatica(), []);
 
   useEffect(() => observarEnvio(setEnvio), []);
 
