@@ -3,14 +3,14 @@ import { Link, useLocation } from "wouter";
 import { ArrowLeft, CloudUpload, Download, DownloadCloud, LogOut, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
+import { apelido, inicial } from "@/auth/apelido";
 import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
-import { authClient } from "@/lib/authClient";
 import { exportarConta, baixarDadosDaConta } from "@/lib/apiConta";
 import { ModalMigracao } from "@/components/ModalMigracao";
 
 export function TelaConta() {
-  const { user } = useAuth();
+  const { user, sair: encerrarSessao } = useAuth();
   const { substituirDados } = useApp();
   const { ent, loading: entLoading } = useEntitlements();
   const [, navegar] = useLocation();
@@ -21,7 +21,7 @@ export function TelaConta() {
   const [msg, setMsg] = useState<string | null>(null);
 
   const sair = async () => {
-    await authClient.signOut();
+    await encerrarSessao();
     navegar("/");
   };
 
@@ -67,10 +67,10 @@ export function TelaConta() {
 
         <div className="flex items-center gap-3 mb-8">
           <span className="w-14 h-14 rounded-full bg-primary/25 text-primary flex items-center justify-center text-xl font-semibold">
-            {(user?.name || user?.email || "?").charAt(0).toUpperCase()}
+            {inicial(user?.email)}
           </span>
           <div className="min-w-0">
-            <h1 className="text-xl font-bold text-foreground truncate">{user?.name || "Minha conta"}</h1>
+            <h1 className="text-xl font-bold text-foreground truncate">{apelido(user?.email)}</h1>
             <p className="text-muted-foreground text-sm truncate">{user?.email}</p>
           </div>
         </div>

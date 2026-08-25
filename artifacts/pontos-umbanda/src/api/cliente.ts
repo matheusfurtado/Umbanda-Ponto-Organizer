@@ -79,11 +79,16 @@ export function baixarAcervo(): Promise<AppData> {
  * Manda só o que é do usuário. Os campos `video*` são do servidor — reenviá-los
  * seria o cliente opinando sobre dado que não é dele.
  */
-export function enviarAcervo(dados: AppData): Promise<{
+export interface ResultadoEnvio {
   orixas: number;
   subcategorias: number;
   pontos: number;
-}> {
+  pontosCanonicos: number;
+  pontosCriados: number;
+  favoritos: number;
+}
+
+export function enviarAcervo(dados: AppData): Promise<ResultadoEnvio> {
   const corpo = {
     orixas: dados.orixas.map(
       ({ id, nome, cor, emoji, ordem, criadoEm }: Orixa) =>
@@ -98,5 +103,5 @@ export function enviarAcervo(dados: AppData): Promise<{
         ({ id, subcategoriaId, titulo, letra, ordem, favorito, criadoEm }),
     ),
   };
-  return requisitar("/acervo", { method: "PUT", body: JSON.stringify(corpo) });
+  return requisitar<ResultadoEnvio>("/acervo", { method: "PUT", body: JSON.stringify(corpo) });
 }
