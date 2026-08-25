@@ -6,18 +6,36 @@ import { InstallBanner } from "@/components/InstallBanner";
 import { ModalMigracao } from "@/components/ModalMigracao";
 import { AppProvider } from "@/context";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
+import { useEntitlements } from "@/billing/EntitlementsContext";
 import { EntitlementsProvider } from "@/billing/EntitlementsContext";
+import { TelaAcervoSimples } from "@/pages/TelaAcervoSimples";
 import { TelaOrixas } from "@/pages/TelaOrixas";
 import { TelaSubcategorias } from "@/pages/TelaSubcategorias";
 import { TelaLogin } from "@/pages/TelaLogin";
 import { TelaConta } from "@/pages/TelaConta";
 import { TelaPlanos } from "@/pages/TelaPlanos";
+import { TelaRepertorios } from "@/pages/TelaRepertorios";
 import { Orixa } from "@/types";
 
 const FLAG_MIGRACAO = "migracao-oferecida";
 
 function AppInner() {
+  const { ent, loading } = useEntitlements();
   const [orixaSelecionado, setOrixaSelecionado] = useState<Orixa | null>(null);
+
+  // Sem plano, o servidor não envia orixás nem subcategorias (ADR 0002). A tela
+  // de hierarquia recebia lista vazia e dizia "Nenhum Orixá ainda — toque em +
+  // para adicionar" a quem tem 520 pontos: parecia app quebrado. A lista corrida
+  // mostra o que a pessoa REALMENTE tem.
+  if (!loading && !ent.acervoOrganizado) {
+    return (
+      <>
+        <AvisoTeste />
+        <AvisoAcervo />
+        <TelaAcervoSimples />
+      </>
+    );
+  }
 
   // A faixa de estado fica ACIMA da tela, nunca no lugar dela: informar que o
   // dado veio do cache não pode custar o acesso à letra do ponto.
@@ -72,6 +90,11 @@ function App() {
             </Route>
             <Route path="/planos">
               <TelaPlanos />
+            </Route>
+            <Route path="/repertorios">
+              <RotaProtegida>
+                <TelaRepertorios />
+              </RotaProtegida>
             </Route>
             <Route path="/conta">
               <RotaProtegida>
