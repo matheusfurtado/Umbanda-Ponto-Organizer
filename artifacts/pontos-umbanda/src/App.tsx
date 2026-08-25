@@ -12,6 +12,8 @@ import { TelaAcervoSimples } from "@/pages/TelaAcervoSimples";
 import { TelaOrixas } from "@/pages/TelaOrixas";
 import { TelaSubcategorias } from "@/pages/TelaSubcategorias";
 import { TelaLogin } from "@/pages/TelaLogin";
+import { TelaRecuperar } from "@/pages/TelaRecuperar";
+import { TelaRedefinir } from "@/pages/TelaRedefinir";
 import { TelaConta } from "@/pages/TelaConta";
 import { TelaPlanos } from "@/pages/TelaPlanos";
 import { TelaRepertorios } from "@/pages/TelaRepertorios";
@@ -87,6 +89,14 @@ function App() {
           <Switch>
             <Route path="/login">
               <TelaLogin />
+            </Route>
+            <Route path="/recuperar">
+              <TelaRecuperar />
+            </Route>
+            {/* Não é rota protegida: quem chega aqui está justamente sem
+                conseguir entrar. */}
+            <Route path="/redefinir">
+              <TelaRedefinir />
             </Route>
             <Route path="/planos">
               <TelaPlanos />

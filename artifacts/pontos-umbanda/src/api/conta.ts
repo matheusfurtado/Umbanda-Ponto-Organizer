@@ -98,3 +98,39 @@ export function minhasSessoes(): Promise<SessaoAtiva[] | null> {
 export function encerrarOutrasSessoes(): Promise<null> {
   return chamar<null>("/sessoes/encerrar-outras", { method: "POST" }) as Promise<null>;
 }
+
+
+// ------------------------------------------------------ recuperar senha
+
+/**
+ * Pede o link de redefinição.
+ *
+ * **Sempre resolve**, exista o e-mail ou não — é assim no servidor, e a tela
+ * precisa refletir isso. Mostrar "esse e-mail não existe" transformaria a tela
+ * num verificador de quem tem conta num app de Umbanda.
+ */
+export function pedirRecuperacao(email: string): Promise<null> {
+  return chamar<null>("/recuperar", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  }) as Promise<null>;
+}
+
+/** Troca a senha pelo link. Derruba todas as sessões e abre uma nova. */
+export function redefinirSenha(token: string, senha: string): Promise<Usuario | null> {
+  return chamar<Usuario>("/redefinir", {
+    method: "POST",
+    body: JSON.stringify({ token, senha }),
+  });
+}
+
+export function pedirVerificacao(): Promise<null> {
+  return chamar<null>("/verificar/enviar", { method: "POST" }) as Promise<null>;
+}
+
+export function confirmarEmail(token: string): Promise<Usuario | null> {
+  return chamar<Usuario>("/verificar", {
+    method: "POST",
+    body: JSON.stringify({ token }),
+  });
+}
