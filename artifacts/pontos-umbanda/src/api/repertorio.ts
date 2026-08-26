@@ -12,8 +12,14 @@ export interface ItemRepertorio {
   pontoId: string;
   ordem: number;
   titulo: string | null;
+  autor?: string | null;
   videoUrl: string | null;
   videoStatus: "encontrado" | "revisar" | "nao_encontrado" | null;
+  // Vêm do servidor junto do item: a linha da gira mostra as mesmas
+  // informações da linha do acervo, e buscá-las de novo faria as duas telas
+  // divergirem no dia em que uma mudasse.
+  videoCanal?: string | null;
+  videoDuracaoSeg?: number | null;
 }
 
 export interface Repertorio {

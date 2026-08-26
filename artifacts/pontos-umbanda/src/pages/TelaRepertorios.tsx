@@ -9,6 +9,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { CapaGira } from "@/componentes/CapaGira";
 import { Link } from "wouter";
 import {
   ArrowLeft,
@@ -84,9 +85,22 @@ function ItemArrastavel({
       <span className="w-6 shrink-0 text-center text-xs font-semibold text-muted-foreground">
         {posicao + 1}
       </span>
-      <span className="flex-1 truncate text-sm text-foreground">
-        {item.titulo ?? <em className="text-muted-foreground">ponto removido do acervo</em>}
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm text-foreground">
+          {item.titulo ?? <em className="text-muted-foreground">ponto removido do acervo</em>}
+        </span>
+        {(item.autor || item.videoCanal?.trim()) && (
+          <span className="block truncate text-xs text-muted-foreground">
+            {item.autor || item.videoCanal?.trim()}
+          </span>
+        )}
       </span>
+      {item.videoDuracaoSeg ? (
+        <span className="hidden w-12 shrink-0 text-right text-xs tabular-nums text-muted-foreground sm:block">
+          {Math.floor(item.videoDuracaoSeg / 60)}:
+          {String(item.videoDuracaoSeg % 60).padStart(2, "0")}
+        </span>
+      ) : null}
       {item.videoUrl && (
         <a
           href={item.videoUrl}
@@ -302,8 +316,8 @@ export function TelaRepertorios() {
   // ------------------------------------------------------------------ detalhe
   if (aberto) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="mx-auto max-w-lg px-4 pb-16 pt-8">
+      <div className="min-h-full">
+        <div className="max-w-4xl px-4 pb-24 pt-5 sm:px-8">
           <Button
             variant="ghost"
             size="sm"
@@ -313,15 +327,33 @@ export function TelaRepertorios() {
             <ArrowLeft className="h-4 w-4" aria-hidden /> Meus repertórios
           </Button>
 
-          <div className="mb-1 flex items-center gap-2">
-            <h1 className="text-xl font-bold text-foreground">{aberto.nome}</h1>
-            {sincronia.enviando && (
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden />
-            )}
+          <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-end">
+            <div className="h-32 w-32 shrink-0 sm:h-40 sm:w-40">
+              <CapaGira nome={aberto.nome} />
+            </div>
+            <div className="min-w-0 pb-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Gira
+              </p>
+              <div className="mt-1 flex items-center gap-2">
+                <h1 className="break-words text-3xl font-black leading-tight text-foreground sm:text-4xl">
+                  {aberto.nome}
+                </h1>
+                {sincronia.enviando && (
+                  <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" aria-hidden />
+                )}
+              </div>
+            </div>
           </div>
           <p className="mb-4 text-sm text-muted-foreground">
-            {aberto.itens.length} ponto{aberto.itens.length === 1 ? "" : "s"} · arraste para
-            mudar a ordem
+            {aberto.itens.length} ponto{aberto.itens.length === 1 ? "" : "s"}
+            {/* Duração total: quem monta a gira precisa saber se ela cabe no
+                tempo da sessão. Soma só o que tem duração conhecida. */}
+            {(() => {
+              const seg = aberto.itens.reduce((t, i) => t + (i.videoDuracaoSeg ?? 0), 0);
+              return seg > 0 ? ` · cerca de ${Math.round(seg / 60)} min` : "";
+            })()}
+            {" · arraste para mudar a ordem"}
           </p>
 
           <FaixaSincronia fonte={fonte} motivo={motivoFonte} sincronia={sincronia} />
@@ -376,16 +408,12 @@ export function TelaRepertorios() {
   }
 
   // -------------------------------------------------------------------- lista
+  // Sem "voltar ao app" e sem coluna estreita: a navegação agora é a barra
+  // lateral, e o espaço horizontal é para as giras.
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-lg px-4 pb-16 pt-8">
-        <Link href="/">
-          <Button variant="ghost" size="sm" className="-ml-2 mb-4 gap-1.5 text-muted-foreground">
-            <ArrowLeft className="h-4 w-4" aria-hidden /> Voltar ao app
-          </Button>
-        </Link>
-
-        <h1 className="text-2xl font-bold text-foreground">Meus repertórios</h1>
+    <div className="min-h-full">
+      <div className="max-w-5xl px-4 pb-24 pt-5 sm:px-8">
+        <h1 className="text-2xl font-black text-foreground sm:text-3xl">Minhas giras</h1>
         <p className="mb-6 mt-1 text-sm text-muted-foreground">
           A sequência de pontos da sua gira, na ordem em que serão cantados.
         </p>
@@ -450,17 +478,17 @@ export function TelaRepertorios() {
             <p className="mt-1 text-sm">Dê um nome acima e monte a primeira gira.</p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {lista.map((r) => (
               <div
                 key={r.id}
-                className="flex items-center gap-2 rounded-xl border border-border bg-card"
+                className="group relative rounded-xl bg-card/60 p-3 transition hover:bg-accent/50"
               >
-                <button
-                  onClick={() => setAberto(r)}
-                  className="min-h-11 flex-1 px-4 py-3 text-left"
-                >
-                  <span className="block font-medium text-foreground">{r.nome}</span>
+                <button onClick={() => setAberto(r)} className="w-full text-left">
+                  <span className="mb-3 block aspect-square w-full">
+                    <CapaGira nome={r.nome} />
+                  </span>
+                  <span className="block truncate font-semibold text-foreground">{r.nome}</span>
                   <span className="block text-xs text-muted-foreground">
                     {r.itens.length} ponto{r.itens.length === 1 ? "" : "s"}
                   </span>
@@ -484,7 +512,7 @@ export function TelaRepertorios() {
                     }
                   }}
                   aria-label={`Apagar ${r.nome}`}
-                  className="min-h-11 px-3 text-muted-foreground hover:text-destructive"
+                  className="absolute right-4 top-4 rounded-md bg-background/80 p-2 text-muted-foreground opacity-0 transition hover:text-destructive focus:opacity-100 group-hover:opacity-100"
                 >
                   <Trash2 className="h-4 w-4" aria-hidden />
                 </button>
