@@ -49,7 +49,7 @@ export function TelaInicio({
   onAbrirOrixa: (o: Orixa) => void;
   onAdicionar?: (p: Ponto) => void;
 }) {
-  const { dados } = useApp();
+  const { dados, estado } = useApp();
   const { ent } = useEntitlements();
   const [busca, setBusca] = useState("");
 
@@ -133,9 +133,29 @@ export function TelaInicio({
 
           <section aria-label="Orixás">
             <h2 className="mb-3 px-2 text-lg font-bold text-foreground">Orixás</h2>
-            {dados.orixas.length === 0 ? (
+            {dados.orixas.length === 0 && estado === "carregando" ? (
+              // Primeiríssima visita: não há cache e o acervo está a caminho.
+              // Antes, a mensagem de "confira sua conexão" aparecia AQUI —
+              // acusando a rede de quem só precisava esperar dois segundos.
+              // Quem já visitou nunca vê isto: o cache é lido de forma
+              // síncrona e os cartões aparecem prontos.
+              <div aria-busy="true" aria-label="Carregando o acervo"
+                   className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {Array.from({ length: 10 }, (_, i) => (
+                  <div key={i} className="rounded-xl bg-card/60 p-3">
+                    <div className="mb-3 aspect-square w-full animate-pulse rounded-xl bg-muted/50" />
+                    <div className="h-4 w-2/3 animate-pulse rounded bg-muted/50" />
+                    <div className="mt-1.5 h-3 w-1/3 animate-pulse rounded bg-muted/40" />
+                  </div>
+                ))}
+              </div>
+            ) : dados.orixas.length === 0 ? (
+              // Aqui sim é estado final sem nada: ou a rede falhou na primeira
+              // abertura, ou o acervo veio vazio de verdade.
               <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-                Nenhum orixá carregado ainda. Confira sua conexão e recarregue.
+                {estado === "erro"
+                  ? "Não consegui carregar o acervo e não há nada guardado neste aparelho ainda. Confira sua conexão e recarregue."
+                  : "Nenhum orixá no acervo."}
               </p>
             ) : (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
