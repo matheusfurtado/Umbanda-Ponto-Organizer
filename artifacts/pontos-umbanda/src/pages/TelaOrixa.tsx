@@ -6,6 +6,7 @@ import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { Capa } from "@/componentes/Capa";
 import { LinhaPonto } from "@/componentes/LinhaPonto";
+import { semAcento } from "@/lib/destacar";
 import type { Orixa, Ponto } from "@/types";
 
 /**
@@ -20,10 +21,6 @@ import type { Orixa, Ponto } from "@/types";
  * pessoa perde a noção de onde está — e "onde estou" é a primeira pergunta de
  * quem procura um ponto no meio da gira.
  */
-
-function normalizar(t: string): string {
-  return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
-}
 
 export function TelaOrixa({
   orixa,
@@ -49,10 +46,10 @@ export function TelaOrixa({
   }, [dados.pontos, subs, orixa.id]);
 
   const filtrados = useMemo<Ponto[]>(() => {
-    const termo = normalizar(busca.trim());
+    const termo = semAcento(busca.trim());
     if (!termo) return meus;
     return meus.filter(
-      (p) => normalizar(p.titulo).includes(termo) || normalizar(p.letra).includes(termo),
+      (p) => semAcento(p.titulo).includes(termo) || semAcento(p.letra).includes(termo),
     );
   }, [busca, meus]);
 

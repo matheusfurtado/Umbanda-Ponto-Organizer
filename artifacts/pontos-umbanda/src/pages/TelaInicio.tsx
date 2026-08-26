@@ -6,6 +6,7 @@ import { useEntitlements } from "@/billing/EntitlementsContext";
 import { MenuUsuario } from "@/components/MenuUsuario";
 import { Capa } from "@/componentes/Capa";
 import { LinhaPonto } from "@/componentes/LinhaPonto";
+import { semAcento } from "@/lib/destacar";
 import type { Orixa, Ponto } from "@/types";
 
 /**
@@ -19,10 +20,6 @@ import type { Orixa, Ponto } from "@/types";
  * A busca vem antes de tudo porque em gira ninguém navega: a pessoa lembra um
  * trecho da letra e precisa achar agora.
  */
-
-function normalizar(t: string): string {
-  return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
-}
 
 function CardOrixa({ orixa, quantos, onClick }: {
   orixa: Orixa; quantos: number; onClick: () => void;
@@ -67,10 +64,10 @@ export function TelaInicio({
   }, [dados.pontos, dados.subcategorias]);
 
   const achados = useMemo<Ponto[]>(() => {
-    const termo = normalizar(busca.trim());
+    const termo = semAcento(busca.trim());
     if (termo.length < 2) return [];
     return dados.pontos
-      .filter((p) => normalizar(p.titulo).includes(termo) || normalizar(p.letra).includes(termo))
+      .filter((p) => semAcento(p.titulo).includes(termo) || semAcento(p.letra).includes(termo))
       .slice(0, 60);
   }, [busca, dados.pontos]);
 

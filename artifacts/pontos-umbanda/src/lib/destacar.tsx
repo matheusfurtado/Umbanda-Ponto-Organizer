@@ -31,6 +31,18 @@ function dobrar(texto: string): string {
   return saida;
 }
 
+/**
+ * Versão sem acento e em minúsculas, para COMPARAR texto.
+ *
+ * Exportada de propósito, e é a mesma função que o destaque usa por dentro.
+ * As telas de busca tinham cada uma o seu `normalizar` — três implementações da
+ * mesma regra, já escritas de formas diferentes. Quando a busca dobra o acento
+ * de um jeito e o destaque de outro, o resultado aparece na lista mas o trecho
+ * não fica marcado, ou fica marcado no lugar errado.
+ *
+ * Usar a MESMA função torna a divergência impossível por construção, o que vale
+ * mais que um teste conferindo que duas implementações concordam.
+ */
 export function semAcento(texto: string): string {
   return dobrar(texto);
 }
