@@ -10,6 +10,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CapaGira } from "@/componentes/CapaGira";
+import { PublicarGira } from "@/componentes/PublicarGira";
 import type { ItemEnviado } from "@/api/repertorio";
 import { Link } from "wouter";
 import {
@@ -23,6 +24,8 @@ import {
   Trash2,
   UploadCloud,
   Tag,
+  Globe,
+  Lock,
   Youtube,
 } from "lucide-react";
 import {
@@ -291,6 +294,7 @@ export function TelaRepertorios() {
   const [motivoFonte, setMotivoFonte] = useState<string | undefined>();
   const [sincronia, setSincronia] = useState<EstadoSincronia>({ enviando: false, pendentes: 0 });
   const [editandoSecao, setEditandoSecao] = useState<number | null>(null);
+  const [publicando, setPublicando] = useState<Repertorio | null>(null);
   const [textoSecao, setTextoSecao] = useState("");
 
   const carregar = useCallback(async () => {
@@ -364,6 +368,21 @@ export function TelaRepertorios() {
                   <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" aria-hidden />
                 )}
               </div>
+              {/* O estado atual é o próprio botão: ver "Só minha" e poder
+                  clicar ali é mais direto que um interruptor separado com um
+                  rótulo explicando o que ele faz. */}
+              <button
+                onClick={() => setPublicando(aberto)}
+                className={`mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition ${
+                  aberto.publico
+                    ? "bg-primary/15 text-primary hover:bg-primary/25"
+                    : "bg-muted text-muted-foreground hover:bg-accent"
+                }`}
+              >
+                {aberto.publico
+                  ? <><Globe className="h-3.5 w-3.5" /> Pública</>
+                  : <><Lock className="h-3.5 w-3.5" /> Só minha</>}
+              </button>
             </div>
           </div>
           <p className="mb-4 text-sm text-muted-foreground">
@@ -376,6 +395,18 @@ export function TelaRepertorios() {
             })()}
             {" · arraste para mudar a ordem"}
           </p>
+
+          <PublicarGira
+            gira={publicando}
+            onFechar={() => setPublicando(null)}
+            onMudou={(r) => {
+              const atualizada = (lista ?? []).map((x) =>
+                x.id === r.id ? { ...x, publico: r.publico } : x);
+              setLista(atualizada);
+              guardar(atualizada);
+              setAberto({ ...aberto, publico: r.publico });
+            }}
+          />
 
           <FaixaSincronia fonte={fonte} motivo={motivoFonte} sincronia={sincronia} />
 

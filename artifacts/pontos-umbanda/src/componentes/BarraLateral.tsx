@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Search, ListMusic, Plus, Palette, Send, ShieldCheck, Sparkles } from "lucide-react";
+import { Home, Search, ListMusic, Plus, Palette, Send, ShieldCheck, Sparkles, Globe } from "lucide-react";
 import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { useAuth } from "@/auth/AuthContext";
@@ -41,6 +41,9 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
 
       <Link href="/novidades" className={item(local === "/novidades")}>
         <Sparkles className="h-4 w-4" aria-hidden /> Novos do mês
+      </Link>
+      <Link href="/giras-publicas" className={item(local.startsWith("/giras-publicas"))}>
+        <Globe className="h-4 w-4" aria-hidden /> Giras da comunidade
       </Link>
 
       {/* Contribuir exige CONTA, não plano: o acervo cresce por quem canta, e

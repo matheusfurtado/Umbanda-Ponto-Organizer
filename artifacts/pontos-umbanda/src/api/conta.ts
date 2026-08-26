@@ -15,6 +15,10 @@ export interface Usuario {
   /** Modera o que a comunidade envia. Só decide se o LINK aparece — a
    *  proteção de verdade está na rota, que responde 404 a quem não for. */
   admin?: boolean;
+  /** Como a pessoa aparece para OUTRAS. Nulo até ela escolher — e sem ele o
+   *  servidor recusa publicar gira, porque o rótulo alternativo seria o
+   *  e-mail, e e-mail ao lado de pontos de Umbanda publica a religião dela. */
+  apelido?: string | null;
   consentiu_dado_religioso_em: string | null;
   consentiu_comunicacao_em: string | null;
   criado_em: string;
@@ -136,4 +140,23 @@ export function confirmarEmail(token: string): Promise<Usuario | null> {
     method: "POST",
     body: JSON.stringify({ token }),
   });
+}
+
+
+/**
+ * Escolher como aparecer para outras pessoas.
+ *
+ * Existe por causa das giras públicas: sem apelido, publicar exporia o e-mail
+ * junto de uma lista de pontos de Umbanda — identidade mais convicção
+ * religiosa. Continua opcional para quem nunca publica nada.
+ */
+export async function escolherApelido(apelido: string): Promise<Usuario> {
+  const r = await fetch("/api/v1/auth/apelido", {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ apelido }),
+  });
+  if (r.status === 409) throw new Error("Este apelido já está em uso.");
+  if (!r.ok) throw new Error("Não consegui salvar o apelido.");
+  return (await r.json()) as Usuario;
 }

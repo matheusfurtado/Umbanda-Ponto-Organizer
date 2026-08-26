@@ -20,6 +20,8 @@ import { TelaEnviarPonto } from "@/pages/TelaEnviarPonto";
 import { TelaMeusEnvios } from "@/pages/TelaMeusEnvios";
 import { TelaModeracao } from "@/pages/TelaModeracao";
 import { TelaNovidades } from "@/pages/TelaNovidades";
+import { TelaGirasPublicas } from "@/pages/TelaGirasPublicas";
+import { TelaGiraPublica } from "@/pages/TelaGiraPublica";
 import { TelaLogin } from "@/pages/TelaLogin";
 import { TelaRecuperar } from "@/pages/TelaRecuperar";
 import { TelaRedefinir } from "@/pages/TelaRedefinir";
@@ -158,6 +160,15 @@ function App() {
                   </Route>
                   <Route path="/novidades">
                     <TelaNovidades />
+                  </Route>
+                  {/* Sem RotaProtegida de propósito: a vitrine e o link de uma
+                      gira precisam abrir para quem NÃO tem conta — é por eles
+                      que o app circula no boca a boca do terreiro. */}
+                  <Route path="/giras-publicas">
+                    <TelaGirasPublicas />
+                  </Route>
+                  <Route path="/gira/:id">
+                    <TelaGiraPublica />
                   </Route>
                   <Route path="/enviar-ponto">
                     <RotaProtegida>

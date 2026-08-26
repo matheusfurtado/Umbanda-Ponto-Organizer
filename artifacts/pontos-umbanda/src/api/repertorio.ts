@@ -28,6 +28,17 @@ export interface Repertorio {
   id: string;
   nome: string;
   ordem: number;
+  /** Visível para outras pessoas. Falso por padrão, sempre. */
+  publico?: boolean;
+  itens: ItemRepertorio[];
+}
+
+/** Uma gira vista por OUTRA pessoa. `de` é o apelido — nunca o e-mail. */
+export interface GiraPublica {
+  id: string;
+  nome: string;
+  publico: boolean;
+  de: string;
   itens: ItemRepertorio[];
 }
 
@@ -104,4 +115,36 @@ export function definirItens(id: string, itens: ItemEnviado[]): Promise<Repertor
 
 export async function apagar(id: string): Promise<void> {
   await chamar(`/${id}`, { method: "DELETE" });
+}
+
+
+/**
+ * Publicar ou despublicar.
+ *
+ * Manda `publico` EXPLÍCITO junto do nome porque o servidor só mexe na
+ * visibilidade quando o campo vem — é o que impede uma renomeação de publicar
+ * sem querer.
+ */
+export function definirVisibilidade(
+  r: Repertorio,
+  publico: boolean,
+): Promise<Repertorio> {
+  return chamar<Repertorio>(`/${r.id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ nome: r.nome, ordem: r.ordem, publico }),
+  }) as Promise<Repertorio>;
+}
+
+/** A vitrine. Não exige conta: é por aqui que o app circula no boca a boca. */
+export async function publicas(): Promise<GiraPublica[]> {
+  const r = await fetch(`${BASE}/publicos`);
+  if (!r.ok) throw new Error("Não consegui carregar as giras públicas.");
+  return (await r.json()) as GiraPublica[];
+}
+
+export async function giraPublica(id: string): Promise<GiraPublica> {
+  const r = await fetch(`${BASE}/publicos/${id}`);
+  if (r.status === 404) throw new Error("Esta gira não existe ou não é pública.");
+  if (!r.ok) throw new Error("Não consegui carregar a gira.");
+  return (await r.json()) as GiraPublica;
 }
