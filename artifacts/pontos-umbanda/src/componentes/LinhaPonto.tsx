@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Star, Youtube, AlertTriangle, Plus } from "lucide-react";
+import { ChevronDown, Star, Youtube, AlertTriangle, Plus, UserPen, Clock } from "lucide-react";
 import { useApp } from "@/context";
 import { destacar } from "@/lib/destacar";
 import type { Ponto } from "@/types";
@@ -28,11 +28,13 @@ export function LinhaPonto({
   indice,
   busca = "",
   onAdicionar,
+  onSugerirAutor,
 }: {
   ponto: Ponto;
   indice: number;
   busca?: string;
   onAdicionar?: (p: Ponto) => void;
+  onSugerirAutor?: (p: Ponto) => void;
 }) {
   const [aberto, setAberto] = useState(false);
   const { toggleFavorito } = useApp();
@@ -54,8 +56,13 @@ export function LinhaPonto({
           className="min-w-0 flex-1 text-left"
           aria-expanded={aberto}
         >
-          <span className="block truncate text-sm font-medium text-foreground">
-            {destacar(ponto.titulo, busca)}
+          <span className="flex items-center gap-1.5 truncate text-sm font-medium text-foreground">
+            {ponto.emAprovacao && (
+              // Sem a marca, quem enviou acha que já está no acervo de todos e
+              // estranha quando ninguém mais encontra.
+              <Clock className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-label="Em aprovação" />
+            )}
+            <span className="truncate">{destacar(ponto.titulo, busca)}</span>
           </span>
           {/* Só quando há o que dizer. Um "—" em 520 linhas é ruído em toda
               a lista, e sugere lacuna a preencher onde não há: no plano
@@ -83,6 +90,17 @@ export function LinhaPonto({
               className="rounded-md p-2 text-muted-foreground opacity-0 transition hover:bg-accent hover:text-foreground focus:opacity-100 group-hover:opacity-100"
             >
               <Plus className="h-4 w-4" />
+            </button>
+          )}
+
+          {onSugerirAutor && !ponto.emAprovacao && (
+            <button
+              onClick={() => onSugerirAutor(ponto)}
+              title={ponto.autor ? "Corrigir o autor" : "Sugerir o autor"}
+              aria-label={`Sugerir o autor de ${ponto.titulo}`}
+              className="rounded-md p-2 text-muted-foreground opacity-0 transition hover:bg-accent hover:text-foreground focus:opacity-100 group-hover:opacity-100"
+            >
+              <UserPen className="h-4 w-4" />
             </button>
           )}
 

@@ -43,9 +43,11 @@ function CardOrixa({ orixa, quantos, onClick }: {
 export function TelaInicio({
   onAbrirOrixa,
   onAdicionar,
+  onSugerirAutor,
 }: {
   onAbrirOrixa: (o: Orixa) => void;
   onAdicionar?: (p: Ponto) => void;
+  onSugerirAutor?: (p: Ponto) => void;
 }) {
   const { dados, estado } = useApp();
   const { ent } = useEntitlements();
@@ -112,7 +114,7 @@ export function TelaInicio({
               : `${achados.length} ${achados.length === 1 ? "ponto" : "pontos"}`}
           </p>
           {achados.map((p, i) => (
-            <LinhaPonto key={p.id} ponto={p} indice={i + 1} busca={busca} onAdicionar={onAdicionar} />
+            <LinhaPonto key={p.id} ponto={p} indice={i + 1} busca={busca} onAdicionar={onAdicionar} onSugerirAutor={onSugerirAutor} />
           ))}
         </section>
       ) : (
@@ -124,7 +126,7 @@ export function TelaInicio({
                 Seus favoritos
               </h2>
               {favoritos.slice(0, 8).map((p, i) => (
-                <LinhaPonto key={p.id} ponto={p} indice={i + 1} onAdicionar={onAdicionar} />
+                <LinhaPonto key={p.id} ponto={p} indice={i + 1} onAdicionar={onAdicionar} onSugerirAutor={onSugerirAutor} />
               ))}
             </section>
           )}

@@ -1,7 +1,8 @@
 import { Link, useLocation } from "wouter";
-import { Home, Search, ListMusic, Plus, Palette } from "lucide-react";
+import { Home, Search, ListMusic, Plus, Palette, Send, ShieldCheck, Sparkles } from "lucide-react";
 import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
+import { useAuth } from "@/auth/AuthContext";
 
 /**
  * A navegação fixa — sempre visível no desktop.
@@ -20,6 +21,7 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
   const [local] = useLocation();
   const { dados } = useApp();
   const { ent } = useEntitlements();
+  const { autenticado, user } = useAuth();
 
   const item = (ativo: boolean) =>
     `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
@@ -36,6 +38,33 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
       <Link href="/buscar" className={item(local === "/buscar")}>
         <Search className="h-4 w-4" aria-hidden /> Buscar
       </Link>
+
+      <Link href="/novidades" className={item(local === "/novidades")}>
+        <Sparkles className="h-4 w-4" aria-hidden /> Novos do mês
+      </Link>
+
+      {/* Contribuir exige CONTA, não plano: o acervo cresce por quem canta, e
+          cobrar para contribuir afastaria quem tem ponto para dar. */}
+      {autenticado && (
+        <div className="mt-4 border-t pt-4">
+          <span className="mb-2 block px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Comunidade
+          </span>
+          <Link href="/enviar-ponto" className={item(local === "/enviar-ponto")}>
+            <Send className="h-4 w-4" aria-hidden /> Enviar um ponto
+          </Link>
+          <Link href="/meus-envios" className={item(local === "/meus-envios")}>
+            <ListMusic className="h-4 w-4" aria-hidden /> Meus envios
+          </Link>
+          {/* O link só aparece para admin por conveniência. A defesa está na
+              rota, que responde 404 a quem não for. */}
+          {user?.admin && (
+            <Link href="/moderacao" className={item(local === "/moderacao")}>
+              <ShieldCheck className="h-4 w-4" aria-hidden /> Moderação
+            </Link>
+          )}
+        </div>
+      )}
 
       <div className="mt-4 border-t pt-4">
         <div className="mb-2 flex items-center justify-between px-3">

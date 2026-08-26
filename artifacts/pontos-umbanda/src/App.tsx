@@ -15,6 +15,11 @@ import { BarraLateral } from "@/componentes/BarraLateral";
 import { BarraInferior } from "@/componentes/BarraInferior";
 import { EscolherPaleta } from "@/componentes/EscolherPaleta";
 import { AdicionarAGira } from "@/componentes/AdicionarAGira";
+import { SugerirAutor } from "@/componentes/SugerirAutor";
+import { TelaEnviarPonto } from "@/pages/TelaEnviarPonto";
+import { TelaMeusEnvios } from "@/pages/TelaMeusEnvios";
+import { TelaModeracao } from "@/pages/TelaModeracao";
+import { TelaNovidades } from "@/pages/TelaNovidades";
 import { TelaLogin } from "@/pages/TelaLogin";
 import { TelaRecuperar } from "@/pages/TelaRecuperar";
 import { TelaRedefinir } from "@/pages/TelaRedefinir";
@@ -30,12 +35,17 @@ const FLAG_MIGRACAO = "migracao-oferecida";
 function AppInner() {
   const [orixaAberto, setOrixaAberto] = useState<Orixa | null>(null);
   const [paraAdicionar, setParaAdicionar] = useState<Ponto | null>(null);
+  const [paraAutoria, setParaAutoria] = useState<Ponto | null>(null);
   const { ent } = useEntitlements();
+  const { autenticado } = useAuth();
 
   // O botão de adicionar só existe para quem tem repertório. Mostrá-lo a quem
   // não tem e abrir uma tela de "assine" seria vender empurrando: a pessoa
   // clica achando que vai fazer uma coisa e recebe outra.
   const adicionar = ent.repertorios ? setParaAdicionar : undefined;
+  // Sugerir autor não depende de plano — depende de ter conta, porque a
+  // sugestão precisa de um responsável.
+  const sugerir = autenticado ? setParaAutoria : undefined;
 
   // A MESMA navegação para quem paga e para quem não paga. A diferença aparece
   // DENTRO do orixá, sozinha: com subcategoria vira seções da gira, sem ela
@@ -49,11 +59,13 @@ function AppInner() {
           orixa={orixaAberto}
           onVoltar={() => setOrixaAberto(null)}
           onAdicionar={adicionar}
+          onSugerirAutor={sugerir}
         />
       ) : (
-        <TelaInicio onAbrirOrixa={setOrixaAberto} onAdicionar={adicionar} />
+        <TelaInicio onAbrirOrixa={setOrixaAberto} onAdicionar={adicionar} onSugerirAutor={sugerir} />
       )}
       <AdicionarAGira ponto={paraAdicionar} onFechar={() => setParaAdicionar(null)} />
+      <SugerirAutor ponto={paraAutoria} onFechar={() => setParaAutoria(null)} />
     </>
   );
 }
@@ -143,6 +155,26 @@ function App() {
                   </Route>
                   <Route path="/planos">
                     <TelaPlanos />
+                  </Route>
+                  <Route path="/novidades">
+                    <TelaNovidades />
+                  </Route>
+                  <Route path="/enviar-ponto">
+                    <RotaProtegida>
+                      <TelaEnviarPonto />
+                    </RotaProtegida>
+                  </Route>
+                  <Route path="/meus-envios">
+                    <RotaProtegida>
+                      <TelaMeusEnvios />
+                    </RotaProtegida>
+                  </Route>
+                  {/* Protegida só por login. Quem não é admin recebe 404 da
+                      API — a tela não decide isso sozinha. */}
+                  <Route path="/moderacao">
+                    <RotaProtegida>
+                      <TelaModeracao />
+                    </RotaProtegida>
                   </Route>
                   {/* Para onde o Mercado Pago devolve quem pagou. Protegida:
                       sem sessão não há o que confirmar, e a tela precisa

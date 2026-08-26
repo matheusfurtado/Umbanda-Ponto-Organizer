@@ -26,10 +26,12 @@ export function TelaOrixa({
   orixa,
   onVoltar,
   onAdicionar,
+  onSugerirAutor,
 }: {
   orixa: Orixa;
   onVoltar: () => void;
   onAdicionar?: (p: Ponto) => void;
+  onSugerirAutor?: (p: Ponto) => void;
 }) {
   const { dados } = useApp();
   const { ent } = useEntitlements();
@@ -141,7 +143,7 @@ export function TelaOrixa({
               {sub.nome}
             </h2>
             {pontos.map((p) => (
-              <LinhaPonto key={p.id} ponto={p} indice={++n} busca={busca} onAdicionar={onAdicionar} />
+              <LinhaPonto key={p.id} ponto={p} indice={++n} busca={busca} onAdicionar={onAdicionar} onSugerirAutor={onSugerirAutor} />
             ))}
           </section>
         ))}
@@ -154,7 +156,7 @@ export function TelaOrixa({
               </h2>
             )}
             {soltos.map((p) => (
-              <LinhaPonto key={p.id} ponto={p} indice={++n} busca={busca} onAdicionar={onAdicionar} />
+              <LinhaPonto key={p.id} ponto={p} indice={++n} busca={busca} onAdicionar={onAdicionar} onSugerirAutor={onSugerirAutor} />
             ))}
           </section>
         )}

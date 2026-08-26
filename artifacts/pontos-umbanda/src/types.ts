@@ -10,6 +10,8 @@ export interface Ponto {
   // não tem autoria conhecida. Quem souber preenche; palpite seria atribuição
   // falsa de obra religiosa.
   autor?: string | null;
+  /** Enviado por mim e ainda esperando revisão. Só eu vejo. */
+  emAprovacao?: boolean;
   letra: string;
   favorito: boolean;
   ordem: number;

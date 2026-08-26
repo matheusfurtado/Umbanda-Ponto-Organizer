@@ -12,6 +12,9 @@ export interface Usuario {
   id: string;
   email: string;
   email_verificado: boolean;
+  /** Modera o que a comunidade envia. Só decide se o LINK aparece — a
+   *  proteção de verdade está na rota, que responde 404 a quem não for. */
+  admin?: boolean;
   consentiu_dado_religioso_em: string | null;
   consentiu_comunicacao_em: string | null;
   criado_em: string;
