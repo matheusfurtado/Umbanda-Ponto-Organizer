@@ -56,6 +56,8 @@ export function enviarPonto(dados: {
   letra: string;
   orixaId: string;
   autor?: string | null;
+  /** Link do YouTube, se quem manda souber qual é a gravação. */
+  videoUrl?: string | null;
 }): Promise<Submissao> {
   return chamar<Submissao>("/submissoes/ponto", {
     method: "POST",

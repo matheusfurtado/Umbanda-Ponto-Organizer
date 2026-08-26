@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, Search, X, Lock } from "lucide-react";
+import { ArrowLeft, Search, X, Lock, Sparkles } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/context";
@@ -46,6 +46,20 @@ export function TelaOrixa({
     const ids = new Set(subs.map((s) => s.id));
     return dados.pontos.filter((p) => p.orixaId === orixa.id || ids.has(p.subcategoriaId));
   }, [dados.pontos, subs, orixa.id]);
+
+  // Os que a comunidade acrescentou há pouco.
+  //
+  // Eles JÁ estão na lista abaixo, na seção "Enviados pela comunidade" — que é
+  // a última do orixá, depois de dezenas de pontos. Quem enviou não achava o
+  // próprio ponto. Este atalho no topo resolve sem mexer na ordem da gira, que
+  // é conteúdo litúrgico e não pode ser reorganizada por conveniência.
+  const novos = useMemo(
+    () => meus.filter((p) => {
+      if (!p.aprovadoEm) return false;
+      return Date.now() - p.aprovadoEm < 30 * 24 * 60 * 60 * 1000;
+    }),
+    [meus],
+  );
 
   const filtrados = useMemo<Ponto[]>(() => {
     const termo = semAcento(busca.trim());
@@ -130,6 +144,23 @@ export function TelaOrixa({
             </button>
           )}
         </div>
+
+        {!busca && novos.length > 0 && (
+          <section className="mb-6 rounded-xl border border-primary/25 bg-primary/[0.04] p-3">
+            <h2 className="mb-1 flex items-center gap-1.5 px-1 text-sm font-semibold text-foreground">
+              <Sparkles className="h-4 w-4 text-primary" aria-hidden />
+              Novos em {orixa.nome}
+            </h2>
+            <p className="mb-2 px-1 text-xs text-muted-foreground">
+              Acrescentados pela comunidade nos últimos 30 dias. Também estão na
+              sequência abaixo.
+            </p>
+            {novos.map((p, i) => (
+              <LinhaPonto key={`novo-${p.id}`} ponto={p} indice={i + 1}
+                          onAdicionar={onAdicionar} onSugerirAutor={onSugerirAutor} />
+            ))}
+          </section>
+        )}
 
         {filtrados.length === 0 && (
           <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">

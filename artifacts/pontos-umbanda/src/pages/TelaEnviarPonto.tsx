@@ -27,6 +27,7 @@ export function TelaEnviarPonto() {
   const [letra, setLetra] = useState("");
   const [autor, setAutor] = useState("");
   const [orixaId, setOrixaId] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [pronto, setPronto] = useState(false);
@@ -41,6 +42,7 @@ export function TelaEnviarPonto() {
         letra,
         orixaId,
         autor: autor.trim() || null,
+        videoUrl: videoUrl.trim() || null,
       });
       setPronto(true);
     } catch (problema) {
@@ -62,7 +64,7 @@ export function TelaEnviarPonto() {
           que alguém revisar, entra para todo mundo.
         </p>
         <div className="mt-8 flex flex-col gap-2">
-          <Button onClick={() => { setPronto(false); setTitulo(""); setLetra(""); setAutor(""); }}>
+          <Button onClick={() => { setPronto(false); setTitulo(""); setLetra(""); setAutor(""); setVideoUrl(""); }}>
             Enviar outro
           </Button>
           <Link href="/meus-envios">
@@ -121,6 +123,25 @@ export function TelaEnviarPonto() {
             onChange={(e) => setAutor(e.target.value)}
             placeholder="Deixe em branco se for de domínio popular"
           />
+        </div>
+
+        <div>
+          <Label htmlFor="video-novo" className="mb-1 block text-sm text-muted-foreground">
+            Vídeo no YouTube <span className="text-xs">(se você souber qual é)</span>
+          </Label>
+          <Input
+            id="video-novo"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            placeholder="https://youtube.com/watch?v=..."
+          />
+          {/* Vale mais que o nosso casamento automático: quem canta o ponto
+              sabe qual gravação é. Por isso entra com confiança máxima quando
+              aprovado, e não com o aviso de "vídeo provável". */}
+          <p className="mt-1 text-xs text-muted-foreground">
+            Se você indicar, o link entra como confirmado — vale mais que o
+            vídeo que a gente acha sozinho.
+          </p>
         </div>
 
         <div>
