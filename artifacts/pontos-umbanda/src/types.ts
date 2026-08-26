@@ -12,6 +12,9 @@ export interface Ponto {
   autor?: string | null;
   /** Enviado por mim e ainda esperando revisão. Só eu vejo. */
   emAprovacao?: boolean;
+  /** Quando entrou no acervo por aprovação da comunidade (ms). Nulo no acervo
+   *  original — é o que permite marcar "novo" sem inventar uma lista à parte. */
+  aprovadoEm?: number | null;
   letra: string;
   favorito: boolean;
   ordem: number;

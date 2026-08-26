@@ -23,6 +23,20 @@ import type { Ponto } from "@/types";
  * cara de acerto é o tipo de mentira que aparece na pior hora: a pessoa aperta
  * play no meio da gira e toca outra música. Por isso o ícone e a cor mudam.
  */
+/**
+ * Quanto tempo um ponto continua sendo "novo".
+ *
+ * Trinta dias, decidido no CLIENTE de propósito: o que conta como recente é
+ * apresentação, e mudar isso não deveria exigir mexer no servidor nem uma
+ * migration.
+ */
+const DIAS_DE_NOVIDADE = 30;
+
+function eNovo(aprovadoEm?: number | null): boolean {
+  if (!aprovadoEm) return false;
+  return Date.now() - aprovadoEm < DIAS_DE_NOVIDADE * 24 * 60 * 60 * 1000;
+}
+
 export function LinhaPonto({
   ponto,
   indice,
@@ -63,6 +77,14 @@ export function LinhaPonto({
               <Clock className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-label="Em aprovação" />
             )}
             <span className="truncate">{destacar(ponto.titulo, busca)}</span>
+            {eNovo(ponto.aprovadoEm) && (
+              // Fica DENTRO do orixá, junto do ponto — a lista "Novos do mês"
+              // sozinha não resolve: quem procura ponto de Ogum está em Ogum, e
+              // é ali que precisa notar que apareceu coisa nova.
+              <span className="shrink-0 rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                novo
+              </span>
+            )}
           </span>
           {/* Só quando há o que dizer. Um "—" em 520 linhas é ruído em toda
               a lista, e sugere lacuna a preencher onde não há: no plano
