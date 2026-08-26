@@ -20,6 +20,14 @@ export interface Ponto {
    * aqui significa "não há a quem creditar", nunca "creditar de outro jeito".
    */
   enviadoPor?: string | null;
+  /**
+   * De qual ponto canônico esta linha é cópia.
+   *
+   * Quem organiza o acervo ganha uma cópia inteira, com ids próprios. É este
+   * campo que permite reconhecer que a cópia e o ponto de "Novos do mês" são o
+   * mesmo ponto — sem ele, favoritar de lá não marcava nada.
+   */
+  origemId?: string | null;
   /** Quando entrou no acervo por aprovação da comunidade (ms). Nulo no acervo
    *  original — é o que permite marcar "novo" sem inventar uma lista à parte. */
   aprovadoEm?: number | null;

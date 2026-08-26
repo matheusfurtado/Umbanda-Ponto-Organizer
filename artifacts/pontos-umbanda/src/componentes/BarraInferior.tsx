@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Search, ListMusic, Palette } from "lucide-react";
+import { Home, Search, ListMusic, Palette, Star } from "lucide-react";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 
 /**
@@ -25,6 +25,11 @@ export function BarraInferior({ onTrocarPaleta }: { onTrocarPaleta: () => void }
       </Link>
       <Link href="/buscar" className={item(local === "/buscar")}>
         <Search className="h-5 w-5" aria-hidden /> Buscar
+      </Link>
+      {/* No celular a estrela é ainda mais importante: é o atalho de quem está
+          no meio da gira e precisa do ponto que já separou. */}
+      <Link href="/favoritos" className={item(local === "/favoritos")}>
+        <Star className="h-5 w-5" aria-hidden /> Favoritos
       </Link>
       <Link
         href={ent.repertorios ? "/repertorios" : "/planos"}

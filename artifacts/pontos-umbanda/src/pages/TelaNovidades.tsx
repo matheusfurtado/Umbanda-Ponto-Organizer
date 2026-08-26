@@ -3,6 +3,7 @@ import { Sparkles } from "lucide-react";
 import { Capa } from "@/componentes/Capa";
 import { LinhaPonto } from "@/componentes/LinhaPonto";
 import { useAcoesDePonto } from "@/componentes/AcoesDePonto";
+import { useApp } from "@/context";
 import type { Ponto } from "@/types";
 
 /**
@@ -39,6 +40,25 @@ export function TelaNovidades() {
   const [linhas, setLinhas] = useState<Array<{ ponto: Ponto; orixa: OrixaDaNovidade }> | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const { adicionar, sugerir, modais } = useAcoesDePonto();
+  const { dados } = useApp();
+
+  // O favorito NÃO vem desta rota — ele é do acervo, e mora no contexto.
+  //
+  // Estes pontos são objetos novos, montados a partir do JSON de `/novidades`.
+  // Enquanto `favorito` vinha `false` fixo, clicar na estrela marcava de
+  // verdade no acervo e a estrela continuava vazia na tela: o botão parecia
+  // não funcionar justamente onde a pessoa acabou de descobrir o ponto.
+  const favoritos = useMemo(
+    () =>
+      new Set(
+        dados.pontos
+          .filter((p) => p.favorito)
+          // Os DOIS ids: quem organizou o acervo tem cópia com id próprio, e
+          // esta lista fala no id canônico.
+          .flatMap((p) => [p.id, p.origemId ?? ""]),
+      ),
+    [dados.pontos],
+  );
 
   useEffect(() => {
     fetch("/api/v1/novidades")
@@ -64,7 +84,7 @@ export function TelaNovidades() {
                 autor: (p.autor as string | null) ?? null,
                 aprovadoEm: p.aprovado_em ? Date.parse(String(p.aprovado_em)) : null,
                 enviadoPor: (p.enviado_por as string | null) ?? null,
-                favorito: false,
+                favorito: false, // resolvido na renderização, a partir do acervo
                 ordem: Number(p.ordem ?? 0),
                 criadoEm: 0,
                 // O vídeo vem do servidor já respeitando o plano: sem plano ele
@@ -138,7 +158,7 @@ export function TelaNovidades() {
             {pontos.map((p, i) => (
               <LinhaPonto
                 key={p.id}
-                ponto={p}
+                ponto={{ ...p, favorito: favoritos.has(p.id) }}
                 indice={i + 1}
                 onAdicionar={adicionar}
                 onSugerirAutor={sugerir}

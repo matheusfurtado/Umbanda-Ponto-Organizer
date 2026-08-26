@@ -11,8 +11,34 @@
  *   terreiro  terra, ocre e dourado. O vocabulário visual da casa.
  *   mata      verde de folha e ouro velho. Ervas, defumação, linha de Oxóssi.
  *   claro     claro de verdade, para quem usa no sol ou tem baixa visão.
+ *
+ * ## Por que `:root[data-paleta=...]` e não só `[data-paleta=...]`
+ *
+ * `:root` e `[data-paleta="x"]` têm a MESMA especificidade (0,1,0), então quem
+ * vence é quem vier depois. Como este arquivo entra por `@import` no topo do
+ * `index.css`, o `:root` de lá vinha depois e ganhava sempre — trocar a paleta
+ * não mudava absolutamente nada, em nenhuma das quatro. Com `:root` na frente a
+ * especificidade sobe para (0,2,0) e a paleta vence independentemente da ordem
+ * de importação, que é o tipo de coisa que muda sozinha quando alguém mexe no
+ * build.
+ *
+ * O seletor SEM `:root` continua na lista, e não é redundância: as amostras do
+ * seletor de aparência são botões com `data-paleta` próprio, desenhados com as
+ * cores REAIS de cada paleta. Só com `:root` eles paravam de casar e as quatro
+ * amostras passavam a mostrar a cor atual — quatro quadrados idênticos, que é
+ * pior que amostra nenhuma porque mente sobre o resultado.
+ *
+ * Num botão aninhado o valor concorrente é HERDADO, e valor declarado sempre
+ * vence herdado — por isso ali (0,1,0) basta.
+ *
+ * ## Todo token que `:root` define precisa estar nas QUATRO
+ *
+ * Faltavam os `--sidebar*` — e a barra lateral é a maior área da tela. Mesmo
+ * com a cascata certa, ela seguiria roxa no Terreiro e no Mata, e a troca
+ * pareceria meio quebrada em vez de errada, que é pior de diagnosticar.
  */
 
+:root[data-paleta="noite"],
 [data-paleta="noite"] {
   --background: 252 30% 8%;
   --foreground: 260 20% 92%;
@@ -33,8 +59,19 @@
   --accent-foreground: 260 20% 90%;
   --input: 255 20% 22%;
   --ring: 270 70% 60%;
+  --destructive: 0 75% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --sidebar: 252 30% 7%;
+  --sidebar-foreground: 260 20% 92%;
+  --sidebar-border: 255 20% 16%;
+  --sidebar-primary: 270 70% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 255 20% 18%;
+  --sidebar-accent-foreground: 260 20% 92%;
+  --sidebar-ring: 270 70% 60%;
 }
 
+:root[data-paleta="terreiro"],
 [data-paleta="terreiro"] {
   --background: 24 18% 9%;
   --foreground: 36 30% 92%;
@@ -55,8 +92,19 @@
   --accent-foreground: 36 30% 90%;
   --input: 28 16% 24%;
   --ring: 38 78% 55%;
+  --destructive: 4 70% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --sidebar: 24 20% 7%;
+  --sidebar-foreground: 36 30% 92%;
+  --sidebar-border: 28 16% 17%;
+  --sidebar-primary: 38 78% 55%;
+  --sidebar-primary-foreground: 24 30% 10%;
+  --sidebar-accent: 28 18% 19%;
+  --sidebar-accent-foreground: 36 30% 92%;
+  --sidebar-ring: 38 78% 55%;
 }
 
+:root[data-paleta="mata"],
 [data-paleta="mata"] {
   --background: 150 20% 7%;
   --foreground: 90 18% 92%;
@@ -77,8 +125,19 @@
   --accent-foreground: 90 18% 90%;
   --input: 150 16% 22%;
   --ring: 88 52% 52%;
+  --destructive: 8 68% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --sidebar: 150 22% 6%;
+  --sidebar-foreground: 90 18% 92%;
+  --sidebar-border: 150 16% 15%;
+  --sidebar-primary: 88 52% 52%;
+  --sidebar-primary-foreground: 150 30% 8%;
+  --sidebar-accent: 150 16% 17%;
+  --sidebar-accent-foreground: 90 18% 92%;
+  --sidebar-ring: 88 52% 52%;
 }
 
+:root[data-paleta="claro"],
 [data-paleta="claro"] {
   --background: 40 30% 97%;
   --foreground: 250 25% 14%;
@@ -102,4 +161,16 @@
   /* No claro a borda dos botões precisa ESCURECER, não clarear: com o valor do
      tema escuro ela some no branco e todo botão fica sem contorno. */
   --opaque-button-border-intensity: -12;
+  --destructive: 0 70% 45%;
+  --destructive-foreground: 0 0% 100%;
+  /* A barra é um degrau MAIS ESCURA que o fundo, não mais clara: no claro é a
+     única forma de ela se separar da página sem virar um bloco branco solto. */
+  --sidebar: 40 24% 93%;
+  --sidebar-foreground: 250 25% 14%;
+  --sidebar-border: 40 16% 84%;
+  --sidebar-primary: 268 62% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 40 22% 87%;
+  --sidebar-accent-foreground: 250 22% 18%;
+  --sidebar-ring: 268 62% 48%;
 }

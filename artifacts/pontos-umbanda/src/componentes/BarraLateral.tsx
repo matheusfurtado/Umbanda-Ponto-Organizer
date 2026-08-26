@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Search, ListMusic, Plus, Palette, Send, ShieldCheck, Sparkles, Globe } from "lucide-react";
+import { Home, Search, ListMusic, Plus, Palette, Send, ShieldCheck, Sparkles, Globe, Star } from "lucide-react";
 import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { useAuth } from "@/auth/AuthContext";
@@ -20,6 +20,7 @@ import { useAuth } from "@/auth/AuthContext";
 export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void }) {
   const [local] = useLocation();
   const { dados } = useApp();
+  const favoritos = dados.pontos.filter((p) => p.favorito).length;
   const { ent } = useEntitlements();
   const { autenticado, user } = useAuth();
 
@@ -37,6 +38,17 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
       </Link>
       <Link href="/buscar" className={item(local === "/buscar")}>
         <Search className="h-4 w-4" aria-hidden /> Buscar
+      </Link>
+
+      {/* A estrela precisava levar a algum lugar. Ela aparecia em toda linha de
+          ponto e o único lugar que mostrava o resultado era uma seção do
+          Início, com no máximo oito e escondida quando vazia — então quem
+          favoritava de dentro de um orixá não via nada acontecer. */}
+      <Link href="/favoritos" className={item(local === "/favoritos")}>
+        <Star className="h-4 w-4" aria-hidden /> Favoritos
+        {favoritos > 0 && (
+          <span className="ml-auto text-xs tabular-nums text-muted-foreground">{favoritos}</span>
+        )}
       </Link>
 
       <Link href="/novidades" className={item(local === "/novidades")}>

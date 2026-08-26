@@ -25,6 +25,7 @@ import { TelaRecuperar } from "@/pages/TelaRecuperar";
 import { TelaRedefinir } from "@/pages/TelaRedefinir";
 import { TelaVerificar } from "@/pages/TelaVerificar";
 import { TelaConta } from "@/pages/TelaConta";
+import { TelaFavoritos } from "@/pages/TelaFavoritos";
 import { TelaPlanos } from "@/pages/TelaPlanos";
 import { TelaRetornoPagamento } from "@/pages/TelaRetornoPagamento";
 import { TelaRepertorios } from "@/pages/TelaRepertorios";
@@ -143,6 +144,9 @@ function App() {
                   </Route>
                   <Route path="/planos">
                     <TelaPlanos />
+                  </Route>
+                  <Route path="/favoritos">
+                    <TelaFavoritos />
                   </Route>
                   <Route path="/novidades">
                     <TelaNovidades />

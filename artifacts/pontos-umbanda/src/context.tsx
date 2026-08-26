@@ -255,8 +255,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const toggleFavorito = useCallback(
     (id: string) => {
+      // Aceita o id da linha OU o do ponto canônico de onde ela veio.
+      //
+      // "Novos do mês" e as giras públicas falam em ids CANÔNICOS, porque vêm
+      // de rotas que não sabem de quem está pedindo. Quem organizou o acervo
+      // tem uma cópia com ids próprios — e a estrela clicada de lá não achava
+      // nada para marcar. Resolver aqui conserta todas as telas de uma vez, em
+      // vez de cada uma lembrar de traduzir o id.
+      const alvo = dados.pontos.find((p) => p.id === id || p.origemId === id);
+      if (!alvo) return;
       const pontos = dados.pontos.map((p) =>
-        p.id === id ? { ...p, favorito: !p.favorito } : p
+        p.id === alvo.id ? { ...p, favorito: !p.favorito } : p
       );
       atualizar({ ...dados, pontos });
     },

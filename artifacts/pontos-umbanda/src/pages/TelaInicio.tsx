@@ -124,6 +124,11 @@ export function TelaInicio({
               <h2 className="mb-2 flex items-center gap-2 px-2 text-lg font-bold text-foreground">
                 <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden />
                 Seus favoritos
+                {/* Só os oito primeiros cabem aqui. Sem esta saída, o nono
+                    favorito simplesmente desaparecia do app. */}
+                <Link href="/favoritos" className="ml-auto text-xs font-medium text-primary underline">
+                  {favoritos.length > 8 ? `ver todos os ${favoritos.length}` : "ver todos"}
+                </Link>
               </h2>
               {favoritos.slice(0, 8).map((p, i) => (
                 <LinhaPonto key={p.id} ponto={p} indice={i + 1} onAdicionar={onAdicionar} onSugerirAutor={onSugerirAutor} />
