@@ -11,6 +11,8 @@ import { ErroApi, ErroRede } from "./cliente";
 export interface ItemRepertorio {
   pontoId: string;
   ordem: number;
+  /** A parte da gira: "Chegada", "Louvação". Nulo = ponto solto. */
+  secao?: string | null;
   titulo: string | null;
   autor?: string | null;
   videoUrl: string | null;
@@ -84,10 +86,19 @@ export function renomear(id: string, nome: string, ordem = 0): Promise<Repertori
  * que precisa ser aplicada na ordem certa. Repetir o mesmo ponto é permitido —
  * abrir e fechar a gira com ele é comum.
  */
-export function definirItens(id: string, pontos: string[]): Promise<Repertorio> {
+export interface ItemEnviado {
+  pontoId: string;
+  secao?: string | null;
+}
+
+export function definirItens(id: string, itens: ItemEnviado[]): Promise<Repertorio> {
   return chamar<Repertorio>(`/${id}/itens`, {
     method: "PUT",
-    body: JSON.stringify({ pontos }),
+    // Manda no formato NOVO, com seção. O servidor ainda aceita o antigo
+    // (`{pontos: [...]}`) porque pode haver envio pendente guardado no
+    // aparelho, montado offline antes desta versão — recusá-lo perderia a
+    // gira de alguém sem aviso.
+    body: JSON.stringify({ itens }),
   }) as Promise<Repertorio>;
 }
 

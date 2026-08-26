@@ -10,6 +10,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CapaGira } from "@/componentes/CapaGira";
+import type { ItemEnviado } from "@/api/repertorio";
 import { Link } from "wouter";
 import {
   ArrowLeft,
@@ -21,6 +22,7 @@ import {
   Search,
   Trash2,
   UploadCloud,
+  Tag,
   Youtube,
 } from "lucide-react";
 import {
@@ -54,10 +56,12 @@ function ItemArrastavel({
   item,
   posicao,
   aoRemover,
+  aoMudarSecao,
 }: {
   item: ItemRepertorio;
   posicao: number;
   aoRemover: () => void;
+  aoMudarSecao?: () => void;
 }) {
   // A chave inclui a POSIÇÃO, não só o ponto: o mesmo ponto pode aparecer duas
   // vezes na gira (abrir e fechar com ele é comum), e chaves repetidas fariam
@@ -116,6 +120,16 @@ function ItemArrastavel({
         >
           <Youtube className="h-4 w-4" aria-hidden />
         </a>
+      )}
+      {aoMudarSecao && (
+        <button
+          onClick={aoMudarSecao}
+          aria-label={`Mudar a parte da gira de ${item.titulo ?? "ponto"}`}
+          title="Parte da gira"
+          className="min-h-11 shrink-0 px-2 text-muted-foreground hover:text-foreground"
+        >
+          <Tag className="h-4 w-4" aria-hidden />
+        </button>
       )}
       <button
         onClick={aoRemover}
@@ -273,6 +287,8 @@ export function TelaRepertorios() {
   const [fonte, setFonte] = useState<FonteRepertorios>("servidor");
   const [motivoFonte, setMotivoFonte] = useState<string | undefined>();
   const [sincronia, setSincronia] = useState<EstadoSincronia>({ enviando: false, pendentes: 0 });
+  const [editandoSecao, setEditandoSecao] = useState<number | null>(null);
+  const [textoSecao, setTextoSecao] = useState("");
 
   const carregar = useCallback(async () => {
     const r = await carregarRepertorios();
@@ -296,8 +312,8 @@ export function TelaRepertorios() {
    * síncrona, então a tela fica certa mesmo sem rede — que é o caso da gira. O
    * envio vai por fila e retoma sozinho quando a conexão volta.
    */
-  const salvarSequencia = (rep: Repertorio, pontos: string[]) => {
-    const atualizados = definirSequencia(rep.id, pontos);
+  const salvarSequencia = (rep: Repertorio, itens: ItemEnviado[]) => {
+    const atualizados = definirSequencia(rep.id, itens);
     setLista(atualizados);
     setAberto(atualizados.find((r) => r.id === rep.id) ?? rep);
   };
@@ -307,10 +323,12 @@ export function TelaRepertorios() {
     const ids = aberto.itens.map((i, n) => `${n}:${i.pontoId}`);
     const de = ids.indexOf(String(e.active.id));
     const para = ids.indexOf(String(e.over.id));
-    const pontos = aberto.itens.map((i) => i.pontoId);
-    const [movido] = pontos.splice(de, 1);
-    pontos.splice(para, 0, movido);
-    salvarSequencia(aberto, pontos);
+    // Move o ITEM inteiro, com a seção junto: mover só o id faria o ponto
+    // trocar de parte da gira ao ser arrastado, o que ninguém pediu.
+    const itens = aberto.itens.map((i) => ({ pontoId: i.pontoId, secao: i.secao ?? null }));
+    const [movido] = itens.splice(de, 1);
+    itens.splice(para, 0, movido);
+    salvarSequencia(aberto, itens);
   };
 
   // ------------------------------------------------------------------ detalhe
@@ -367,7 +385,12 @@ export function TelaRepertorios() {
           <div className="mb-4">
             <Adicionar
               aoEscolher={(pontoId) =>
-                salvarSequencia(aberto, [...aberto.itens.map((i) => i.pontoId), pontoId])
+                salvarSequencia(aberto, [
+                  ...aberto.itens.map((i) => ({ pontoId: i.pontoId, secao: i.secao ?? null })),
+                  // Entra solto: quem adiciona daqui está montando a lista, e
+                  // escolher a parte da gira é outro gesto.
+                  { pontoId, secao: null },
+                ])
               }
             />
           </div>
@@ -385,19 +408,82 @@ export function TelaRepertorios() {
                 strategy={verticalListSortingStrategy}
               >
                 <div className="space-y-2">
-                  {aberto.itens.map((item, n) => (
-                    <ItemArrastavel
-                      key={`${n}:${item.pontoId}`}
-                      item={completar(item, dados.pontos)}
-                      posicao={n}
-                      aoRemover={() =>
-                        salvarSequencia(
-                          aberto,
-                          aberto.itens.filter((_, i) => i !== n).map((i) => i.pontoId),
-                        )
-                      }
-                    />
-                  ))}
+                  {aberto.itens.map((item, n) => {
+                    // Cabeçalho quando a parte da gira MUDA. A lista continua
+                    // sendo uma só, arrastável de ponta a ponta: quebrar em
+                    // várias listas impediria mover um ponto de "Chegada" para
+                    // "Louvação" arrastando, que é o gesto óbvio.
+                    const anterior = n > 0 ? (aberto.itens[n - 1].secao ?? null) : undefined;
+                    const atual = item.secao ?? null;
+                    const abreSecao = n === 0 ? atual !== null : atual !== anterior;
+
+                    return (
+                      <div key={`${n}:${item.pontoId}`}>
+                        {abreSecao && (
+                          <h3 className="mb-1 mt-4 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground first:mt-0">
+                            {atual ?? "Sem parte"}
+                          </h3>
+                        )}
+                        {editandoSecao === n ? (
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              salvarSequencia(
+                                aberto,
+                                aberto.itens.map((i, idx) => ({
+                                  pontoId: i.pontoId,
+                                  secao: idx === n ? textoSecao.trim() || null : (i.secao ?? null),
+                                })),
+                              );
+                              setEditandoSecao(null);
+                            }}
+                            className="mb-2 flex gap-2"
+                          >
+                            <input
+                              autoFocus
+                              value={textoSecao}
+                              onChange={(e) => setTextoSecao(e.target.value)}
+                              placeholder="Chegada, Louvação... (vazio = sem parte)"
+                              aria-label="Parte da gira"
+                              list="secoes-da-gira"
+                              className="min-h-11 flex-1 rounded-lg border border-border bg-card px-3 text-sm text-foreground"
+                            />
+                            <Button type="submit" size="sm" className="min-h-11">Salvar</Button>
+                            <Button type="button" variant="ghost" size="sm"
+                                    className="min-h-11"
+                                    onClick={() => setEditandoSecao(null)}>
+                              Cancelar
+                            </Button>
+                          </form>
+                        ) : (
+                          <ItemArrastavel
+                            item={completar(item, dados.pontos)}
+                            posicao={n}
+                            aoMudarSecao={() => {
+                              setTextoSecao(item.secao ?? "");
+                              setEditandoSecao(n);
+                            }}
+                            aoRemover={() =>
+                              salvarSequencia(
+                                aberto,
+                                aberto.itens
+                                  .filter((_, i) => i !== n)
+                                  .map((i) => ({ pontoId: i.pontoId, secao: i.secao ?? null })),
+                              )
+                            }
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                  {/* Sugere as partes que ESTA gira já usa — quem repete um
+                      nome não o digita de novo, e quem tem outro vocabulário
+                      não é corrigido. As partes variam de casa para casa. */}
+                  <datalist id="secoes-da-gira">
+                    {[...new Set(aberto.itens.map((i) => i.secao).filter(Boolean))].map((n) => (
+                      <option key={n as string} value={n as string} />
+                    ))}
+                  </datalist>
                 </div>
               </SortableContext>
             </DndContext>

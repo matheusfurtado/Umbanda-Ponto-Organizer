@@ -27,16 +27,14 @@ function CardOrixa({ orixa, quantos, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="group flex flex-col gap-3 rounded-xl bg-card/60 p-3 text-left transition hover:bg-accent/50 active:scale-[0.99]"
+      className="group flex flex-col gap-2 rounded-lg bg-card/60 p-2 text-left transition hover:bg-accent/50 active:scale-[0.99]"
     >
       <div className="aspect-square w-full">
         <Capa cor={orixa.cor} emoji={orixa.emoji} />
       </div>
       <div className="min-w-0">
-        <p className="truncate font-semibold text-foreground">{orixa.nome}</p>
-        <p className="text-xs text-muted-foreground">
-          {quantos} {quantos === 1 ? "ponto" : "pontos"}
-        </p>
+        <p className="truncate text-sm font-semibold text-foreground">{orixa.nome}</p>
+        <p className="text-[11px] text-muted-foreground">{quantos}</p>
       </div>
     </button>
   );
@@ -140,8 +138,8 @@ export function TelaInicio({
               // Quem já visitou nunca vê isto: o cache é lido de forma
               // síncrona e os cartões aparecem prontos.
               <div aria-busy="true" aria-label="Carregando o acervo"
-                   className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {Array.from({ length: 10 }, (_, i) => (
+                   className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
+                {Array.from({ length: 14 }, (_, i) => (
                   <div key={i} className="rounded-xl bg-card/60 p-3">
                     <div className="mb-3 aspect-square w-full animate-pulse rounded-xl bg-muted/50" />
                     <div className="h-4 w-2/3 animate-pulse rounded bg-muted/50" />
@@ -158,7 +156,10 @@ export function TelaInicio({
                   : "Nenhum orixá no acervo."}
               </p>
             ) : (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              // Mais colunas = capa menor. Catorze orixás em cartões grandes
+              // viravam uma parede de cor que exigia rolar para ver o acervo
+              // inteiro; o ponto da grade é caber tudo de uma olhada.
+              <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
                 {dados.orixas.map((o) => (
                   <CardOrixa
                     key={o.id}

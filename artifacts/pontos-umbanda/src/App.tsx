@@ -14,6 +14,7 @@ import { TelaOrganizarAcervo } from "@/pages/TelaOrganizarAcervo";
 import { BarraLateral } from "@/componentes/BarraLateral";
 import { BarraInferior } from "@/componentes/BarraInferior";
 import { EscolherPaleta } from "@/componentes/EscolherPaleta";
+import { AdicionarAGira } from "@/componentes/AdicionarAGira";
 import { TelaLogin } from "@/pages/TelaLogin";
 import { TelaRecuperar } from "@/pages/TelaRecuperar";
 import { TelaRedefinir } from "@/pages/TelaRedefinir";
@@ -22,12 +23,19 @@ import { TelaConta } from "@/pages/TelaConta";
 import { TelaPlanos } from "@/pages/TelaPlanos";
 import { TelaRetornoPagamento } from "@/pages/TelaRetornoPagamento";
 import { TelaRepertorios } from "@/pages/TelaRepertorios";
-import { Orixa } from "@/types";
+import { Orixa, Ponto } from "@/types";
 
 const FLAG_MIGRACAO = "migracao-oferecida";
 
 function AppInner() {
   const [orixaAberto, setOrixaAberto] = useState<Orixa | null>(null);
+  const [paraAdicionar, setParaAdicionar] = useState<Ponto | null>(null);
+  const { ent } = useEntitlements();
+
+  // O botão de adicionar só existe para quem tem repertório. Mostrá-lo a quem
+  // não tem e abrir uma tela de "assine" seria vender empurrando: a pessoa
+  // clica achando que vai fazer uma coisa e recebe outra.
+  const adicionar = ent.repertorios ? setParaAdicionar : undefined;
 
   // A MESMA navegação para quem paga e para quem não paga. A diferença aparece
   // DENTRO do orixá, sozinha: com subcategoria vira seções da gira, sem ela
@@ -37,10 +45,15 @@ function AppInner() {
       <AvisoTeste />
       <AvisoAcervo />
       {orixaAberto ? (
-        <TelaOrixa orixa={orixaAberto} onVoltar={() => setOrixaAberto(null)} />
+        <TelaOrixa
+          orixa={orixaAberto}
+          onVoltar={() => setOrixaAberto(null)}
+          onAdicionar={adicionar}
+        />
       ) : (
-        <TelaInicio onAbrirOrixa={setOrixaAberto} />
+        <TelaInicio onAbrirOrixa={setOrixaAberto} onAdicionar={adicionar} />
       )}
+      <AdicionarAGira ponto={paraAdicionar} onFechar={() => setParaAdicionar(null)} />
     </>
   );
 }

@@ -19,7 +19,7 @@
  */
 
 import { ehErroDeApi, ehErroDeRede } from "../api/cliente";
-import { definirItens, listar, type Repertorio } from "../api/repertorio";
+import { definirItens, listar, type Repertorio , type ItemEnviado} from "../api/repertorio";
 
 const CHAVE = "pontos-umbanda-repertorios";
 /**
@@ -90,14 +90,22 @@ function aplicarPendentes(doServidor: Repertorio[]): Repertorio[] {
     if (!pendente) return r;
     return {
       ...r,
-      itens: pendente.map((pontoId, ordem) => {
+      itens: pendente.map(({ pontoId, secao }, ordem) => {
+        // Título, canal e duração vêm do que o servidor já mandou: a fila
+        // guarda só o que a pessoa DECIDIU (quais pontos, em que ordem, em
+        // que parte da gira). Duplicar o resto na fila seria guardar duas
+        // vezes um dado que só o servidor conhece.
         const antes = r.itens.find((i) => i.pontoId === pontoId);
         return {
           pontoId,
           ordem,
+          secao: secao ?? null,
           titulo: antes?.titulo ?? null,
+          autor: antes?.autor ?? null,
           videoUrl: antes?.videoUrl ?? null,
           videoStatus: antes?.videoStatus ?? null,
+          videoCanal: antes?.videoCanal ?? null,
+          videoDuracaoSeg: antes?.videoDuracaoSeg ?? null,
         };
       }),
     };
@@ -123,12 +131,27 @@ export async function carregar(): Promise<CargaRepertorios> {
 type Ouvinte = (estado: EstadoSincronia) => void;
 
 /** repertorio_id -> sequência final que o servidor ainda não confirmou. */
-const fila = new Map<string, string[]>(lerFila());
+const fila = new Map<string, ItemEnviado[]>(lerFila());
 
-function lerFila(): [string, string[]][] {
+/**
+ * A fila do disco, NORMALIZADA.
+ *
+ * Antes das seções, cada entrada era uma lista de ids (`string[]`). Uma gira
+ * montada offline naquela versão ainda pode estar guardada aqui, esperando
+ * conexão. Ler aquilo como o formato novo produziria itens sem `pontoId` e o
+ * envio subiria vazio — perdendo, em silêncio, a gira que a pessoa montou.
+ *
+ * Por isso a conversão é feita na leitura, e não em algum lugar depois.
+ */
+function lerFila(): [string, ItemEnviado[]][] {
   try {
     const cru = localStorage.getItem(CHAVE_FILA);
-    return cru ? (JSON.parse(cru) as [string, string[]][]) : [];
+    if (!cru) return [];
+    const bruto = JSON.parse(cru) as [string, (string | ItemEnviado)[]][];
+    return bruto.map(([id, itens]) => [
+      id,
+      itens.map((i) => (typeof i === "string" ? { pontoId: i, secao: null } : i)),
+    ]);
   } catch {
     return [];
   }
@@ -204,27 +227,34 @@ function agendar() {
  * Grava a sequência nova. O cache é atualizado de forma SÍNCRONA — é isso que
  * mantém a tela certa mesmo sem rede — e o servidor recebe depois.
  */
-export function definirSequencia(repertorioId: string, pontos: string[]): Repertorio[] {
+export function definirSequencia(
+  repertorioId: string,
+  itensNovos: ItemEnviado[],
+): Repertorio[] {
   const cache = lerCache() ?? [];
   const atualizado = cache.map((r) =>
     r.id === repertorioId
       ? {
           ...r,
-          itens: pontos.map((pontoId, ordem) => {
+          itens: itensNovos.map(({ pontoId, secao }, ordem) => {
             const antes = r.itens.find((i) => i.pontoId === pontoId);
             return {
               pontoId,
               ordem,
+              secao: secao ?? null,
               titulo: antes?.titulo ?? null,
+              autor: antes?.autor ?? null,
               videoUrl: antes?.videoUrl ?? null,
               videoStatus: antes?.videoStatus ?? null,
+              videoCanal: antes?.videoCanal ?? null,
+              videoDuracaoSeg: antes?.videoDuracaoSeg ?? null,
             };
           }),
         }
       : r,
   );
   gravarCache(atualizado);
-  fila.set(repertorioId, pontos);
+  fila.set(repertorioId, itensNovos);
   gravarFila();
   anunciar({});
   agendar();
