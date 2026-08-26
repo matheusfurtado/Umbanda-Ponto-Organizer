@@ -42,7 +42,7 @@ interface AppContextType {
   excluirSubcategoria: (id: string) => void;
 
   adicionarPonto: (subcategoriaId: string, titulo: string, letra: string) => void;
-  editarPonto: (id: string, titulo: string, letra: string) => void;
+  editarPonto: (id: string, titulo: string, letra: string, autor?: string | null) => void;
   excluirPonto: (id: string) => void;
   toggleFavorito: (id: string) => void;
   reordenarPontos: (subcategoriaId: string, ids: string[]) => void;
@@ -235,9 +235,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const editarPonto = useCallback(
-    (id: string, titulo: string, letra: string) => {
+    (id: string, titulo: string, letra: string, autor?: string | null) => {
       const pontos = dados.pontos.map((p) =>
-        p.id === id ? { ...p, titulo, letra } : p
+        // `autor` vazio vira `null` e não `""`: no banco a coluna é nula, e
+        // duas representações de "não sei" divergem no primeiro `===`.
+        p.id === id ? { ...p, titulo, letra, autor: autor?.trim() || null } : p
       );
       atualizar({ ...dados, pontos });
     },

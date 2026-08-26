@@ -9,27 +9,30 @@ import { Ponto } from "@/types";
 interface Props {
   aberto: boolean;
   ponto?: Ponto | null;
-  onSalvar: (titulo: string, letra: string) => void;
+  onSalvar: (titulo: string, letra: string, autor: string) => void;
   onFechar: () => void;
 }
 
 export function ModalPonto({ aberto, ponto, onSalvar, onFechar }: Props) {
   const [titulo, setTitulo] = useState("");
   const [letra, setLetra] = useState("");
+  const [autor, setAutor] = useState("");
 
   useEffect(() => {
     if (ponto) {
       setTitulo(ponto.titulo);
       setLetra(ponto.letra);
+      setAutor(ponto.autor ?? "");
     } else {
       setTitulo("");
       setLetra("");
+      setAutor("");
     }
   }, [ponto, aberto]);
 
   const salvar = () => {
     if (!titulo.trim()) return;
-    onSalvar(titulo.trim(), letra.trim());
+    onSalvar(titulo.trim(), letra.trim(), autor.trim());
     onFechar();
   };
 
@@ -52,6 +55,23 @@ export function ModalPonto({ aberto, ponto, onSalvar, onFechar }: Props) {
               placeholder="Ex: Laroyê Exu, Exu mojubá..."
               className="bg-background border-border"
               autoFocus
+            />
+          </div>
+
+          <div>
+            {/* Opcional de propósito, e o texto de apoio diz por quê: a maior
+                parte do acervo é de tradição oral e não tem autoria conhecida.
+                Um campo obrigatório aqui convidaria a preencher com palpite —
+                atribuição falsa de obra religiosa. */}
+            <Label htmlFor="autor-ponto" className="text-muted-foreground text-sm mb-1 block">
+              Autor <span className="text-xs">(se você souber)</span>
+            </Label>
+            <Input
+              id="autor-ponto"
+              value={autor}
+              onChange={(e) => setAutor(e.target.value)}
+              placeholder="Deixe em branco se for de domínio popular"
+              className="bg-background border-border"
             />
           </div>
 

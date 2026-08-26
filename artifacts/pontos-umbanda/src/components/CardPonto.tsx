@@ -81,6 +81,14 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
               <p className="text-sm font-medium text-foreground leading-snug">
                 {destacar(ponto.titulo, busca)}
               </p>
+              {/* Só aparece quando alguém sabe. Um "Autor: desconhecido" fixo
+                  em 520 pontos é ruído em toda linha da lista — e sugere
+                  lacuna a preencher onde não há lacuna: a tradição é oral. */}
+              {ponto.autor && (
+                <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                  {ponto.autor}
+                </p>
+              )}
             </div>
             <ChevronDown
               className={`w-4 h-4 text-muted-foreground mt-0.5 shrink-0 transition-transform ${
@@ -140,7 +148,7 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
       <ModalPonto
         aberto={modalEditar}
         ponto={ponto}
-        onSalvar={(titulo, letra) => editarPonto(ponto.id, titulo, letra)}
+        onSalvar={(titulo, letra, autor) => editarPonto(ponto.id, titulo, letra, autor)}
         onFechar={() => setModalEditar(false)}
       />
 

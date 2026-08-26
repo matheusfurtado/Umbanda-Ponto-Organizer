@@ -8,9 +8,12 @@ import { AppProvider } from "@/context";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { EntitlementsProvider } from "@/billing/EntitlementsContext";
-import { TelaAcervoSimples } from "@/pages/TelaAcervoSimples";
-import { TelaOrixas } from "@/pages/TelaOrixas";
-import { TelaSubcategorias } from "@/pages/TelaSubcategorias";
+import { TelaInicio } from "@/pages/TelaInicio";
+import { TelaOrixa } from "@/pages/TelaOrixa";
+import { TelaOrganizarAcervo } from "@/pages/TelaOrganizarAcervo";
+import { BarraLateral } from "@/componentes/BarraLateral";
+import { BarraInferior } from "@/componentes/BarraInferior";
+import { EscolherPaleta } from "@/componentes/EscolherPaleta";
 import { TelaLogin } from "@/pages/TelaLogin";
 import { TelaRecuperar } from "@/pages/TelaRecuperar";
 import { TelaRedefinir } from "@/pages/TelaRedefinir";
@@ -24,35 +27,43 @@ import { Orixa } from "@/types";
 const FLAG_MIGRACAO = "migracao-oferecida";
 
 function AppInner() {
-  const { ent, loading } = useEntitlements();
-  const [orixaSelecionado, setOrixaSelecionado] = useState<Orixa | null>(null);
+  const [orixaAberto, setOrixaAberto] = useState<Orixa | null>(null);
 
-  // Sem plano, o servidor não envia orixás nem subcategorias (ADR 0002). A tela
-  // de hierarquia recebia lista vazia e dizia "Nenhum Orixá ainda — toque em +
-  // para adicionar" a quem tem 520 pontos: parecia app quebrado. A lista corrida
-  // mostra o que a pessoa REALMENTE tem.
-  if (!loading && !ent.acervoOrganizado) {
-    return (
-      <>
-        <AvisoTeste />
-        <AvisoAcervo />
-        <TelaAcervoSimples />
-      </>
-    );
-  }
-
-  // A faixa de estado fica ACIMA da tela, nunca no lugar dela: informar que o
-  // dado veio do cache não pode custar o acesso à letra do ponto.
+  // A MESMA navegação para quem paga e para quem não paga. A diferença aparece
+  // DENTRO do orixá, sozinha: com subcategoria vira seções da gira, sem ela
+  // vira lista. Ver `TelaOrixa`.
   return (
     <>
       <AvisoTeste />
       <AvisoAcervo />
-      {orixaSelecionado ? (
-        <TelaSubcategorias orixa={orixaSelecionado} onVoltar={() => setOrixaSelecionado(null)} />
+      {orixaAberto ? (
+        <TelaOrixa orixa={orixaAberto} onVoltar={() => setOrixaAberto(null)} />
       ) : (
-        <TelaOrixas onSelectOrixa={setOrixaSelecionado} />
+        <TelaInicio onAbrirOrixa={setOrixaAberto} />
       )}
     </>
+  );
+}
+
+/**
+ * O esqueleto: barra fixa à esquerda no desktop, barra inferior no celular.
+ *
+ * Antes tudo era uma coluna estreita centralizada. Numa tela larga sobravam
+ * dois terços vazios, e trocar de seção exigia voltar — cada ação custava uma
+ * ida e volta. Com a navegação sempre visível, mudar de lugar é um clique de
+ * onde você estiver, e o espaço horizontal vira conteúdo.
+ */
+function Moldura({ children }: { children: ReactNode }) {
+  const [paleta, setPaleta] = useState(false);
+  return (
+    <div className="flex min-h-screen bg-background">
+      <BarraLateral onTrocarPaleta={() => setPaleta(true)} />
+      {/* `min-w-0`: sem isto um título longo estica o flex e a lista inteira
+          passa a rolar na horizontal. */}
+      <main className="min-w-0 flex-1 pb-16 lg:pb-0">{children}</main>
+      <BarraInferior onTrocarPaleta={() => setPaleta(true)} />
+      <EscolherPaleta aberto={paleta} onFechar={() => setPaleta(false)} />
+    </div>
   );
 }
 
@@ -105,30 +116,45 @@ function App() {
             <Route path="/verificar">
               <TelaVerificar />
             </Route>
-            <Route path="/planos">
-              <TelaPlanos />
-            </Route>
-            {/* Para onde o Mercado Pago devolve quem pagou. Protegida: sem
-                sessão não há o que confirmar, e a tela precisa consultar os
-                direitos da conta. */}
-            <Route path="/assinatura/retorno">
-              <RotaProtegida>
-                <TelaRetornoPagamento />
-              </RotaProtegida>
-            </Route>
-            <Route path="/repertorios">
-              <RotaProtegida>
-                <TelaRepertorios />
-              </RotaProtegida>
-            </Route>
-            <Route path="/conta">
-              <RotaProtegida>
-                <TelaConta />
-              </RotaProtegida>
-            </Route>
+            {/* Daqui para baixo é o APP, e tudo mora dentro da moldura: a
+                navegação fica sempre visível em vez de a pessoa ter que voltar
+                para trocar de seção. As telas acima ficam de fora de propósito
+                — quem está fazendo login não tem para onde navegar ainda. */}
             <Route>
-              <AppInner />
-              <GerenciadorMigracao />
+              <Moldura>
+                <Switch>
+                  <Route path="/organizar">
+                    <RotaProtegida>
+                      <TelaOrganizarAcervo />
+                    </RotaProtegida>
+                  </Route>
+                  <Route path="/planos">
+                    <TelaPlanos />
+                  </Route>
+                  {/* Para onde o Mercado Pago devolve quem pagou. Protegida:
+                      sem sessão não há o que confirmar, e a tela precisa
+                      consultar os direitos da conta. */}
+                  <Route path="/assinatura/retorno">
+                    <RotaProtegida>
+                      <TelaRetornoPagamento />
+                    </RotaProtegida>
+                  </Route>
+                  <Route path="/repertorios">
+                    <RotaProtegida>
+                      <TelaRepertorios />
+                    </RotaProtegida>
+                  </Route>
+                  <Route path="/conta">
+                    <RotaProtegida>
+                      <TelaConta />
+                    </RotaProtegida>
+                  </Route>
+                  <Route>
+                    <AppInner />
+                    <GerenciadorMigracao />
+                  </Route>
+                </Switch>
+              </Moldura>
             </Route>
           </Switch>
           <InstallBanner />

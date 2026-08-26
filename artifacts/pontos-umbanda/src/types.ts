@@ -1,7 +1,15 @@
 export interface Ponto {
   id: string;
   subcategoriaId: string;
+  // De qual orixá é o ponto. Vem SEMPRE, inclusive no plano grátis — é o que
+  // permite navegar por orixá sem receber a subcategoria, que é o recorte
+  // fino e continua pago.
+  orixaId?: string;
   titulo: string;
+  // Vazio na maior parte do acervo: a tradição é oral e boa parte dos pontos
+  // não tem autoria conhecida. Quem souber preenche; palpite seria atribuição
+  // falsa de obra religiosa.
+  autor?: string | null;
   letra: string;
   favorito: boolean;
   ordem: number;
@@ -17,6 +25,11 @@ export interface Ponto {
   videoUrl?: string | null;
   videoStatus?: "encontrado" | "revisar" | "nao_encontrado" | null;
   videoConfianca?: number | null;
+  // Crédito de quem gravou, e sinal de procedência: ajuda a decidir se aquela
+  // versão do ponto é confiável antes de levá-la para a gira.
+  videoCanal?: string | null;
+  videoTitulo?: string | null;
+  videoDuracaoSeg?: number | null;
 }
 
 export interface Subcategoria {

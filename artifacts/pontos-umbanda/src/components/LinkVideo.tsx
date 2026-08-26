@@ -8,15 +8,27 @@
  * Mostrar palpite com a mesma cara de acerto é o tipo de mentira que só aparece
  * na hora errada — a pessoa aperta play no meio da gira e toca outra música.
  * Por isso `revisar` vem com aviso explícito e um convite a corrigir.
+ *
+ * O CANAL vai junto, e não é enfeite: é crédito de quem gravou e é o sinal de
+ * procedência que deixa quem vai cantar decidir se confia naquela versão antes
+ * de levá-la para a gira.
  */
 
 import { AlertTriangle, Youtube } from "lucide-react";
 import type { Ponto } from "@/types";
 
+function duracao(segundos?: number | null): string | null {
+  if (!segundos || segundos <= 0) return null;
+  const m = Math.floor(segundos / 60);
+  const s = segundos % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
 export function LinkVideo({ ponto }: { ponto: Ponto }) {
   if (!ponto.videoUrl) return null;
 
   const incerto = ponto.videoStatus === "revisar";
+  const tempo = duracao(ponto.videoDuracaoSeg);
 
   return (
     <div className="px-3.5 pb-3">
@@ -36,8 +48,16 @@ export function LinkVideo({ ponto }: { ponto: Ponto }) {
         ) : (
           <Youtube className="h-4 w-4 shrink-0" aria-hidden />
         )}
-        <span className="flex-1 text-left">
-          {incerto ? "Vídeo provável — confira antes de usar" : "Ouvir no YouTube"}
+        <span className="min-w-0 flex-1 text-left">
+          <span className="block">
+            {incerto ? "Vídeo provável — confira antes de usar" : "Ouvir no YouTube"}
+          </span>
+          {ponto.videoCanal && (
+            <span className="mt-0.5 block truncate text-[11px] font-normal opacity-80">
+              {ponto.videoCanal.trim()}
+              {tempo && ` · ${tempo}`}
+            </span>
+          )}
         </span>
       </a>
       {incerto && (
