@@ -15,7 +15,10 @@ function traduzir(erro: unknown): string {
   if (ehErroDeRede(erro)) return "Sem conexão. Verifique a internet e tente de novo.";
   if (ehErroDeApi(erro)) {
     if (erro.status === 401) return "E-mail ou senha incorretos.";
-    if (erro.status === 409) return "Já existe uma conta com esse e-mail. Tente entrar.";
+    // 409 agora tem DOIS motivos: e-mail repetido e apelido repetido. O
+    // servidor manda qual dos dois; escrever "esse e-mail já existe" aqui
+    // mandaria a pessoa mexer no campo errado.
+    if (erro.status === 409) return erro.detalhe;
     if (erro.status === 422) return erro.detalhe;
     // 429: o servidor já manda "Muitas tentativas. Tente de novo em N minutos",
     // com o tempo calculado. Repassar é melhor que inventar texto aqui — e o
@@ -33,6 +36,7 @@ export function TelaLogin() {
   const { entrar, cadastrar } = useAuth();
   const [modo, setModo] = useState<Modo>("entrar");
   const [email, setEmail] = useState("");
+  const [apelido, setApelido] = useState("");
   const [senha, setSenha] = useState("");
   const [consentiu, setConsentiu] = useState(false);
   const [querComunicacao, setQuerComunicacao] = useState(false);
@@ -43,7 +47,7 @@ export function TelaLogin() {
   const podeEnviar =
     email.trim() !== "" &&
     senha !== "" &&
-    (!criando || (senha.length >= MINIMO_SENHA && consentiu));
+    (!criando || (senha.length >= MINIMO_SENHA && consentiu && apelido.trim().length >= 2));
 
   const submeter = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +58,7 @@ export function TelaLogin() {
       if (criando) {
         await cadastrar({
           email: email.trim(),
+          apelido: apelido.trim(),
           senha,
           consinto_dado_religioso: consentiu,
           consinto_comunicacao: querComunicacao,
@@ -110,6 +115,30 @@ export function TelaLogin() {
                 className="min-h-11"
               />
             </div>
+
+            {criando && (
+              <div className="space-y-1.5">
+                <Label htmlFor="apelido">Como você quer aparecer</Label>
+                <Input
+                  id="apelido"
+                  autoComplete="nickname"
+                  value={apelido}
+                  onChange={(e) => setApelido(e.target.value)}
+                  placeholder="Terreiro de Ogum Beira-Mar"
+                  className="min-h-11"
+                />
+                {/* O aviso fica AQUI, colado no campo, e não no rodapé.
+                    Este nome vai a público embaixo de todo ponto que a pessoa
+                    mandar e de toda gira que publicar — junto, portanto, da
+                    informação de que ela é de Umbanda. Quem lê "nome" e escreve
+                    o nome civil sem saber disso não consentiu com o que
+                    aconteceu; e nome publicado não se despublica. */}
+                <p className="text-xs text-muted-foreground">
+                  Aparece publicamente quando você envia um ponto ou publica uma gira.
+                  Pode ser o nome do terreiro — não precisa ser o seu.
+                </p>
+              </div>
+            )}
 
             <div className="space-y-1.5">
               <Label htmlFor="senha">Senha</Label>

@@ -24,7 +24,7 @@ import { aprovar, filaDeModeracao, recusar, type SubmissaoNaFila } from "@/api/c
  * o revisor já decidiu.
  */
 export function TelaModeracao() {
-  const { dados } = useApp();
+  const { dados, recarregar } = useApp();
   const [fila, setFila] = useState<SubmissaoNaFila[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [ocupado, setOcupado] = useState<string | null>(null);
@@ -47,6 +47,14 @@ export function TelaModeracao() {
       setRecusando(null);
       setMotivo("");
       carregar();
+      // E o ACERVO junto, não só a fila.
+      //
+      // Aprovar acrescenta um ponto ao acervo de todo mundo, mas o `dados`
+      // desta aba foi baixado ao abrir o app. Sem esta linha o revisor aprova,
+      // vai ao orixá, e o ponto não está lá — só reaparece se ele recarregar a
+      // página. Aconteceu exatamente assim, e a conclusão natural é "a
+      // aprovação não funcionou", que é o pior lugar para deixar alguém.
+      recarregar();
     } catch (problema) {
       setErro(problema instanceof Error ? problema.message : "Falhou.");
     } finally {

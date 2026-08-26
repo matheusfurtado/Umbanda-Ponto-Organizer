@@ -6,7 +6,6 @@ import { InstallBanner } from "@/components/InstallBanner";
 import { ModalMigracao } from "@/components/ModalMigracao";
 import { AppProvider } from "@/context";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
-import { useEntitlements } from "@/billing/EntitlementsContext";
 import { EntitlementsProvider } from "@/billing/EntitlementsContext";
 import { TelaInicio } from "@/pages/TelaInicio";
 import { TelaOrixa } from "@/pages/TelaOrixa";
@@ -14,8 +13,7 @@ import { TelaOrganizarAcervo } from "@/pages/TelaOrganizarAcervo";
 import { BarraLateral } from "@/componentes/BarraLateral";
 import { BarraInferior } from "@/componentes/BarraInferior";
 import { EscolherPaleta } from "@/componentes/EscolherPaleta";
-import { AdicionarAGira } from "@/componentes/AdicionarAGira";
-import { SugerirAutor } from "@/componentes/SugerirAutor";
+import { useAcoesDePonto } from "@/componentes/AcoesDePonto";
 import { TelaEnviarPonto } from "@/pages/TelaEnviarPonto";
 import { TelaMeusEnvios } from "@/pages/TelaMeusEnvios";
 import { TelaModeracao } from "@/pages/TelaModeracao";
@@ -30,24 +28,13 @@ import { TelaConta } from "@/pages/TelaConta";
 import { TelaPlanos } from "@/pages/TelaPlanos";
 import { TelaRetornoPagamento } from "@/pages/TelaRetornoPagamento";
 import { TelaRepertorios } from "@/pages/TelaRepertorios";
-import { Orixa, Ponto } from "@/types";
+import { Orixa } from "@/types";
 
 const FLAG_MIGRACAO = "migracao-oferecida";
 
 function AppInner() {
   const [orixaAberto, setOrixaAberto] = useState<Orixa | null>(null);
-  const [paraAdicionar, setParaAdicionar] = useState<Ponto | null>(null);
-  const [paraAutoria, setParaAutoria] = useState<Ponto | null>(null);
-  const { ent } = useEntitlements();
-  const { autenticado } = useAuth();
-
-  // O botão de adicionar só existe para quem tem repertório. Mostrá-lo a quem
-  // não tem e abrir uma tela de "assine" seria vender empurrando: a pessoa
-  // clica achando que vai fazer uma coisa e recebe outra.
-  const adicionar = ent.repertorios ? setParaAdicionar : undefined;
-  // Sugerir autor não depende de plano — depende de ter conta, porque a
-  // sugestão precisa de um responsável.
-  const sugerir = autenticado ? setParaAutoria : undefined;
+  const { adicionar, sugerir, modais } = useAcoesDePonto();
 
   // A MESMA navegação para quem paga e para quem não paga. A diferença aparece
   // DENTRO do orixá, sozinha: com subcategoria vira seções da gira, sem ela
@@ -66,8 +53,7 @@ function AppInner() {
       ) : (
         <TelaInicio onAbrirOrixa={setOrixaAberto} onAdicionar={adicionar} onSugerirAutor={sugerir} />
       )}
-      <AdicionarAGira ponto={paraAdicionar} onFechar={() => setParaAdicionar(null)} />
-      <SugerirAutor ponto={paraAutoria} onFechar={() => setParaAutoria(null)} />
+      {modais}
     </>
   );
 }

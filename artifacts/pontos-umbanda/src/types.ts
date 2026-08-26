@@ -12,6 +12,14 @@ export interface Ponto {
   autor?: string | null;
   /** Enviado por mim e ainda esperando revisão. Só eu vejo. */
   emAprovacao?: boolean;
+  /**
+   * O APELIDO de quem mandou este ponto para o acervo. Nunca o e-mail.
+   *
+   * Vazio quando o ponto é do acervo original, ou quando quem mandou não tem
+   * apelido — contas criadas antes de ele ser pedido no cadastro. Ausência
+   * aqui significa "não há a quem creditar", nunca "creditar de outro jeito".
+   */
+  enviadoPor?: string | null;
   /** Quando entrou no acervo por aprovação da comunidade (ms). Nulo no acervo
    *  original — é o que permite marcar "novo" sem inventar uma lista à parte. */
   aprovadoEm?: number | null;

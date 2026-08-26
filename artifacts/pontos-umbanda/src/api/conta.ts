@@ -69,6 +69,14 @@ async function chamar<T>(caminho: string, init?: RequestInit): Promise<T | null>
 export interface DadosCadastro {
   email: string;
   senha: string;
+  /**
+   * Como a pessoa quer aparecer. Obrigatório no cadastro, e único no servidor.
+   *
+   * É o que credita quem manda um ponto para o acervo de todos. Pedido só numa
+   * tela posterior, quase ninguém teria um — e o crédito ficaria vazio
+   * justamente para quem mais contribui.
+   */
+  apelido: string;
   /** LGPD: obrigatório, específico e destacado. Sem ele não há conta. */
   consinto_dado_religioso: boolean;
   /** Opcional de verdade — recusar não bloqueia nada. */

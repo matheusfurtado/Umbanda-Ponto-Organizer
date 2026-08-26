@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Star, Youtube, AlertTriangle, Plus, UserPen, Clock } from "lucide-react";
+import { ChevronDown, Star, Youtube, AlertTriangle, VideoOff, Plus, UserPen, Clock } from "lucide-react";
 import { useApp } from "@/context";
 import { destacar } from "@/lib/destacar";
 import type { Ponto } from "@/types";
@@ -90,9 +90,19 @@ export function LinhaPonto({
               a lista, e sugere lacuna a preencher onde não há: no plano
               grátis o canal simplesmente não vem, e a maior parte do acervo
               não tem autoria conhecida. */}
-          {(ponto.autor || ponto.videoCanal?.trim()) && (
+          {(ponto.autor || ponto.videoCanal?.trim() || ponto.enviadoPor) && (
             <span className="mt-0.5 block truncate text-xs text-muted-foreground">
               {ponto.autor || ponto.videoCanal?.trim()}
+              {/* Quem mandou vem DEPOIS do autor e mais apagado, porque são
+                  coisas diferentes: autor é quem compôs o ponto, e este é quem
+                  o trouxe para cá. Trocar um pelo outro atribuiria obra
+                  religiosa a quem não a fez. */}
+              {ponto.enviadoPor && (
+                <span className="text-muted-foreground/70">
+                  {(ponto.autor || ponto.videoCanal?.trim()) ? " · " : ""}
+                  enviado por {ponto.enviadoPor}
+                </span>
+              )}
             </span>
           )}
         </button>
@@ -155,9 +165,23 @@ export function LinhaPonto({
               {incerto ? <AlertTriangle className="h-4 w-4" /> : <Youtube className="h-4 w-4" />}
             </a>
           ) : (
-            // Espaço reservado: sem ele as linhas com e sem vídeo desalinham,
-            // e a lista inteira fica serrilhada.
-            <span className="block h-8 w-8" aria-hidden />
+            // Sem vídeo é uma informação, não um vazio.
+            //
+            // Antes isto era um espaço em branco, só para as linhas não
+            // desalinharem — e "não tem gravação" ficava indistinguível de "o
+            // ícone não carregou". Quem procura um ponto para ensaiar quer ver
+            // de longe onde tem áudio.
+            //
+            // NÃO é o triângulo: aquele já significa "achei um vídeo, mas posso
+            // ter errado", e são 157 pontos assim. Dois sentidos no mesmo
+            // desenho tornariam os dois inúteis.
+            <span
+              title="Sem vídeo ainda"
+              aria-label={`${ponto.titulo}: sem vídeo ainda`}
+              className="block rounded-md p-2 text-muted-foreground/35"
+            >
+              <VideoOff className="h-4 w-4" />
+            </span>
           )}
 
           <button
