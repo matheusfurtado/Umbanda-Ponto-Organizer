@@ -111,7 +111,10 @@ function ItemArrastavel({
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Ouvir no YouTube"
-          className={`min-h-11 shrink-0 px-2 ${
+          // `flex items-center`: sem isto o ícone encosta no topo da caixa de
+          // 44px e fica desalinhado dos outros botões da linha — os <button>
+          // centralizam sozinhos, o <a> não.
+          className={`flex min-h-11 shrink-0 items-center px-2 ${
             // `revisar` é palpite. Sinalizar aqui também evita a pessoa montar a
             // gira confiando num casamento fraco e descobrir na hora de cantar.
             item.videoStatus === "revisar" ? "text-amber-400" : "text-red-400"
