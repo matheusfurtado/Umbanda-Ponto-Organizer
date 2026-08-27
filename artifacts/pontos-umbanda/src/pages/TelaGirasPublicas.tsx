@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/AuthContext";
 import { girasDeQuemSigo, type GiraDeQuemSigo } from "@/api/perfil";
-import { Link } from "wouter";
 import { Globe, Users } from "lucide-react";
-import { CapaGira } from "@/componentes/CapaGira";
+import { CartaoGira } from "@/componentes/CartaoGira";
 import { publicas, type GiraPublica } from "@/api/repertorio";
 
 /**
@@ -56,17 +55,7 @@ export function TelaGirasPublicas() {
           </h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {deQuemSigo.map((g) => (
-              <Link key={g.id} href={`/gira/${g.id}`}>
-                <a className="block rounded-xl bg-card/60 p-3 transition hover:bg-accent/50">
-                  <span className="mb-3 block aspect-square w-full">
-                    <CapaGira nome={g.nome} />
-                  </span>
-                  <span className="block truncate font-semibold text-foreground">{g.nome}</span>
-                  <span className="block truncate text-xs text-muted-foreground">
-                    {g.de} · {g.pontos} {g.pontos === 1 ? "ponto" : "pontos"}
-                  </span>
-                </a>
-              </Link>
+              <CartaoGira key={g.id} id={g.id} nome={g.nome} de={g.de} pontos={g.pontos} />
             ))}
           </div>
         </section>
@@ -89,17 +78,13 @@ export function TelaGirasPublicas() {
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {giras.map((g) => (
-            <Link key={g.id} href={`/gira/${g.id}`}>
-              <a className="block rounded-xl bg-card/60 p-3 transition hover:bg-accent/50">
-                <span className="mb-3 block aspect-square w-full">
-                  <CapaGira nome={g.nome} />
-                </span>
-                <span className="block truncate font-semibold text-foreground">{g.nome}</span>
-                <span className="block truncate text-xs text-muted-foreground">
-                  {g.de} · {g.itens.length} {g.itens.length === 1 ? "ponto" : "pontos"}
-                </span>
-              </a>
-            </Link>
+            <CartaoGira
+              key={g.id}
+              id={g.id}
+              nome={g.nome}
+              de={g.de}
+              pontos={g.itens.length}
+            />
           ))}
         </div>
       )}

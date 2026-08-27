@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
 import { apelido, inicial } from "@/auth/apelido";
 import { TrocarApelido } from "@/componentes/TrocarApelido";
+import { ApagarConta } from "@/componentes/ApagarConta";
 import { pedirVerificacao } from "@/api/conta";
 import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -29,6 +30,7 @@ export function TelaConta() {
   const [, navegar] = useLocation();
   const [migrar, setMigrar] = useState(false);
   const [trocando, setTrocando] = useState(false);
+  const [apagando, setApagando] = useState(false);
   const [baixando, setBaixando] = useState(false);
   const [confirmandoBaixar, setConfirmandoBaixar] = useState(false);
   const [baixandoConta, setBaixandoConta] = useState(false);
@@ -265,9 +267,27 @@ export function TelaConta() {
             <LogOut className="w-4 h-4" /> Sair da conta
           </Button>
         </div>
+
+        {/* Apagar a conta é direito, não escape de suporte: a LGPD garante a
+            eliminação (art. 18, VI), e aqui isso pesa mais porque a simples
+            existência da conta revela convicção religiosa.
+
+            Fica embaixo e discreto — quem procura acha, e quem não procura não
+            esbarra. Ao lado de "baixar meus dados" de propósito: portabilidade
+            e eliminação são o mesmo par de direitos, e ver os dois juntos é o
+            que faz alguém entender que pode levar o seu antes de sair. */}
+        <div className="mt-4">
+          <button
+            onClick={() => setApagando(true)}
+            className="text-xs text-muted-foreground underline underline-offset-2 hover:text-destructive"
+          >
+            Apagar minha conta e meus dados
+          </button>
+        </div>
       </div>
 
       <ModalMigracao aberto={migrar} onFechar={() => setMigrar(false)} />
+      <ApagarConta aberto={apagando} onFechar={() => setApagando(false)} />
     </div>
   );
 }

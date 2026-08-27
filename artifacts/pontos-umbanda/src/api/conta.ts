@@ -168,3 +168,28 @@ export async function escolherApelido(apelido: string): Promise<Usuario> {
   if (!r.ok) throw new Error("Não consegui salvar o apelido.");
   return (await r.json()) as Usuario;
 }
+
+/**
+ * Apaga a conta e tudo que é dela. Sem volta.
+ *
+ * Pede a senha mesmo já estando logado: a sessão prova que o navegador é o de
+ * sempre, a senha prova que é a pessoa. Ver `routers/auth.py`.
+ */
+export async function apagarConta(senha: string): Promise<void> {
+  const r = await fetch("/api/v1/auth/eu", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    body: JSON.stringify({ senha }),
+  });
+  if (!r.ok) {
+    let detalhe = r.statusText;
+    try {
+      detalhe = (await r.json())?.detail ?? detalhe;
+    } catch {
+      /* corpo não-JSON: fica o statusText */
+    }
+    throw new Error(String(detalhe));
+  }
+}
+
