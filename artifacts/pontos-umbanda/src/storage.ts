@@ -1,4 +1,4 @@
-import { AppData, Orixa, Ponto, Subcategoria } from "./types";
+import type { AppData, Orixa, Ponto, Subcategoria } from "./types";
 
 const STORAGE_KEY = "pontos-umbanda-data";
 

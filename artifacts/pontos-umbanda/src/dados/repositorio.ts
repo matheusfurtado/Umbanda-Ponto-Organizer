@@ -309,7 +309,12 @@ export function sincronizarAgora(): void {
 /** Quando o navegador avisa que a rede voltou, empurra o que ficou pendente. */
 export function ligarRetomadaAutomatica(): () => void {
   const aoVoltar = () => {
-    if (estado.pendente) sincronizarAgora();
+    // Em conflito NÃO: a rede voltar não é a pessoa decidindo. O `agendar()`
+    // já se recusa a insistir sozinho, mas este caminho chamava
+    // `sincronizarAgora()` direto e passava por fora do guarda — bastava o
+    // Wi-Fi oscilar para o aparelho reenviar por cima de um conflito que ele
+    // mesmo tinha acabado de detectar.
+    if (estado.pendente && !estado.conflito) sincronizarAgora();
   };
   window.addEventListener("online", aoVoltar);
   return () => window.removeEventListener("online", aoVoltar);

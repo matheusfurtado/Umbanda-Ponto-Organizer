@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
-import { AppData, EstadoAcervo, FonteAcervo, Orixa, Subcategoria, Ponto } from "./types";
+import type { AppData, EstadoAcervo, FonteAcervo, Orixa, Subcategoria, Ponto } from "./types";
 import { carregarDados, gerarId } from "./storage";
 import { useAuth } from "./auth/AuthContext";
 import {
