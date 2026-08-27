@@ -42,6 +42,27 @@ export async function carregar(): Promise<ResultadoCarga> {
     // A preferência de qual orixá estava aberto é deste aparelho e não vem do
     // servidor. Preservá-la evita a tela pular ao voltar de uma sincronização.
     const local = carregarDados();
+
+    // O que ficou por enviar VENCE o servidor.
+    //
+    // Antes, `carregar()` gravava o do servidor por cima sem olhar: quem
+    // editasse sem sinal e reabrisse o app com rede perdia a edição em
+    // silêncio — e o pendente vivia só em memória, então recarregar bastava
+    // para apagá-lo. O cache era a única cópia, e o próprio carregamento a
+    // destruía.
+    //
+    // Devolver o pendente mantém a promessa da faixa de conflito ("nada foi
+    // perdido") verdadeira no caminho mais comum do app: gira sem sinal.
+    const pendente = pendenteGuardado();
+    if (pendente) {
+      aguardando = pendente;
+      anunciar({ pendente: true });
+      agendar();
+      const dados: AppData = { ...pendente, ultimoOrixaId: local.ultimoOrixaId };
+      salvarDados(dados);
+      return { dados, fonte: "cache", motivo: "há mudanças suas ainda não enviadas" };
+    }
+
     const dados: AppData = { ...doServidor, ultimoOrixaId: local.ultimoOrixaId };
     salvarDados(dados);
     return { dados, fonte: "servidor" };
@@ -76,8 +97,79 @@ export interface EstadoEnvio {
   conflito: boolean;
 }
 
+/**
+ * Quem é o dono do que está pendente.
+ *
+ * `aguardando` vivia só em memória, e isso custava caro de dois jeitos:
+ *
+ * 1. Recarregar (ou o sistema matar o PWA em segundo plano) apagava o pendente,
+ *    e o `carregar()` seguinte sobrescrevia o cache com o do servidor. A edição
+ *    feita sem sinal sumia sem aviso.
+ * 2. Trocar de conta no MESMO aparelho — comum no tablet do terreiro — não
+ *    limpava nada, e o acervo de quem saiu era empurrado para dentro da conta
+ *    de quem entrou.
+ *
+ * Guardar o dono junto resolve os dois: o pendente é retomado só por quem o
+ * criou, e descartado quando não é dele.
+ */
+const CHAVE_PENDENTE = "pontos-umbanda-pendente";
+
+let donoAtual: string | null = null;
+
+function lerPendente(): { dono: string; dados: AppData } | null {
+  try {
+    const bruto = localStorage.getItem(CHAVE_PENDENTE);
+    return bruto ? JSON.parse(bruto) : null;
+  } catch {
+    return null;
+  }
+}
+
+function gravarPendente(dados: AppData | null): void {
+  try {
+    if (dados && donoAtual) {
+      localStorage.setItem(CHAVE_PENDENTE, JSON.stringify({ dono: donoAtual, dados }));
+    } else {
+      localStorage.removeItem(CHAVE_PENDENTE);
+    }
+  } catch {
+    /* sem storage o pendente volta a viver só em memória, como antes */
+  }
+}
+
+/**
+ * Diz de quem é a sessão atual. Chamado no login, no logout e ao abrir o app.
+ *
+ * Pendente de OUTRA conta é descartado aqui, antes de qualquer envio — é o que
+ * impede o acervo de quem saiu de ser gravado na conta de quem entrou.
+ */
+export function definirDono(id: string | null): void {
+  if (donoAtual === id) return;
+  donoAtual = id;
+  const guardado = lerPendente();
+  if (!guardado || guardado.dono !== id) {
+    aguardando = null;
+    gravarPendente(null);
+    anunciar({ pendente: false, conflito: false, ultimoErro: undefined });
+    return;
+  }
+  aguardando = guardado.dados;
+  anunciar({ pendente: true });
+}
+
+/** O que ficou por enviar da sessão anterior, se for desta mesma pessoa. */
+export function pendenteGuardado(): AppData | null {
+  const guardado = lerPendente();
+  return guardado && guardado.dono === donoAtual ? guardado.dados : null;
+}
+
 let relogio: ReturnType<typeof setTimeout> | null = null;
 let aguardando: AppData | null = null;
+
+/** O pendente em memória. Existe para o TypeScript não estreitar o tipo. */
+function pendenteEmMemoria(): AppData | null {
+  return aguardando;
+}
 let enviando = false;
 const ouvintes = new Set<Ouvinte>();
 let estado: EstadoEnvio = { enviando: false, pendente: false, conflito: false };
@@ -97,11 +189,29 @@ async function empurrar() {
   if (enviando || !aguardando) return;
   const carga = aguardando;
   aguardando = null;
+  // Ainda NÃO apaga o guardado: se o envio falhar, ele é a única cópia do que
+  // a pessoa fez. Só sai depois do 200.
   enviando = true;
   anunciar({ enviando: true });
 
   try {
-    await enviarAcervo(carga);
+    const resultado = await enviarAcervo(carga);
+    // A versão que ESTE envio criou. Sem aplicá-la, o próximo salvamento manda
+    // a versão que o envio acabou de invalidar e leva 409 — "mudou em outro
+    // aparelho" sem nada ter mudado, a cada segunda edição seguida.
+    if (resultado?.versao) {
+      const cache = carregarDados();
+      salvarDados({ ...cache, versao: resultado.versao });
+      // Lido através de função: o `aguardando = null` no início desta função
+      // estreita o tipo para `null`, e o TypeScript não atravessa chamada. O
+      // que interessa aqui é o que chegou DEPOIS, enquanto o envio corria.
+      const chegouDepois = pendenteEmMemoria();
+      if (chegouDepois) {
+        aguardando = { ...chegouDepois, versao: resultado.versao };
+      }
+    }
+    // Chegou ao servidor: agora sim.
+    gravarPendente(aguardando);
     anunciar({
       enviando: false,
       pendente: aguardando !== null,
@@ -112,6 +222,7 @@ async function empurrar() {
     // O dado JÁ está no cache do aparelho — nada se perdeu, aconteça o que
     // acontecer aqui.
     aguardando = aguardando ?? carga;
+    gravarPendente(aguardando);
     if (ehErroDeApi(erro) && erro.status === 409) {
       // Conflito: NÃO reenviar sozinho. Reenviar em laço apagaria o que o
       // outro aparelho gravou, que é exatamente o que a versão veio impedir.
@@ -161,6 +272,7 @@ export async function forcarEnvio(): Promise<void> {
   if (!aguardando) return;
   const atual = await baixarAcervo();
   aguardando = { ...aguardando, versao: atual.versao };
+  gravarPendente(aguardando);
   anunciar({ conflito: false });
   await empurrar();
 }
@@ -168,6 +280,7 @@ export async function forcarEnvio(): Promise<void> {
 /** "Ficar com o que está no servidor": descarta o pendente daqui. */
 export function descartarPendente(): void {
   aguardando = null;
+  gravarPendente(null);
   if (relogio) clearTimeout(relogio);
   anunciar({ conflito: false, pendente: false, ultimoErro: undefined });
 }
@@ -179,6 +292,10 @@ export function descartarPendente(): void {
 export function persistir(dados: AppData): void {
   salvarDados(dados);
   aguardando = dados;
+  // Persistido, e não só em memória: sem isto, recarregar ou o sistema matar o
+  // PWA em segundo plano apagava o pendente, e o `carregar()` seguinte
+  // sobrescrevia o cache com o do servidor. A edição feita sem sinal sumia.
+  gravarPendente(dados);
   anunciar({ pendente: true });
   agendar();
 }

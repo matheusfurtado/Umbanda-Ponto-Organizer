@@ -8,6 +8,7 @@
  */
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { definirDono } from "@/dados/repositorio";
 import {
   cadastrar as cadastrarNaApi,
   entrar as entrarNaApi,
@@ -67,6 +68,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Começa do lembrado, SÍNCRONO: sem isto a tela pisca "deslogado" por um
   // instante antes de a resposta chegar, e o RotaProtegida chega a redirecionar.
   const [user, setUser] = useState<Usuario | null>(() => lembrado());
+
+  // Quem é o dono do que está pendente de envio.
+  //
+  // O pendente é guardado no aparelho para sobreviver a recarregar — e o
+  // aparelho pode ser o tablet do terreiro, onde uma pessoa sai e outra entra.
+  // Sem dizer de quem ele é, o acervo de quem saiu era empurrado para dentro da
+  // conta de quem entrou: não é sync, é sobrescrever a casa de outra pessoa.
+  //
+  // Roda também no logout (`user` vira nulo), que é quando o descarte importa.
+  useEffect(() => {
+    definirDono(user?.id ?? null);
+  }, [user?.id]);
   const [isPending, setIsPending] = useState(true);
 
   const recarregar = useCallback(async () => {

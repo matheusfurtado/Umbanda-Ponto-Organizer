@@ -100,6 +100,15 @@ export function baixarAcervo(): Promise<AppData> {
  * seria o cliente opinando sobre dado que não é dele.
  */
 export interface ResultadoEnvio {
+  /**
+   * A versão DEPOIS desta gravação.
+   *
+   * Sem aplicá-la, o cliente seguia com a versão que mandou — que o próprio
+   * envio acabou de invalidar — e o salvamento SEGUINTE levava 409 dizendo
+   * "mudou em outro aparelho" sem nada ter mudado. Se a pessoa respondesse
+   * "ficar com o do outro", perdia a própria edição.
+   */
+  versao: string;
   orixas: number;
   subcategorias: number;
   pontos: number;
