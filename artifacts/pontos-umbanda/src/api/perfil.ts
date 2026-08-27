@@ -84,3 +84,15 @@ export function definirFavoritosPublicos(publicos: boolean): Promise<void> {
     body: JSON.stringify({ publicos }),
   });
 }
+
+export interface GiraDeQuemSigo {
+  id: string;
+  nome: string;
+  pontos: number;
+  de: string;
+}
+
+export function girasDeQuemSigo(): Promise<GiraDeQuemSigo[]> {
+  return chamar<GiraDeQuemSigo[]>("/eu/giras-de-quem-sigo");
+}
+

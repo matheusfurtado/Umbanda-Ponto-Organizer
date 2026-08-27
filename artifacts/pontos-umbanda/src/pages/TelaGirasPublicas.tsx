@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "@/auth/AuthContext";
+import { girasDeQuemSigo, type GiraDeQuemSigo } from "@/api/perfil";
 import { Link } from "wouter";
-import { Globe } from "lucide-react";
+import { Globe, Users } from "lucide-react";
 import { CapaGira } from "@/componentes/CapaGira";
 import { publicas, type GiraPublica } from "@/api/repertorio";
 
@@ -16,12 +18,25 @@ import { publicas, type GiraPublica } from "@/api/repertorio";
 export function TelaGirasPublicas() {
   const [giras, setGiras] = useState<GiraPublica[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const { autenticado } = useAuth();
+  const [deQuemSigo, setDeQuemSigo] = useState<GiraDeQuemSigo[]>([]);
 
   useEffect(() => {
     publicas()
       .then(setGiras)
       .catch((e) => setErro(e instanceof Error ? e.message : "Falha ao carregar."));
   }, []);
+
+  // O que dá sentido ao seguir. Sem isto, seguir alguém só mexia num número no
+  // perfil dela — e ninguém segue para mudar um número.
+  //
+  // Falha em silêncio de propósito: se este pedaço não carregar, a vitrine
+  // continua inteira logo abaixo. Um erro aqui não pode esvaziar a página que
+  // é o canal de aquisição do produto.
+  useEffect(() => {
+    if (!autenticado) return;
+    girasDeQuemSigo().then(setDeQuemSigo).catch(() => setDeQuemSigo([]));
+  }, [autenticado]);
 
   return (
     <div className="max-w-5xl px-4 pb-24 pt-5 sm:px-8">
@@ -33,6 +48,29 @@ export function TelaGirasPublicas() {
       </p>
 
       {erro && <p role="alert" className="text-sm text-destructive">{erro}</p>}
+
+      {deQuemSigo.length > 0 && (
+        <section className="mb-8">
+          <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
+            <Users className="h-4 w-4 text-primary" aria-hidden /> De quem você segue
+          </h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {deQuemSigo.map((g) => (
+              <Link key={g.id} href={`/gira/${g.id}`}>
+                <a className="block rounded-xl bg-card/60 p-3 transition hover:bg-accent/50">
+                  <span className="mb-3 block aspect-square w-full">
+                    <CapaGira nome={g.nome} />
+                  </span>
+                  <span className="block truncate font-semibold text-foreground">{g.nome}</span>
+                  <span className="block truncate text-xs text-muted-foreground">
+                    {g.de} · {g.pontos} {g.pontos === 1 ? "ponto" : "pontos"}
+                  </span>
+                </a>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {giras === null ? (
         <div aria-busy="true" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
