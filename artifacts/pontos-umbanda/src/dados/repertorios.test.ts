@@ -293,3 +293,48 @@ test("edição nova sobre fila velha não se aproveita da versão que o cache j�
   assert.equal(a.sequenciaNoServidor(), "p1,p2", "o ponto do outro aparelho sumiu em silêncio");
   assert.deepEqual(estado.conflitos, ["r1"], "gravou por cima sem consultar a pessoa");
 });
+
+test("com a rede caída, decidir o conflito não custa a gira", async () => {
+  const a = await montar("6", {
+    fila: [["r1", { itens: [{ pontoId: "p1", secao: null }], versao: "vX" }]],
+    cache: [{ id: "r1", nome: "Abertura", versao: "vX", itens: [{ pontoId: "p1" }] }],
+    servidor: [{
+      id: "r1", nome: "Abertura", versao: "vB",
+      itens: [{ pontoId: "p1" }, { pontoId: "p2" }],
+    }],
+  });
+  let estado: { pendentes: number; conflitos: string[] } = {
+    pendentes: 0, conflitos: [],
+  };
+  a.mod.observarSincronia((e: typeof estado) => { estado = e });
+  a.mod.sincronizarAgora();
+  await respirar();
+  assert.deepEqual(estado.conflitos, ["r1"], "preparo do cenário falhou");
+
+  // A rede cai bem na hora de decidir.
+  const online = globalThis.fetch;
+  globalThis.fetch = (async () => { throw new TypeError("fetch failed") }) as typeof fetch;
+
+  // As duas saídas precisam AVISAR, e não engolir: é assim que a tela sabe que
+  // não aconteceu. E nenhuma pode custar a gira que ela montou aqui.
+  await assert.rejects(() => a.mod.forcarEnvio("r1"), "forçar falhou calado");
+  assert.equal(estado.pendentes, 1, "forçar sem rede jogou fora o que ela montou");
+  assert.deepEqual(estado.conflitos, ["r1"], "limpou o conflito sem ter resolvido");
+
+  await assert.rejects(() => a.mod.descartarPendente("r1"), "descartar falhou calado");
+  // Olhando o DISCO, não o último anúncio: quando a função estoura no meio, o
+  // anúncio nunca acontece e o estado observado fica velho — parecendo intacto
+  // enquanto a fila já foi apagada. Foi o que deixou uma mutação passar aqui.
+  assert.ok(a.naFila(), (
+    "descartou o que ela montou aqui SEM conseguir trazer o do servidor — " +
+    "ela fica sem as duas versões"
+  ));
+  assert.equal(estado.pendentes, 1);
+  assert.deepEqual(estado.conflitos, ["r1"]);
+
+  // Rede de volta: continua dando para decidir.
+  globalThis.fetch = online;
+  await a.mod.descartarPendente("r1");
+  assert.equal(estado.pendentes, 0);
+  assert.deepEqual(estado.conflitos, []);
+});

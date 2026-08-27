@@ -223,6 +223,30 @@ function FaixaSincronia({
   nomeDe: (id: string) => string;
   aoResolver: () => void;
 }) {
+  // As duas saídas do conflito falam com a rede: uma relê a versão do servidor
+  // antes de gravar, a outra busca a gira de lá para repor a tela. Sem estado
+  // de andamento os botões ficam idênticos a antes do clique numa rede lenta, e
+  // sem tratamento de erro a falha some — bem no momento em que a pessoa decide
+  // qual sequência da gira dela sobrevive.
+  const [resolvendo, setResolvendo] = useState(false);
+  const [erroDecisao, setErroDecisao] = useState<string | null>(null);
+
+  async function decidir(acao: () => Promise<void>) {
+    setResolvendo(true);
+    setErroDecisao(null);
+    try {
+      await acao();
+      aoResolver();
+    } catch (problema) {
+      setErroDecisao(
+        ehErroDeRede(problema)
+          ? "Sem conexão agora. Sua gira continua guardada neste aparelho — tente de novo quando a rede voltar."
+          : "Não consegui falar com o servidor. Sua gira continua guardada neste aparelho.",
+      );
+    } finally {
+      setResolvendo(false);
+    }
+  }
   // O conflito vem ANTES de tudo: é o único estado desta faixa que pede uma
   // decisão em vez de informar. Enquanto ele estiver aberto, o envio automático
   // não insiste — a gira fica parada esperando a pessoa, e ela precisa saber.
@@ -245,18 +269,26 @@ function FaixaSincronia({
               } esperando)`}
           </p>
         </div>
+        {erroDecisao && (
+          <p role="alert" className="mt-2 leading-snug text-destructive">
+            {erroDecisao}
+          </p>
+        )}
         <div className="mt-2 flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => void forcarEnvio(id).finally(aoResolver)}
-            className="min-h-11 rounded-md border px-3 font-medium"
+            onClick={() => void decidir(() => forcarEnvio(id))}
+            disabled={resolvendo}
+            className="inline-flex min-h-11 items-center gap-2 rounded-md border px-3 font-medium disabled:opacity-60"
           >
-            Mandar a deste aparelho
+            {resolvendo && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+            {resolvendo ? "Enviando…" : "Mandar a deste aparelho"}
           </button>
           <button
             type="button"
-            onClick={() => void descartarPendente(id).finally(aoResolver)}
-            className="min-h-11 rounded-md border px-3 font-medium"
+            onClick={() => void decidir(() => descartarPendente(id))}
+            disabled={resolvendo}
+            className="min-h-11 rounded-md border px-3 font-medium disabled:opacity-60"
           >
             Ficar com a do outro
           </button>

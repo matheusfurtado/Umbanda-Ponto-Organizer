@@ -318,10 +318,14 @@ export async function forcarEnvio(repertorioId: string): Promise<void> {
  * clicado em descartar e visto o descartado.
  */
 export async function descartarPendente(repertorioId: string): Promise<void> {
+  // Busca ANTES de descartar. Ao contrário, uma rede que cai no meio deixa a
+  // pessoa sem as duas: o que ela montou aqui já foi jogado fora, e o do
+  // servidor não chegou para pôr no lugar. Nesta ordem, a falha não custa
+  // nada — o pendente continua onde estava e ela tenta de novo.
+  const doServidor = (await listar()).find((r) => r.id === repertorioId);
   fila.delete(repertorioId);
   gravarFila();
   conflitos.delete(repertorioId);
-  const doServidor = (await listar()).find((r) => r.id === repertorioId);
   const cache = lerCache();
   if (cache) {
     gravarCache(

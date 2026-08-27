@@ -437,3 +437,38 @@ test("primeira abertura sem rede não é falha, é primeira abertura", async (t)
   assert.equal(carga.fonte, "local");
   assert.deepEqual(carga.dados.pontos, [], "veio acervo embutido: o portão do ADR 0002 fura aqui");
 });
+
+test("forçar o envio sem rede avisa, em vez de sumir com a decisão", async (t) => {
+  // A faixa de conflito chama isto no clique de "manter o deste aparelho". Se a
+  // falha for engolida, a pessoa clica e a tela não muda — ela conclui que não
+  // funcionou, ou que funcionou. Nas duas leituras ela erra.
+  const a = await montar("10", {
+    cache: acervo([{ id: "p1", titulo: "Ogum de Lei" }], "vX"),
+    pendente: {
+      dono: "u1",
+      dados: acervo([{ id: "p1", titulo: "Ogum de Lei" }, { id: "meu", titulo: "Meu ponto" }], "vX"),
+    },
+    servidor: acervo([{ id: "p1", titulo: "Ogum de Lei" }, { id: "outro", titulo: "De lá" }], "vB"),
+  });
+  t.after(() => a.encerrar());
+  let estado: { pendente: boolean; conflito: boolean } = { pendente: false, conflito: false };
+  a.mod.observarEnvio((e: typeof estado) => { estado = e });
+  a.mod.definirDono("u1");
+  a.mod.sincronizarAgora();
+  await respirar();
+  assert.equal(estado.conflito, true, "preparo do cenário falhou");
+
+  a.servidor.fora = true;
+  await assert.rejects(() => a.mod.forcarEnvio(), "a falha foi engolida");
+
+  assert.ok(a.pendenteNoDisco(), "perdeu o que ela fez neste aparelho");
+  assert.equal(estado.conflito, true, "deu o conflito por resolvido sem ter resolvido");
+  assert.equal(a.noServidor(), "p1,outro", "mexeu no servidor mesmo tendo falhado");
+
+  // Rede de volta: a decisão dela ainda vale.
+  a.servidor.fora = false;
+  await a.mod.forcarEnvio();
+  await respirar();
+  assert.equal(a.noServidor(), "p1,meu");
+  assert.equal(estado.conflito, false);
+});

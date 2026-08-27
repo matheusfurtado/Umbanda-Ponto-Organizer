@@ -10,13 +10,46 @@
  */
 
 import { useEffect, useState } from "react";
-import { AlertCircle, CloudOff, GitCompare, RefreshCw, UploadCloud } from "lucide-react";
+import {
+  AlertCircle, CloudOff, GitCompare, Loader2, RefreshCw, UploadCloud,
+} from "lucide-react";
+import { ehErroDeApi, ehErroDeRede } from "../api/cliente";
 import { contarSoDoServidor, descartarPendente, forcarEnvio } from "../dados/repositorio";
 import { useApp } from "../context";
 
 export function AvisoAcervo() {
   const { estado, fonte, motivoFalha, envio, sincronizarAgora, recarregar } = useApp();
   const [soDoServidor, setSoDoServidor] = useState(0);
+  /**
+   * A decisão do conflito é a única ação desta faixa que fala com a rede — e
+   * era a única sem estado nenhum.
+   *
+   * "Manter o deste aparelho" relê a versão do servidor antes de gravar. Numa
+   * rede ruim isso demora, e o botão ficava idêntico a antes do clique: a
+   * pessoa clicava de novo, ou concluía que não funcionou. Se a rede caísse,
+   * a promessa era descartada em silêncio (`void`) e NADA aparecia — no exato
+   * momento em que ela está decidindo qual cópia da gira dela sobrevive.
+   */
+  const [resolvendo, setResolvendo] = useState(false);
+  const [erroDecisao, setErroDecisao] = useState<string | null>(null);
+
+  async function manterODaqui() {
+    setResolvendo(true);
+    setErroDecisao(null);
+    try {
+      await forcarEnvio();
+    } catch (problema) {
+      setErroDecisao(
+        ehErroDeRede(problema)
+          ? "Sem conexão para enviar agora. Seus pontos continuam guardados aqui — tente de novo quando a rede voltar."
+          : ehErroDeApi(problema)
+            ? `O servidor respondeu ${problema.status}. Seus pontos continuam guardados aqui.`
+            : "Não consegui enviar. Seus pontos continuam guardados aqui.",
+      );
+    } finally {
+      setResolvendo(false);
+    }
+  }
 
   // Só conta quando há conflito de verdade: fora dele a consulta seria uma ida
   // ao servidor a cada render, para uma informação que ninguém vai ler.
@@ -105,13 +138,20 @@ export function AvisoAcervo() {
             {soDoServidor === 1 ? "o descarta" : "os descarta"}.
           </p>
         )}
+        {erroDecisao && (
+          <p role="alert" className="mt-2 leading-snug text-destructive">
+            {erroDecisao}
+          </p>
+        )}
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => void forcarEnvio()}
-            className="min-h-11 rounded-md border border-amber-500/40 px-3 font-medium text-amber-200"
+            onClick={() => void manterODaqui()}
+            disabled={resolvendo}
+            className="inline-flex min-h-11 items-center gap-2 rounded-md border border-amber-500/40 px-3 font-medium text-amber-200 disabled:opacity-60"
           >
-            Manter o deste aparelho
+            {resolvendo && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+            {resolvendo ? "Enviando…" : "Manter o deste aparelho"}
           </button>
           <button
             type="button"
@@ -119,7 +159,8 @@ export function AvisoAcervo() {
               descartarPendente();
               recarregar();
             }}
-            className="min-h-11 rounded-md border px-3 font-medium text-muted-foreground"
+            disabled={resolvendo}
+            className="min-h-11 rounded-md border px-3 font-medium text-muted-foreground disabled:opacity-60"
           >
             Ficar com o do outro
           </button>
