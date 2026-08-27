@@ -9,12 +9,32 @@
  * mostrar, e aí sim a tela precisa dizer isso.
  */
 
+import { useEffect, useState } from "react";
 import { AlertCircle, CloudOff, GitCompare, RefreshCw, UploadCloud } from "lucide-react";
-import { descartarPendente, forcarEnvio } from "../dados/repositorio";
+import { contarSoDoServidor, descartarPendente, forcarEnvio } from "../dados/repositorio";
 import { useApp } from "../context";
 
 export function AvisoAcervo() {
   const { estado, fonte, motivoFalha, envio, sincronizarAgora, recarregar } = useApp();
+  const [soDoServidor, setSoDoServidor] = useState(0);
+
+  // Só conta quando há conflito de verdade: fora dele a consulta seria uma ida
+  // ao servidor a cada render, para uma informação que ninguém vai ler.
+  useEffect(() => {
+    if (!envio.conflito) {
+      setSoDoServidor(0);
+      return;
+    }
+    let vivo = true;
+    contarSoDoServidor()
+      .then((n) => vivo && setSoDoServidor(n))
+      // Falha aqui não pode atrapalhar: o aviso principal continua de pé, e
+      // sem o número ele ainda diz o essencial.
+      .catch(() => undefined);
+    return () => {
+      vivo = false;
+    };
+  }, [envio.conflito]);
 
   if (estado === "erro") {
     return (
@@ -70,6 +90,21 @@ export function AvisoAcervo() {
           O que você fez aqui ainda não subiu, e o que veio do outro aparelho
           está guardado. Nada foi perdido — escolha o que fica.
         </p>
+        {/* Quantos pontos existem lá e não aqui.
+            O servidor acrescenta sozinho os que a comunidade aprovou desde a
+            última leitura, então "manter o deste aparelho" pode descartar ponto
+            que a pessoa NUNCA VIU. Descartar o que se escolheu apagar é uma
+            decisão; descartar o que nunca apareceu na tela é uma surpresa — e a
+            diferença precisa aparecer antes do clique. */}
+        {soDoServidor > 0 && (
+          <p className="mt-1 leading-snug text-amber-200/90">
+            Atenção: {soDoServidor}{" "}
+            {soDoServidor === 1 ? "ponto está" : "pontos estão"} só no servidor —
+            pode ser novidade da comunidade que ainda não chegou aqui. Manter o
+            deste aparelho{" "}
+            {soDoServidor === 1 ? "o descarta" : "os descarta"}.
+          </p>
+        )}
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             type="button"

@@ -140,6 +140,23 @@ function agendar() {
  * É uma decisão consciente da pessoa, com o servidor já mostrado a ela — não um
  * reenvio automático.
  */
+/**
+ * Quantos pontos existem NO SERVIDOR e não aqui.
+ *
+ * "Manter o deste aparelho" descarta esses — e a pessoa pode nunca tê-los
+ * visto: o servidor acrescenta sozinho os pontos que a comunidade aprovou
+ * desde a última leitura (ADR 0005). Descartar o que se escolheu apagar é uma
+ * decisão; descartar o que nunca apareceu na tela é uma surpresa.
+ *
+ * Não decido por ela: conto, e a tela avisa antes.
+ */
+export async function contarSoDoServidor(): Promise<number> {
+  if (!aguardando) return 0;
+  const atual = await baixarAcervo();
+  const meus = new Set(aguardando.pontos.map((p) => p.id));
+  return atual.pontos.filter((p) => !meus.has(p.id)).length;
+}
+
 export async function forcarEnvio(): Promise<void> {
   if (!aguardando) return;
   const atual = await baixarAcervo();
