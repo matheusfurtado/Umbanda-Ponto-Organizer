@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useRoute } from "wouter";
-import { Check, Eye, EyeOff, ListMusic, Loader2, Star, UserPlus } from "lucide-react";
+import { Link, useLocation, useRoute } from "wouter";
+import { Check, Eye, EyeOff, ListMusic, Loader2, Star, UserPen, UserPlus } from "lucide-react";
 import { Avatar } from "@/componentes/Avatar";
+import { TrocarApelido } from "@/componentes/TrocarApelido";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
 import {
@@ -29,6 +30,8 @@ export function TelaPerfil() {
   const [, params] = useRoute("/perfil/:apelido");
   const apelido = params?.apelido ? decodeURIComponent(params.apelido) : "";
   const { autenticado } = useAuth();
+  const [, navegar] = useLocation();
+  const [trocando, setTrocando] = useState(false);
 
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -128,6 +131,15 @@ export function TelaPerfil() {
 
             <div className="mt-4 flex flex-wrap items-center gap-2">
               {perfil.souEu ? (
+                <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setTrocando(true)}
+                  className="gap-1.5"
+                >
+                  <UserPen className="h-4 w-4" /> Editar perfil
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
@@ -144,6 +156,7 @@ export function TelaPerfil() {
                   )}
                   {perfil.favoritos === null ? "Mostrar meus favoritos" : "Esconder meus favoritos"}
                 </Button>
+                </>
               ) : autenticado ? (
                 <Button
                   size="sm"
@@ -206,6 +219,23 @@ export function TelaPerfil() {
             </div>
           )}
         </section>
+
+        {/* Trocar o apelido MOVE esta página: a URL é o apelido. Sem navegar,
+            a tela ficaria apontando para um nome que não existe mais e daria
+            404 no primeiro recarregamento — logo depois de a pessoa mexer nas
+            próprias configurações, que é o pior momento para o app parecer
+            quebrado. */}
+        <TrocarApelido
+          aberto={trocando}
+          onFechar={(novo) => {
+            setTrocando(false);
+            if (novo && novo.toLowerCase() !== perfil.apelido.toLowerCase()) {
+              navegar(`/perfil/${encodeURIComponent(novo)}`);
+            } else if (novo) {
+              carregar();
+            }
+          }}
+        />
 
         {perfil.favoritos !== null && (
           <section>

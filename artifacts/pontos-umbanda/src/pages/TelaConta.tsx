@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
 import { apelido, inicial } from "@/auth/apelido";
+import { TrocarApelido } from "@/componentes/TrocarApelido";
 import { pedirVerificacao } from "@/api/conta";
 import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -27,6 +28,7 @@ export function TelaConta() {
   const { ent, loading: entLoading } = useEntitlements();
   const [, navegar] = useLocation();
   const [migrar, setMigrar] = useState(false);
+  const [trocando, setTrocando] = useState(false);
   const [baixando, setBaixando] = useState(false);
   const [confirmandoBaixar, setConfirmandoBaixar] = useState(false);
   const [baixandoConta, setBaixandoConta] = useState(false);
@@ -80,7 +82,7 @@ export function TelaConta() {
           </Button>
         </Link>
 
-        <div className="flex items-center gap-3 mb-8">
+        <div className="flex items-center gap-3 mb-6">
           <span className="w-14 h-14 rounded-full bg-primary/25 text-primary flex items-center justify-center text-xl font-semibold">
             {inicial(user?.email)}
           </span>
@@ -89,6 +91,40 @@ export function TelaConta() {
             <p className="text-muted-foreground text-sm truncate">{user?.email}</p>
           </div>
         </div>
+
+        {/* O nome PÚBLICO, separado do e-mail de propósito.
+            São coisas diferentes e a confusão entre elas é o risco central
+            deste app: o e-mail identifica a pessoa e nunca aparece para
+            ninguém; o apelido é o que o mundo vê ao lado de uma lista de
+            pontos de Umbanda. Mostrar os dois na mesma linha, como se fossem
+            variações do mesmo dado, é como alguém acaba publicando o errado. */}
+        <div className="mb-8 rounded-xl border p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground">Nome público</p>
+              <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                {user?.apelido || "Você ainda não escolheu"}
+              </p>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setTrocando(true)}>
+              {user?.apelido ? "Trocar" : "Escolher"}
+            </Button>
+          </div>
+          <p className="mt-2 text-xs leading-snug text-muted-foreground">
+            É o que aparece no seu perfil, nas giras que você publica e embaixo dos
+            pontos que você envia. Seu e-mail nunca aparece para outras pessoas.
+          </p>
+          {user?.apelido && (
+            <Link
+              href={`/perfil/${encodeURIComponent(user.apelido)}`}
+              className="mt-2 inline-block text-xs font-medium text-primary underline"
+            >
+              Ver meu perfil como os outros veem
+            </Link>
+          )}
+        </div>
+
+        <TrocarApelido aberto={trocando} onFechar={() => setTrocando(false)} />
 
         {entLoading ? (
           <div className="mb-6 h-16 rounded-xl bg-muted/40 animate-pulse" />
