@@ -21,7 +21,7 @@ import type { Ponto } from "@/types";
  * quase sempre montando uma gira — que se pensa por orixá.
  */
 export function TelaFavoritos() {
-  const { dados } = useApp();
+  const { dados, estado } = useApp();
   const { adicionar, sugerir, modais } = useAcoesDePonto();
 
   const grupos = useMemo(() => {
@@ -58,7 +58,25 @@ export function TelaFavoritos() {
           : "Ficam guardados neste aparelho e na sua conta."}
       </p>
 
-      {total === 0 ? (
+      {/* "Você não tem favoritos" e "não consegui carregar o acervo" são coisas
+          diferentes, e dizer a primeira quando a verdade é a segunda faz a
+          pessoa achar que PERDEU o que marcou. O acervo é lido do cache de
+          forma síncrona, então isto só aparece na primeiríssima visita ou
+          quando a rede falhou antes de haver cache — que é justamente quando
+          errar a mensagem dói mais. */}
+      {dados.pontos.length === 0 && estado === "carregando" ? (
+        <div aria-busy="true" aria-label="Carregando o acervo" className="space-y-2">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-14 animate-pulse rounded-lg bg-muted/40" />
+          ))}
+        </div>
+      ) : dados.pontos.length === 0 && estado === "erro" ? (
+        <p role="alert" className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
+          Não consegui carregar o acervo e não há nada guardado neste aparelho ainda,
+          então não dá para saber quais são os seus favoritos. Confira a conexão e
+          recarregue — nada foi perdido.
+        </p>
+      ) : total === 0 ? (
         <div className="rounded-xl border border-dashed p-8 text-center">
           <Star className="mx-auto mb-3 h-6 w-6 text-muted-foreground" aria-hidden />
           <p className="mx-auto max-w-sm text-sm text-muted-foreground">
