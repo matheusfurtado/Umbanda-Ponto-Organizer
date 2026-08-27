@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
-import { Home, Search, ListMusic, Plus, Palette, Send, ShieldCheck, Sparkles, Globe, Star } from "lucide-react";
+import { Home, Search, ListMusic, Plus, Palette, Send, ShieldCheck, Sparkles, Globe, Star, Users } from "lucide-react";
 import { useApp } from "@/context";
+import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { useAuth } from "@/auth/AuthContext";
 
@@ -21,6 +22,9 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
   const [local] = useLocation();
   const { dados } = useApp();
   const favoritos = dados.pontos.filter((p) => p.favorito).length;
+  // Só as entidades: "Início" é momento da gira, e contá-lo como orixá
+  // é a mesma informação errada que o grid dava.
+  const orixas = dados.orixas.filter((o) => o.tipo !== "momento").length;
   const { ent } = useEntitlements();
   const { autenticado, user } = useAuth();
 
@@ -57,6 +61,21 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
       <Link href="/giras-publicas" className={item(local.startsWith("/giras-publicas"))}>
         <Globe className="h-4 w-4" aria-hidden /> Giras da comunidade
       </Link>
+      {autenticado && (
+        <Link href="/seguindo" className={item(local === "/seguindo")}>
+          <Users className="h-4 w-4" aria-hidden /> Seguindo
+        </Link>
+      )}
+      {/* Só para quem escolheu apelido: sem ele não existe perfil, e um link
+          para uma página que responde 404 é pior que link nenhum. */}
+      {autenticado && user?.apelido && (
+        <Link
+          href={`/perfil/${encodeURIComponent(user.apelido)}`}
+          className={item(local === `/perfil/${encodeURIComponent(user.apelido)}`)}
+        >
+          <Avatar apelido={user.apelido} tamanho="sm" /> Meu perfil
+        </Link>
+      )}
 
       {/* Contribuir exige CONTA, não plano: o acervo cresce por quem canta, e
           cobrar para contribuir afastaria quem tem ponto para dar. */}
@@ -115,7 +134,7 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
           <Palette className="h-4 w-4" aria-hidden /> Aparência
         </button>
         <p className="px-3 text-[11px] text-muted-foreground">
-          {dados.pontos.length} pontos · {dados.orixas.length} orixás
+          {dados.pontos.length} pontos · {orixas} orixás
         </p>
       </div>
     </aside>

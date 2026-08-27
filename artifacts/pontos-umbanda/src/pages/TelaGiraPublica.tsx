@@ -66,7 +66,21 @@ export function TelaGiraPublica() {
               {gira.nome}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              por <strong className="font-medium text-foreground">{gira.de}</strong>
+              {/* Leva ao perfil de quem montou — é daqui que se descobre
+                  gente para seguir, como no Spotify se chega ao artista pela
+                  música. "Anônimo" não é link: é o rótulo de quando o apelido
+                  falta, e não corresponde a perfil nenhum. */}
+              por{" "}
+              {gira.de && gira.de !== "Anônimo" ? (
+                <Link
+                  href={`/perfil/${encodeURIComponent(gira.de)}`}
+                  className="font-medium text-foreground underline decoration-muted-foreground/40 underline-offset-2 hover:decoration-foreground"
+                >
+                  {gira.de}
+                </Link>
+              ) : (
+                <strong className="font-medium text-foreground">{gira.de}</strong>
+              )}
               {" · "}{gira.itens.length} {gira.itens.length === 1 ? "ponto" : "pontos"}
               {duracao > 0 && ` · cerca de ${Math.round(duracao / 60)} min`}
             </p>

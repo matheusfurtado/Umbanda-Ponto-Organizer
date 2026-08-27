@@ -26,6 +26,8 @@ import { TelaRedefinir } from "@/pages/TelaRedefinir";
 import { TelaVerificar } from "@/pages/TelaVerificar";
 import { TelaConta } from "@/pages/TelaConta";
 import { TelaFavoritos } from "@/pages/TelaFavoritos";
+import { TelaPerfil } from "@/pages/TelaPerfil";
+import { TelaSeguindo } from "@/pages/TelaSeguindo";
 import { TelaPlanos } from "@/pages/TelaPlanos";
 import { TelaRetornoPagamento } from "@/pages/TelaRetornoPagamento";
 import { TelaRepertorios } from "@/pages/TelaRepertorios";
@@ -154,6 +156,16 @@ function App() {
                   {/* Sem RotaProtegida de propósito: a vitrine e o link de uma
                       gira precisam abrir para quem NÃO tem conta — é por eles
                       que o app circula no boca a boca do terreiro. */}
+                  {/* Sem RotaProtegida: um link de perfil precisa abrir para
+                      quem não tem conta, pelo mesmo motivo da vitrine. */}
+                  <Route path="/perfil/:apelido">
+                    <TelaPerfil />
+                  </Route>
+                  <Route path="/seguindo">
+                    <RotaProtegida>
+                      <TelaSeguindo />
+                    </RotaProtegida>
+                  </Route>
                   <Route path="/giras-publicas">
                     <TelaGirasPublicas />
                   </Route>

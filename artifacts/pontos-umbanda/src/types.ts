@@ -67,6 +67,17 @@ export interface Orixa {
   cor: string;
   emoji: string;
   ordem: number;
+  /**
+   * `orixa` ou `momento`. Nem toda linha do acervo é um orixá.
+   *
+   * "Início" é a abertura da gira, e dentro dela vêm Defumação, Almas, Exu,
+   * Oxalá, Anjo de Guarda e Saudações. No mesmo grid, ele aparecia ao lado de
+   * Iemanjá como se fosse uma entidade — e Oxalá aparecia com zero pontos,
+   * porque os pontos de Oxalá estão justamente ali dentro.
+   *
+   * Opcional para o cache de quem abriu o app antes desta versão.
+   */
+  tipo?: "orixa" | "momento";
   criadoEm: number;
 }
 

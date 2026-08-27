@@ -1,0 +1,244 @@
+import { useCallback, useEffect, useState } from "react";
+import { Link, useRoute } from "wouter";
+import { Check, Eye, EyeOff, ListMusic, Loader2, Star, UserPlus } from "lucide-react";
+import { Avatar } from "@/componentes/Avatar";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/auth/AuthContext";
+import {
+  definirFavoritosPublicos,
+  deixarDeSeguir,
+  seguir,
+  verPerfil,
+  type Perfil,
+} from "@/api/perfil";
+
+/**
+ * O perfil de alguém — o formato do Spotify, com o peso deste domínio.
+ *
+ * Cabeçalho grande com a marca, o nome e as contagens; abaixo, o que a pessoa
+ * escolheu mostrar: as giras públicas e, se ela abriu, os favoritos.
+ *
+ * **O que não está aqui é a parte importante.** Não há lista de seguidores nem
+ * de quem a pessoa segue — só o número. Num app de Umbanda, essa lista é um
+ * mapa da rede religiosa de alguém, e o servidor nem devolve os nomes.
+ *
+ * Abre sem conta, de propósito: é por um link de perfil que o app circula no
+ * grupo do terreiro, e pedir cadastro para ver mata o canal que não custa nada.
+ */
+export function TelaPerfil() {
+  const [, params] = useRoute("/perfil/:apelido");
+  const apelido = params?.apelido ? decodeURIComponent(params.apelido) : "";
+  const { autenticado } = useAuth();
+
+  const [perfil, setPerfil] = useState<Perfil | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+  const [ocupado, setOcupado] = useState(false);
+
+  const carregar = useCallback(() => {
+    if (!apelido) return;
+    setErro(null);
+    verPerfil(apelido)
+      .then(setPerfil)
+      .catch((e) => setErro(e instanceof Error ? e.message : "Não achei esse perfil."));
+  }, [apelido]);
+
+  useEffect(carregar, [carregar]);
+
+  const alternarSeguir = async () => {
+    if (!perfil || ocupado) return;
+    setOcupado(true);
+    // Otimista: o botão responde na hora e o número acompanha. Se falhar, o
+    // `carregar()` do fim devolve a verdade do servidor.
+    const seguindoAgora = perfil.euSigo;
+    setPerfil({
+      ...perfil,
+      euSigo: !seguindoAgora,
+      seguidores: perfil.seguidores + (seguindoAgora ? -1 : 1),
+    });
+    try {
+      await (seguindoAgora ? deixarDeSeguir(perfil.apelido) : seguir(perfil.apelido));
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Não consegui.");
+    } finally {
+      setOcupado(false);
+      carregar();
+    }
+  };
+
+  const alternarFavoritos = async () => {
+    if (!perfil || ocupado) return;
+    setOcupado(true);
+    try {
+      await definirFavoritosPublicos(perfil.favoritos === null);
+      carregar();
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Não consegui.");
+    } finally {
+      setOcupado(false);
+    }
+  };
+
+  if (erro && !perfil) {
+    return (
+      <div className="max-w-3xl px-4 pb-24 pt-16 text-center sm:px-8">
+        <p className="text-sm text-muted-foreground">{erro}</p>
+        <Link href="/giras-publicas" className="mt-4 inline-block text-sm text-primary underline">
+          Ver as giras da comunidade
+        </Link>
+      </div>
+    );
+  }
+
+  if (!perfil) {
+    return (
+      <div aria-busy="true" className="max-w-4xl px-4 pb-24 pt-8 sm:px-8">
+        <div className="flex items-end gap-5">
+          <div className="h-32 w-32 animate-pulse rounded-full bg-muted/50 sm:h-40 sm:w-40" />
+          <div className="flex-1 space-y-3 pb-2">
+            <div className="h-10 w-2/3 animate-pulse rounded bg-muted/50" />
+            <div className="h-4 w-1/3 animate-pulse rounded bg-muted/40" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const n = (q: number, um: string, muitos: string) =>
+    `${q} ${q === 1 ? um : muitos}`;
+
+  return (
+    <div className="min-h-full">
+      <div className="bg-gradient-to-b from-primary/15 to-transparent px-4 pb-8 pt-8 sm:px-8">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
+          <Avatar apelido={perfil.apelido} tamanho="lg" />
+          <div className="min-w-0 pb-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Perfil
+            </p>
+            <h1 className="mt-1 break-words text-4xl font-black leading-tight text-foreground sm:text-5xl">
+              {perfil.apelido}
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {n(perfil.giras.length, "gira pública", "giras públicas")}
+              {" · "}
+              {n(perfil.seguidores, "seguidor", "seguidores")}
+              {" · "}
+              seguindo {perfil.seguindo}
+            </p>
+
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              {perfil.souEu ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={alternarFavoritos}
+                  disabled={ocupado}
+                  className="gap-1.5"
+                >
+                  {ocupado ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : perfil.favoritos === null ? (
+                    <Eye className="h-4 w-4" />
+                  ) : (
+                    <EyeOff className="h-4 w-4" />
+                  )}
+                  {perfil.favoritos === null ? "Mostrar meus favoritos" : "Esconder meus favoritos"}
+                </Button>
+              ) : autenticado ? (
+                <Button
+                  size="sm"
+                  variant={perfil.euSigo ? "outline" : "default"}
+                  onClick={alternarSeguir}
+                  disabled={ocupado}
+                  className="gap-1.5"
+                >
+                  {perfil.euSigo ? <Check className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
+                  {perfil.euSigo ? "Seguindo" : "Seguir"}
+                </Button>
+              ) : (
+                <Link href="/login">
+                  <Button size="sm" variant="outline" className="gap-1.5">
+                    <UserPlus className="h-4 w-4" /> Entrar para seguir
+                  </Button>
+                </Link>
+              )}
+            </div>
+            {perfil.souEu && (
+              // O aviso fica colado no botão, e não numa tela de ajuda: é aqui
+              // que a decisão é tomada. Ver o que se revela DEPOIS de revelar
+              // não serve para nada.
+              <p className="mt-2 max-w-md text-xs text-muted-foreground">
+                {perfil.favoritos === null
+                  ? "Seus favoritos estão fechados. Abrir mostra a qualquer pessoa quais pontos você mais canta — o que diz muito sobre a sua linha e a sua casa."
+                  : "Seus favoritos estão abertos: qualquer pessoa com o link vê esta lista."}
+              </p>
+            )}
+            {erro && <p role="alert" className="mt-2 text-xs text-destructive">{erro}</p>}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-4xl px-4 pb-24 sm:px-8">
+        <section className="mb-8">
+          <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
+            <ListMusic className="h-4 w-4 text-primary" aria-hidden /> Giras públicas
+          </h2>
+          {perfil.giras.length === 0 ? (
+            <p className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
+              {perfil.souEu
+                ? "Você ainda não publicou nenhuma gira. Em Minhas giras dá para tornar uma pública."
+                : "Nenhuma gira pública ainda."}
+            </p>
+          ) : (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {perfil.giras.map((g) => (
+                <Link
+                  key={g.id}
+                  href={`/gira/${g.id}`}
+                  className="rounded-xl border bg-card/40 p-3 transition hover:border-primary/40"
+                >
+                  <p className="truncate font-semibold text-foreground">{g.nome}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {n(g.pontos, "ponto", "pontos")}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {perfil.favoritos !== null && (
+          <section>
+            <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
+              <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden />
+              Favoritos
+            </h2>
+            {perfil.favoritos.length === 0 ? (
+              <p className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
+                Nenhum ponto favoritado ainda.
+              </p>
+            ) : (
+              <ol className="divide-y divide-border/60 rounded-xl border">
+                {perfil.favoritos.map((f, i) => (
+                  <li key={f.id} className="flex items-baseline gap-3 px-3 py-2.5">
+                    <span className="w-6 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+                      {i + 1}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm text-foreground">{f.titulo}</span>
+                      {f.orixa && (
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {f.orixa}
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
+        )}
+      </div>
+    </div>
+  );
+}

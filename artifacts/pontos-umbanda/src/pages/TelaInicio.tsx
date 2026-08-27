@@ -72,6 +72,17 @@ export function TelaInicio({
   }, [busca, dados.pontos]);
 
   const favoritos = useMemo(() => dados.pontos.filter((p) => p.favorito), [dados.pontos]);
+
+  // `tipo` ausente conta como orixá: é o cache de quem abriu o app antes desta
+  // versão, e sumir com os cartões dele seria pior que mostrá-los juntos.
+  const entidades = useMemo(
+    () => dados.orixas.filter((o) => o.tipo !== "momento"),
+    [dados.orixas],
+  );
+  const momentos = useMemo(
+    () => dados.orixas.filter((o) => o.tipo === "momento"),
+    [dados.orixas],
+  );
   const buscando = busca.trim().length >= 2;
 
   return (
@@ -80,7 +91,7 @@ export function TelaInicio({
         <div>
           <h1 className="text-2xl font-black text-foreground sm:text-3xl">Acervo</h1>
           <p className="text-sm text-muted-foreground">
-            {dados.pontos.length} pontos em {dados.orixas.length} orixás
+            {dados.pontos.length} pontos em {entidades.length} orixás
           </p>
         </div>
         <MenuUsuario />
@@ -163,11 +174,11 @@ export function TelaInicio({
                   : "Nenhum orixá no acervo."}
               </p>
             ) : (
-              // Mais colunas = capa menor. Catorze orixás em cartões grandes
-              // viravam uma parede de cor que exigia rolar para ver o acervo
-              // inteiro; o ponto da grade é caber tudo de uma olhada.
+              // Mais colunas = capa menor. Treze cartões grandes viravam uma
+              // parede de cor que exigia rolar para ver o acervo inteiro; o
+              // ponto da grade é caber tudo de uma olhada.
               <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
-                {dados.orixas.map((o) => (
+                {entidades.map((o) => (
                   <CardOrixa
                     key={o.id}
                     orixa={o}
@@ -178,6 +189,33 @@ export function TelaInicio({
               </div>
             )}
           </section>
+
+          {/* Separado dos orixás porque NÃO é orixá.
+              "Início" é a abertura da gira — dentro dela vêm Defumação, Almas,
+              Exu, Oxalá, Anjo de Guarda, Saudações. Misturado no grid, ele
+              aparecia ao lado de Iemanjá como se fosse uma entidade, e quem
+              procurava Oxalá o encontrava com zero pontos: os de Oxalá estão
+              aqui dentro. */}
+          {momentos.length > 0 && (
+            <section aria-label="Momentos da gira" className="mt-8">
+              <h2 className="mb-1 px-2 text-lg font-bold text-foreground">
+                Momentos da gira
+              </h2>
+              <p className="mb-3 px-2 text-sm text-muted-foreground">
+                Não são orixás: são partes da sequência, na ordem em que se canta.
+              </p>
+              <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
+                {momentos.map((o) => (
+                  <CardOrixa
+                    key={o.id}
+                    orixa={o}
+                    quantos={porOrixa.get(o.id) ?? 0}
+                    onClick={() => onAbrirOrixa(o)}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
 
           {!ent.repertorios && dados.orixas.length > 0 && (
             <section className="mt-10 rounded-xl border border-dashed p-6">
