@@ -73,7 +73,7 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
           href={`/perfil/${encodeURIComponent(user.apelido)}`}
           className={item(local === `/perfil/${encodeURIComponent(user.apelido)}`)}
         >
-          <Avatar apelido={user.apelido} tamanho="sm" /> Meu perfil
+          <Avatar apelido={user.apelido} foto={user.foto} tamanho="sm" /> Meu perfil
         </Link>
       )}
 

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useRoute } from "wouter";
-import { Check, Eye, EyeOff, ListMusic, Loader2, Star, UserPen, UserPlus } from "lucide-react";
+import {
+  Camera, Check, Eye, EyeOff, ListMusic, Loader2, Star, Trash2, UserPen, UserPlus,
+} from "lucide-react";
 import { Avatar } from "@/componentes/Avatar";
 import { TrocarApelido } from "@/componentes/TrocarApelido";
 import { Button } from "@/components/ui/button";
@@ -8,10 +10,106 @@ import { useAuth } from "@/auth/AuthContext";
 import {
   definirFavoritosPublicos,
   deixarDeSeguir,
+  enviarFoto,
   seguir,
+  tirarFoto,
   verPerfil,
   type Perfil,
 } from "@/api/perfil";
+
+/**
+ * A foto do perfil, do lado de quem é dono dela.
+ *
+ * O botão fica SOBRE a imagem, e não numa tela de configuração escondida: a
+ * pessoa está olhando o próprio perfil quando pensa "quero trocar isso".
+ *
+ * A recusa do servidor vem pronta para ler — "essa imagem é grande demais",
+ * "use JPEG, PNG ou WebP" — então é ela que aparece, sem tradução no meio.
+ */
+function TrocarFoto({
+  perfil,
+  aoTrocar,
+}: {
+  perfil: Perfil;
+  aoTrocar: () => void;
+}) {
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+
+  async function escolher(evento: React.ChangeEvent<HTMLInputElement>) {
+    const arquivo = evento.target.files?.[0];
+    // Limpa o input mesmo se a pessoa desistir: sem isto, escolher o MESMO
+    // arquivo de novo não dispara evento nenhum e parece que travou.
+    evento.target.value = "";
+    if (!arquivo) return;
+    setEnviando(true);
+    setErro(null);
+    try {
+      await enviarFoto(arquivo);
+      aoTrocar();
+    } catch (problema) {
+      setErro(problema instanceof Error ? problema.message : "Não consegui enviar a imagem.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  async function remover() {
+    setEnviando(true);
+    setErro(null);
+    try {
+      await tirarFoto();
+      aoTrocar();
+    } catch (problema) {
+      setErro(problema instanceof Error ? problema.message : "Não consegui tirar a foto.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="relative w-fit">
+        <Avatar apelido={perfil.apelido} foto={perfil.foto} tamanho="lg" />
+        <label
+          className="absolute bottom-1 right-1 inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full border border-border bg-background/90 shadow-sm"
+          title={perfil.foto ? "Trocar a foto" : "Pôr uma foto"}
+        >
+          {enviando ? (
+            <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+          ) : (
+            <Camera className="h-5 w-5" aria-hidden />
+          )}
+          <span className="sr-only">
+            {perfil.foto ? "Trocar a foto do perfil" : "Pôr uma foto no perfil"}
+          </span>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="sr-only"
+            disabled={enviando}
+            onChange={(e) => void escolher(e)}
+          />
+        </label>
+      </div>
+      {perfil.foto && !enviando && (
+        <button
+          type="button"
+          onClick={() => void remover()}
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2"
+        >
+          <Trash2 className="h-3.5 w-3.5" aria-hidden />
+          Tirar a foto
+        </button>
+      )}
+      {erro && (
+        <p role="alert" className="max-w-40 text-xs leading-snug text-destructive">
+          {erro}
+        </p>
+      )}
+    </div>
+  );
+}
 
 /**
  * O perfil de alguém — o formato do Spotify, com o peso deste domínio.
@@ -113,7 +211,11 @@ export function TelaPerfil() {
     <div className="min-h-full">
       <div className="bg-gradient-to-b from-primary/15 to-transparent px-4 pb-8 pt-8 sm:px-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
-          <Avatar apelido={perfil.apelido} tamanho="lg" />
+          {perfil.souEu ? (
+            <TrocarFoto perfil={perfil} aoTrocar={carregar} />
+          ) : (
+            <Avatar apelido={perfil.apelido} foto={perfil.foto} tamanho="lg" />
+          )}
           <div className="min-w-0 pb-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Perfil

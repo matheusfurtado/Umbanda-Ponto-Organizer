@@ -60,7 +60,7 @@ export function TelaSeguindo() {
               href={`/perfil/${encodeURIComponent(p.apelido)}`}
               className="flex items-center gap-3 rounded-xl border bg-card/40 p-3 transition hover:border-primary/40"
             >
-              <Avatar apelido={p.apelido} />
+              <Avatar apelido={p.apelido} foto={p.foto} />
               <span className="min-w-0">
                 <span className="block truncate font-semibold text-foreground">
                   {p.apelido}

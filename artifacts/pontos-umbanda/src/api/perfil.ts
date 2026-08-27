@@ -43,6 +43,8 @@ export interface FavoritoDoPerfil {
 
 export interface Perfil {
   apelido: string;
+  /** Endereço da foto, com a versão junto. `null` = usa a marca gerada. */
+  foto: string | null;
   seguidores: number;
   seguindo: number;
   euSigo: boolean;
@@ -54,6 +56,7 @@ export interface Perfil {
 
 export interface PerfilResumo {
   apelido: string;
+  foto: string | null;
   giras: number;
   euSigo: boolean;
 }
@@ -96,3 +99,39 @@ export function girasDeQuemSigo(): Promise<GiraDeQuemSigo[]> {
   return chamar<GiraDeQuemSigo[]>("/eu/giras-de-quem-sigo");
 }
 
+
+
+/**
+ * Põe (ou troca) a foto do perfil.
+ *
+ * Vai como `multipart`, e de propósito NÃO passa pelo `chamar` de JSON: o
+ * navegador precisa montar o `Content-Type` com a fronteira do formulário, e
+ * fixá-lo à mão quebra o upload de um jeito que só aparece no servidor.
+ */
+export async function enviarFoto(arquivo: File): Promise<string> {
+  const corpo = new FormData();
+  corpo.append("arquivo", arquivo);
+  const resposta = await fetch(`${BASE}/eu/foto`, {
+    method: "PUT",
+    body: corpo,
+    credentials: "same-origin",
+  });
+  if (!resposta.ok) {
+    let detalhe = resposta.statusText;
+    try {
+      detalhe = (await resposta.json())?.detail ?? detalhe;
+    } catch {
+      /* corpo não-JSON */
+    }
+    // Mesma forma de erro do `chamar` acima: quem trata já sabe ler `status`.
+    const erro = new Error(String(detalhe)) as Error & { status?: number };
+    erro.status = resposta.status;
+    throw erro;
+  }
+  return ((await resposta.json()) as { foto: string }).foto;
+}
+
+/** Volta para a marca gerada a partir do apelido. */
+export function tirarFoto(): Promise<void> {
+  return chamar<void>("/eu/foto", { method: "DELETE" }) as Promise<void>;
+}

@@ -19,6 +19,8 @@ export interface Usuario {
    *  servidor recusa publicar gira, porque o rótulo alternativo seria o
    *  e-mail, e e-mail ao lado de pontos de Umbanda publica a religião dela. */
   apelido?: string | null;
+  /** Endereço da foto do perfil, com a versão. `null` = marca gerada. */
+  foto?: string | null;
   consentiu_dado_religioso_em: string | null;
   consentiu_comunicacao_em: string | null;
   criado_em: string;

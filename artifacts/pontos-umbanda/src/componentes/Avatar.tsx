@@ -1,13 +1,17 @@
 /**
- * A "foto" de um perfil.
+ * A foto de um perfil — ou a marca que faz as vezes dela.
  *
- * Não há foto e não vai haver tão cedo: pedir imagem a quem se identifica como
- * de Umbanda é pedir um rosto colado a uma convicção religiosa, e isso não se
- * despublica. Então a marca é gerada — a inicial do apelido sobre um gradiente
- * derivado do próprio nome, igual para a mesma pessoa em qualquer aparelho.
+ * **A foto é opcional, e a ausência dela não pode parecer defeito.** Quem não
+ * mandou nenhuma recebe uma marca gerada: a inicial do apelido sobre um
+ * gradiente derivado do próprio nome, igual para a mesma pessoa em qualquer
+ * aparelho. Sem âncora visual a tela vira lista de arquivo.
  *
- * É a mesma escolha da `Capa` dos orixás, pelo mesmo motivo: sem âncora visual
- * a tela vira lista de arquivo, e ninguém paga por lista de arquivo.
+ * Por muito tempo não havia foto nenhuma, por um receio legítimo: pedir imagem
+ * a quem se identifica como de Umbanda é pedir um rosto colado a uma convicção
+ * religiosa. O Matheus decidiu abrir — não se pede rosto, a pessoa põe o que
+ * quiser — e o cuidado migrou para onde ele rende mais: o servidor reencoda
+ * toda imagem e joga fora o EXIF, porque a coordenada de GPS que vem numa foto
+ * de celular publicaria onde fica o terreiro (`servicos/foto_perfil.py`).
  */
 
 function matiz(nome: string): number {
@@ -20,9 +24,12 @@ function matiz(nome: string): number {
 
 export function Avatar({
   apelido,
+  foto,
   tamanho = "md",
 }: {
   apelido: string;
+  /** Endereço vindo da API. `null`/ausente = marca gerada. */
+  foto?: string | null;
   tamanho?: "sm" | "md" | "lg";
 }) {
   const h = matiz(apelido || "?");
@@ -32,6 +39,19 @@ export function Avatar({
       : tamanho === "sm"
         ? "h-9 w-9 text-sm"
         : "h-12 w-12 text-lg";
+
+  if (foto) {
+    return (
+      <img
+        src={foto}
+        // Vazio e não "foto de fulano": o nome já está escrito ao lado, e
+        // leitor de tela repetindo o mesmo nome duas vezes atrapalha.
+        alt=""
+        className={`shrink-0 rounded-full object-cover ${classe}`}
+        loading="lazy"
+      />
+    );
+  }
 
   return (
     <div
