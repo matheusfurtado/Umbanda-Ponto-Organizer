@@ -46,6 +46,14 @@ export interface EstadoSincronia {
   /** Quantos repertórios têm mudança local que o servidor ainda não recebeu. */
   pendentes: number;
   ultimoErro?: string;
+  /**
+   * Os ids das giras que o servidor recusou porque mudaram em outro aparelho.
+   *
+   * Estado próprio, e não só uma mensagem de erro, porque exige DECISÃO da
+   * pessoa: nem descartar o que ela montou aqui, nem apagar o que ela montou
+   * lá. Enquanto o id estiver nesta lista, o envio automático NÃO insiste.
+   */
+  conflitos: string[];
 }
 
 function descrever(erro: unknown): string {
@@ -90,7 +98,7 @@ function aplicarPendentes(doServidor: Repertorio[]): Repertorio[] {
     if (!pendente) return r;
     return {
       ...r,
-      itens: pendente.map(({ pontoId, secao }, ordem) => {
+      itens: pendente.itens.map(({ pontoId, secao }, ordem) => {
         // Título, canal e duração vêm do que o servidor já mandou: a fila
         // guarda só o que a pessoa DECIDIU (quais pontos, em que ordem, em
         // que parte da gira). Duplicar o resto na fila seria guardar duas
@@ -130,8 +138,14 @@ export async function carregar(): Promise<CargaRepertorios> {
 
 type Ouvinte = (estado: EstadoSincronia) => void;
 
-/** repertorio_id -> sequência final que o servidor ainda não confirmou. */
-const fila = new Map<string, ItemEnviado[]>(lerFila());
+/** repertorio_id -> o que ficou por enviar de uma gira: a sequência E a versão que foi vista. */
+interface Pendente {
+  itens: ItemEnviado[];
+  /** `null` = fila de uma versão do app que não guardava versão. */
+  versao: string | null;
+}
+
+const fila = new Map<string, Pendente>(lerFila());
 
 /**
  * A fila do disco, NORMALIZADA.
@@ -143,15 +157,25 @@ const fila = new Map<string, ItemEnviado[]>(lerFila());
  *
  * Por isso a conversão é feita na leitura, e não em algum lugar depois.
  */
-function lerFila(): [string, ItemEnviado[]][] {
+function lerFila(): [string, Pendente][] {
   try {
     const cru = localStorage.getItem(CHAVE_FILA);
     if (!cru) return [];
-    const bruto = JSON.parse(cru) as [string, (string | ItemEnviado)[]][];
-    return bruto.map(([id, itens]) => [
-      id,
-      itens.map((i) => (typeof i === "string" ? { pontoId: i, secao: null } : i)),
-    ]);
+    const bruto = JSON.parse(cru) as [string, unknown][];
+    return bruto.map(([id, valor]) => {
+      // TRÊS formatos já existiram, e todos podem estar guardados agora num
+      // aparelho que ficou offline: lista de ids, lista de itens, e o objeto
+      // com versão. Ler qualquer um deles errado sobe uma gira vazia — perdendo
+      // em silêncio o que a pessoa montou.
+      if (Array.isArray(valor)) {
+        const itens = (valor as (string | ItemEnviado)[]).map((i) =>
+          typeof i === "string" ? { pontoId: i, secao: null } : i,
+        );
+        return [id, { itens, versao: null }];
+      }
+      const obj = valor as Pendente;
+      return [id, { itens: obj?.itens ?? [], versao: obj?.versao ?? null }];
+    });
   } catch {
     return [];
   }
@@ -168,10 +192,25 @@ function gravarFila(): void {
 const ouvintes = new Set<Ouvinte>();
 let relogio: ReturnType<typeof setTimeout> | null = null;
 let enviando = false;
-let estado: EstadoSincronia = { enviando: false, pendentes: fila.size };
+/** Giras que o servidor recusou por terem mudado em outro aparelho. */
+const conflitos = new Set<string>();
+
+let estado: EstadoSincronia = {
+  enviando: false,
+  pendentes: fila.size,
+  conflitos: [],
+};
 
 function anunciar(novo: Partial<EstadoSincronia>) {
-  estado = { ...estado, ...novo, pendentes: fila.size };
+  estado = {
+    ...estado,
+    ...novo,
+    // Derivados da fonte, e não do que o chamador lembrou de passar: um
+    // `anunciar({})` esquecido deixaria a faixa de conflito na tela depois de
+    // resolvido, ou escondida com ele aberto.
+    pendentes: fila.size,
+    conflitos: [...conflitos],
+  };
   ouvintes.forEach((o) => o(estado));
 }
 
@@ -191,15 +230,25 @@ async function empurrar() {
   const rodada = [...fila.entries()];
   let falhou: string | undefined;
 
-  for (const [id, pontos] of rodada) {
+  for (const [id, pendente] of rodada) {
+    // Gira já em conflito não vai de novo: reenviar em laço é exatamente o que
+    // apagaria o que o outro aparelho gravou.
+    if (conflitos.has(id)) continue;
     try {
-      const atualizado = await definirItens(id, pontos);
+      const atualizado = await definirItens(id, pendente.itens, pendente.versao);
       // Só remove se o que está na fila ainda for o que acabou de subir. Se a
       // pessoa mexeu de novo durante o envio, a entrada nova permanece.
-      if (fila.get(id) === pontos) {
+      if (fila.get(id) === pendente) {
         fila.delete(id);
-        gravarFila();
+      } else {
+        // Mexeu durante o envio: a entrada que ficou foi montada sobre a
+        // versão ANTIGA, que este envio acabou de invalidar. Sem corrigir a
+        // versão dela aqui, a rodada seguinte levaria 409 contra o próprio
+        // aparelho — "mudou em outro lugar" sem nada ter mudado.
+        const agora = fila.get(id);
+        if (agora) fila.set(id, { ...agora, versao: atualizado.versao ?? null });
       }
+      gravarFila();
       const cache = lerCache();
       if (cache) gravarCache(cache.map((r) => (r.id === atualizado.id ? atualizado : r)));
     } catch (erro) {
@@ -210,17 +259,78 @@ async function empurrar() {
         fila.delete(id);
         gravarFila();
       }
+      if (ehErroDeApi(erro) && erro.status === 409) {
+        // Mudou em outro aparelho. A entrada FICA na fila — é a única cópia do
+        // que a pessoa montou aqui — mas marcada, para nenhuma rodada futura
+        // subir por cima sozinha. Quem decide é ela, na tela.
+        conflitos.add(id);
+        falhou = undefined;
+      }
     }
   }
 
   enviando = false;
   anunciar({ enviando: false, ultimoErro: falhou });
-  if (fila.size > 0 && !falhou) agendar();
+  // Só reagenda se sobrou algo que NÃO está em conflito. Contar as em conflito
+  // aqui faria o relógio bater para sempre num envio que a rodada pula.
+  const pendura = [...fila.keys()].some((id) => !conflitos.has(id));
+  if (pendura && !falhou) agendar();
 }
 
 function agendar() {
   if (relogio) clearTimeout(relogio);
   relogio = setTimeout(empurrar, ESPERA_ENVIO_MS);
+}
+
+/**
+ * "Mandar a minha assim mesmo": relê a gira do servidor só para pegar a versão
+ * atual e sobe a sequência deste aparelho por cima dela.
+ *
+ * É decisão consciente da pessoa, com o outro lado já mostrado a ela na tela —
+ * nunca um reenvio automático.
+ */
+export async function forcarEnvio(repertorioId: string): Promise<void> {
+  const pendente = fila.get(repertorioId);
+  if (!pendente) return;
+  const doServidor = (await listar()).find((r) => r.id === repertorioId);
+  if (!doServidor) {
+    // Apagada no servidor enquanto o conflito estava aberto. Não há versão
+    // contra a qual forçar, e recriar a gira por baixo não é o que o botão
+    // prometeu.
+    fila.delete(repertorioId);
+    gravarFila();
+    conflitos.delete(repertorioId);
+    anunciar({ ultimoErro: "essa gira foi apagada em outro aparelho" });
+    return;
+  }
+  fila.set(repertorioId, { ...pendente, versao: doServidor.versao ?? null });
+  gravarFila();
+  conflitos.delete(repertorioId);
+  anunciar({ ultimoErro: undefined });
+  await empurrar();
+}
+
+/**
+ * "Ficar com a do servidor": descarta o que ficou pendente desta gira.
+ *
+ * Some com a entrada da fila E com o cache dela, porque `aplicarPendentes`
+ * faria a sequência descartada continuar aparecendo na tela — a pessoa teria
+ * clicado em descartar e visto o descartado.
+ */
+export async function descartarPendente(repertorioId: string): Promise<void> {
+  fila.delete(repertorioId);
+  gravarFila();
+  conflitos.delete(repertorioId);
+  const doServidor = (await listar()).find((r) => r.id === repertorioId);
+  const cache = lerCache();
+  if (cache) {
+    gravarCache(
+      doServidor
+        ? cache.map((r) => (r.id === repertorioId ? doServidor : r))
+        : cache.filter((r) => r.id !== repertorioId),
+    );
+  }
+  anunciar({ ultimoErro: undefined });
 }
 
 /**
@@ -254,7 +364,15 @@ export function definirSequencia(
       : r,
   );
   gravarCache(atualizado);
-  fila.set(repertorioId, itensNovos);
+  // A versão que vai junto é a que ESTE aparelho viu por último, nunca uma
+  // inventada agora: é ela que deixa o servidor perceber que a gira mudou em
+  // outro lugar no meio do caminho. Se já havia pendente, a base continua sendo
+  // a versão dele — as edições novas se somam às que ainda não subiram.
+  const anterior = fila.get(repertorioId);
+  const versaoBase = anterior
+    ? anterior.versao
+    : (cache.find((r) => r.id === repertorioId)?.versao ?? null);
+  fila.set(repertorioId, { itens: itensNovos, versao: versaoBase });
   gravarFila();
   anunciar({});
   agendar();

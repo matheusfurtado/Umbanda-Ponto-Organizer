@@ -31,6 +31,9 @@ export interface Repertorio {
   /** Visível para outras pessoas. Falso por padrão, sempre. */
   publico?: boolean;
   itens: ItemRepertorio[];
+  /** Muda quando a sequência muda. Devolvida no `PUT` para o servidor recusar
+   *  gravação sobre mudança que este aparelho não viu. */
+  versao?: string;
 }
 
 /** Uma gira vista por OUTRA pessoa. `de` é o apelido — nunca o e-mail. */
@@ -102,14 +105,20 @@ export interface ItemEnviado {
   secao?: string | null;
 }
 
-export function definirItens(id: string, itens: ItemEnviado[]): Promise<Repertorio> {
+export function definirItens(
+  id: string,
+  itens: ItemEnviado[],
+  versao?: string | null,
+): Promise<Repertorio> {
   return chamar<Repertorio>(`/${id}/itens`, {
     method: "PUT",
-    // Manda no formato NOVO, com seção. O servidor ainda aceita o antigo
-    // (`{pontos: [...]}`) porque pode haver envio pendente guardado no
-    // aparelho, montado offline antes desta versão — recusá-lo perderia a
-    // gira de alguém sem aviso.
-    body: JSON.stringify({ itens }),
+    // Manda no formato NOVO, com seção, e a `versao` só quando existe.
+    //
+    // Os dois casos têm o mesmo motivo: pode haver envio pendente guardado no
+    // aparelho, montado offline por uma versão anterior do app — sem seção, ou
+    // sem versão. O servidor aceita os dois formatos de propósito. Recusá-los
+    // perderia, sem aviso, a gira que alguém montou.
+    body: JSON.stringify(versao ? { itens, versao } : { itens }),
   }) as Promise<Repertorio>;
 }
 

@@ -53,6 +53,8 @@ import {
   sincronizarAgora,
   type EstadoSincronia,
   type FonteRepertorios,
+  forcarEnvio,
+  descartarPendente,
 } from "@/dados/repertorios";
 
 function ItemArrastavel({
@@ -212,11 +214,57 @@ function FaixaSincronia({
   fonte,
   motivo,
   sincronia,
+  nomeDe,
+  aoResolver,
 }: {
   fonte: FonteRepertorios;
   motivo?: string;
   sincronia: EstadoSincronia;
+  nomeDe: (id: string) => string;
+  aoResolver: () => void;
 }) {
+  // O conflito vem ANTES de tudo: é o único estado desta faixa que pede uma
+  // decisão em vez de informar. Enquanto ele estiver aberto, o envio automático
+  // não insiste — a gira fica parada esperando a pessoa, e ela precisa saber.
+  if (sincronia.conflitos.length > 0) {
+    const id = sincronia.conflitos[0];
+    return (
+      <div
+        role="alert"
+        className="mb-3 rounded-lg border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-xs"
+      >
+        <div className="flex items-start gap-2">
+          <CloudOff className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" aria-hidden />
+          <p className="flex-1">
+            <strong className="font-medium">{nomeDe(id)}</strong> mudou em outro
+            aparelho depois que você mexeu nela aqui. Nada foi perdido: as duas
+            versões existem, e você escolhe qual fica.
+            {sincronia.conflitos.length > 1 &&
+              ` (+${sincronia.conflitos.length - 1} outra${
+                sincronia.conflitos.length > 2 ? "s" : ""
+              } esperando)`}
+          </p>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => void forcarEnvio(id).finally(aoResolver)}
+            className="min-h-11 rounded-md border px-3 font-medium"
+          >
+            Mandar a deste aparelho
+          </button>
+          <button
+            type="button"
+            onClick={() => void descartarPendente(id).finally(aoResolver)}
+            className="min-h-11 rounded-md border px-3 font-medium"
+          >
+            Ficar com a do outro
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (sincronia.pendentes > 0) {
     return (
       <div
@@ -292,7 +340,7 @@ export function TelaRepertorios() {
   const [erro, setErro] = useState<string | null>(null);
   const [fonte, setFonte] = useState<FonteRepertorios>("servidor");
   const [motivoFonte, setMotivoFonte] = useState<string | undefined>();
-  const [sincronia, setSincronia] = useState<EstadoSincronia>({ enviando: false, pendentes: 0 });
+  const [sincronia, setSincronia] = useState<EstadoSincronia>({ enviando: false, pendentes: 0, conflitos: [] });
   const [editandoSecao, setEditandoSecao] = useState<number | null>(null);
   const [publicando, setPublicando] = useState<Repertorio | null>(null);
   const [textoSecao, setTextoSecao] = useState("");
@@ -408,7 +456,13 @@ export function TelaRepertorios() {
             }}
           />
 
-          <FaixaSincronia fonte={fonte} motivo={motivoFonte} sincronia={sincronia} />
+          <FaixaSincronia
+            fonte={fonte}
+            motivo={motivoFonte}
+            sincronia={sincronia}
+            nomeDe={(id) => lista?.find((r) => r.id === id)?.nome ?? "Sua gira"}
+            aoResolver={() => void carregar()}
+          />
 
           {erro && (
             <p role="alert" className="mb-3 text-sm text-destructive">
@@ -538,7 +592,13 @@ export function TelaRepertorios() {
           A sequência de pontos da sua gira, na ordem em que serão cantados.
         </p>
 
-        <FaixaSincronia fonte={fonte} motivo={motivoFonte} sincronia={sincronia} />
+        <FaixaSincronia
+            fonte={fonte}
+            motivo={motivoFonte}
+            sincronia={sincronia}
+            nomeDe={(id) => lista?.find((r) => r.id === id)?.nome ?? "Sua gira"}
+            aoResolver={() => void carregar()}
+          />
 
         <form
           onSubmit={async (e) => {
