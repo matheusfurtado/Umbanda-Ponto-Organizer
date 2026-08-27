@@ -122,8 +122,12 @@ export function enviarAcervo(dados: AppData): Promise<ResultadoEnvio> {
         ({ id, orixaId, nome, ordem, criadoEm }),
     ),
     pontos: dados.pontos.map(
-      ({ id, subcategoriaId, titulo, letra, ordem, favorito, criadoEm }: Ponto) =>
-        ({ id, subcategoriaId, titulo, letra, ordem, favorito, criadoEm }),
+      // `autor` VAI JUNTO. Sem ele o servidor gravava vazio e a autoria que a
+      // pessoa preencheu sumia a cada sincronização — indistinguível de nunca
+      // ter preenchido. O servidor também passou a preservar o campo quando ele
+      // não vem, para um app antigo não apagar o que não conhece.
+      ({ id, subcategoriaId, titulo, letra, autor, ordem, favorito, criadoEm }: Ponto) =>
+        ({ id, subcategoriaId, titulo, letra, autor, ordem, favorito, criadoEm }),
     ),
   };
   return requisitar<ResultadoEnvio>("/acervo", { method: "PUT", body: JSON.stringify(corpo) });
