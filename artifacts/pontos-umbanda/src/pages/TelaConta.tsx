@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import {
   AlertCircle,
@@ -25,8 +25,18 @@ import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { exportarConta, baixarDadosDaConta } from "@/lib/apiConta";
 import { ModalMigracao } from "@/components/ModalMigracao";
+import { CancelarAssinatura } from "@/componentes/CancelarAssinatura";
+import { minhaAssinatura, type Assinatura } from "@/lib/apiBilling";
 
 export function TelaConta() {
+  const [assinatura, setAssinatura] = useState<Assinatura | null>(null);
+
+  // Carregada à parte dos direitos: quem está no teste de 15 dias não tem
+  // assinatura, e uma falha aqui não pode esconder o resto da tela de conta —
+  // exportar e apagar os dados são direitos da LGPD e precisam abrir sempre.
+  useEffect(() => {
+    minhaAssinatura().then(setAssinatura).catch(() => setAssinatura(null));
+  }, []);
   const { user, sair: encerrarSessao } = useAuth();
   const { substituirDados } = useApp();
   const { ent, loading: entLoading } = useEntitlements();
@@ -178,7 +188,8 @@ export function TelaConta() {
         {entLoading ? (
           <div className="mb-6 h-16 rounded-xl bg-muted/40 animate-pulse" />
         ) : ent.acervoOrganizado ? (
-          <div className="mb-6 flex items-center gap-1.5 text-sm text-primary">
+          <div className="mb-6 space-y-3">
+          <div className="flex items-center gap-1.5 text-sm text-primary">
             <Sparkles className="h-4 w-4" aria-hidden />
             {ent.plano === "teste" ? (
               <>
@@ -191,6 +202,17 @@ export function TelaConta() {
                 Plano <b className="capitalize">{ent.plano}</b> ativo.
               </>
             )}
+          </div>
+          {/* CANCELAR MORA AQUI, ao lado do estado do plano, e não escondido.
+              Assinar levava um clique e cancelar não tinha caminho nenhum — o
+              CDC exige que se possa rescindir pelo mesmo meio, e este app não
+              tem suporte por e-mail para onde mandar a pessoa.
+              
+              Só aparece para quem tem assinatura de verdade: quem está no teste
+              de 15 dias não tem o que cancelar, e o botão ali só assustaria. */}
+          {assinatura && ent.plano !== "teste" && (
+            <CancelarAssinatura assinatura={assinatura} onCancelou={setAssinatura} />
+          )}
           </div>
         ) : (
           <Link href="/planos">

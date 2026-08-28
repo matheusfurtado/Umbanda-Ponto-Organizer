@@ -72,6 +72,28 @@ export function criarCheckout(planoId: string): Promise<CheckoutResult> {
 }
 
 /** Formata centavos como moeda brasileira. */
+export interface Assinatura {
+  status: string;
+  expira_em: string | null;
+  cancelada_em: string | null;
+}
+
+/** A assinatura atual, ou `null` para quem nunca assinou. */
+export function minhaAssinatura(): Promise<Assinatura | null> {
+  return pegar<Assinatura | null>("/api/v1/assinatura");
+}
+
+/**
+ * Para de cobrar.
+ *
+ * **O acesso continua até o fim do período já pago.** Cancelar não é estornar:
+ * o mês pago foi pago, e tirar o acesso na hora seria ficar com o dinheiro e
+ * com o serviço.
+ */
+export function cancelarAssinatura(): Promise<Assinatura | null> {
+  return pegar<Assinatura | null>("/api/v1/assinatura/cancelar", { method: "POST" });
+}
+
 export function emReais(centavos: number): string {
   return (centavos / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
