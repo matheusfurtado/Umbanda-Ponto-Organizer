@@ -5,8 +5,14 @@
  *
  * Do canal do vídeo casado com cada ponto — é a única pista de autoria que o
  * acervo tem, porque `ponto.autor` está vazio nos 520 (a tradição é oral).
- * Por isso o aviso de coletânea: parte dos canais reúne gravação de terceiros,
- * e chamar isso de "artista" sem ressalva seria dar crédito errado.
+ *
+ * **Canal que publica ponto é artista**, decidido pelo dono em 28/08, e isso
+ * inclui canal de festival e de terreiro. Eu tinha proposto separar "artista"
+ * de "coletânea"; ele descartou a distinção, e a razão é boa: para quem usa o
+ * app, o canal é onde se acha o ponto e é o que se segue.
+ *
+ * O aviso que sobrou é sobre CONFERÊNCIA, não sobre tipo: o corte que traz um
+ * canal para cá é automático, e automático não é conferido.
  *
  * ## O link do canal ainda não é o canal
  *
@@ -113,9 +119,8 @@ export function TelaArtista() {
           <p className="mt-4 flex gap-2 rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
             <span>
-              Reunimos estes pontos pelo canal de onde veio cada vídeo. Alguns
-              canais são coletâneas e reúnem gravação de outras pessoas — ainda
-              não conferimos um a um.
+              Reunimos estes pontos pelo canal de onde veio cada vídeo, e este
+              canal ainda não foi conferido por uma pessoa.
             </span>
           </p>
         )}
