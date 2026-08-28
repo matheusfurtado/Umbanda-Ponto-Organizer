@@ -178,6 +178,25 @@ export function TelaLogin() {
                   </span>
                 </label>
 
+                {/* O LINK MORA AQUI, e não num rodapé.
+                    
+                    A LGPD (art. 9º) obriga a informar finalidade, controlador,
+                    duração e os direitos do titular — e a caixa de consentimento
+                    não cabe tudo isso. O lugar de a informação estar alcançável
+                    é onde o consentimento é DADO; um link no rodapé de outra
+                    tela é informação que ninguém encontra na hora de decidir. */}
+                <p className="text-xs text-muted-foreground">
+                  Antes de decidir, leia a{" "}
+                  <Link href="/privacidade" className="text-primary underline">
+                    Política de Privacidade
+                  </Link>{" "}
+                  e os{" "}
+                  <Link href="/termos" className="text-primary underline">
+                    Termos de Uso
+                  </Link>
+                  .
+                </p>
+
                 <label className="flex gap-2.5 text-xs leading-snug cursor-pointer">
                   <input
                     type="checkbox"

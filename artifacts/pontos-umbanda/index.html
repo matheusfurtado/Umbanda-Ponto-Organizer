@@ -11,9 +11,13 @@
     <title>Pontos de Umbanda</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- A FONTE VEM DAQUI, e não do Google.
+         
+         Cada abertura do app fazia duas requisições a fonts.googleapis.com e
+         fonts.gstatic.com — entregando ao Google o IP de quem usa um app de
+         Umbanda, o que é dado sensível de religião pela LGPD. A fonte agora é
+         servida pelo próprio app (`@fontsource-variable/inter`, importada em
+         `main.tsx`), e a CSP fecha `font-src` em 'self'. -->
   </head>
   <body>
     <div id="root"></div>

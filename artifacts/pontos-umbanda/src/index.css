@@ -88,7 +88,11 @@
   --input: 255 20% 22%;
   --ring: 270 70% 60%;
 
-  --app-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* `Inter Variable` é o nome que o `@fontsource-variable/inter` registra;
+     `Inter` fica logo atrás para quem já tiver a fonte instalada. A pilha
+     do sistema continua como último recurso — a fonte é servida pelo
+     próprio app agora, e não pelo Google (ver `index.html`). */
+  --app-font-sans: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: Menlo, monospace;
   --radius: .75rem;

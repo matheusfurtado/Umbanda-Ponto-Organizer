@@ -27,7 +27,9 @@ import { TelaArtistas } from "@/pages/TelaArtistas";
 import { TelaGirasPublicas } from "@/pages/TelaGirasPublicas";
 import { TelaGiraPublica } from "@/pages/TelaGiraPublica";
 import { TelaLogin } from "@/pages/TelaLogin";
+import { TelaPrivacidade } from "@/pages/TelaPrivacidade";
 import { TelaRecuperar } from "@/pages/TelaRecuperar";
+import { TelaTermos } from "@/pages/TelaTermos";
 import { TelaRedefinir } from "@/pages/TelaRedefinir";
 import { TelaVerificar } from "@/pages/TelaVerificar";
 import { TelaConta } from "@/pages/TelaConta";
@@ -129,6 +131,15 @@ function App() {
           <Switch>
             <Route path="/login">
               <TelaLogin />
+            </Route>
+            {/* FORA da moldura, ao lado do login: precisam abrir para quem
+                ainda não tem conta — é justamente no cadastro que o
+                consentimento é dado, e o link vai de lá para cá. */}
+            <Route path="/privacidade">
+              <TelaPrivacidade />
+            </Route>
+            <Route path="/termos">
+              <TelaTermos />
             </Route>
             <Route path="/recuperar">
               <TelaRecuperar />

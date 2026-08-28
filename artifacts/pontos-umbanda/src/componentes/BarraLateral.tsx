@@ -167,6 +167,19 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
         <p className="px-3 text-[11px] text-muted-foreground">
           {dados.pontos.length} pontos · {orixas} orixás{linhas > 0 ? ` · ${linhas} linhas` : ""}
         </p>
+        {/* O caminho de dentro do app para os textos legais. Quem já tem conta
+            não passa mais pela tela de cadastro, e precisa poder reler o que
+            aceitou — a LGPD dá o direito de saber, e direito sem caminho é
+            promessa. */}
+        <p className="px-3 pt-1 text-[11px] text-muted-foreground/70">
+          <Link href="/privacidade" className="hover:text-foreground hover:underline">
+            Privacidade
+          </Link>
+          {" · "}
+          <Link href="/termos" className="hover:text-foreground hover:underline">
+            Termos
+          </Link>
+        </p>
       </div>
     </aside>
   );

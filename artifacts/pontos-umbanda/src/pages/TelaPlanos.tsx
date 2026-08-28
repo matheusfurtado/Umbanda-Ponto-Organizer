@@ -161,6 +161,29 @@ export function TelaPlanos() {
           ))}
         </div>
 
+        {/* ANTES DE COBRAR, e não depois.
+            
+            O CDC (art. 46) diz que contrato cujos termos não foram PREVIAMENTE
+            apresentados não obriga o consumidor — sem isto, a assinatura seria
+            inexigível e quem pagasse teria razão em pedir tudo de volta. Por
+            isso o resumo do que importa fica aqui, ao lado do botão, e não só
+            atrás do link: renovação automática e os 7 dias de arrependimento
+            são o que a pessoa precisa saber para decidir. */}
+        <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+          A assinatura se renova sozinha todo mês até você cancelar, e você tem{" "}
+          <strong className="text-foreground">7 dias para desistir</strong> e
+          receber tudo de volta (CDC, art. 49). Nada do que é seu é apagado se o
+          plano acabar. Leia os{" "}
+          <Link href="/termos" className="text-primary underline">
+            Termos de Uso
+          </Link>{" "}
+          e a{" "}
+          <Link href="/privacidade" className="text-primary underline">
+            Política de Privacidade
+          </Link>
+          .
+        </p>
+
         {erro && (
           <p role="alert" className="mt-4 text-sm text-destructive">
             {erro}

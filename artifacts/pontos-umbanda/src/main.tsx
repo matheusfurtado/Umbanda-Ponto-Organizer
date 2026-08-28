@@ -1,3 +1,5 @@
+// A fonte, servida pelo próprio app — ver o comentário no `index.html`.
+import "@fontsource-variable/inter";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { iniciarPaleta } from "./lib/paleta";
