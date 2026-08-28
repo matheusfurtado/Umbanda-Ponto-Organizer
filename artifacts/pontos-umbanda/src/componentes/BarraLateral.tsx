@@ -1,8 +1,5 @@
 import { Link, useLocation } from "wouter";
-import {
-  BarChart3, Flag, Globe, Home, ListMusic, Palette, Plus, Search, Send, ShieldCheck,
-  Sparkles, Star, Users,
-} from "lucide-react";
+import { BarChart3, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { useApp } from "@/context";
 import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -71,9 +68,14 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
       <Link href="/giras-publicas" className={item(local.startsWith("/giras-publicas"))}>
         <Globe className="h-4 w-4" aria-hidden /> Giras da comunidade
       </Link>
+      {/* Artistas é aberto: quem ainda não tem conta descobre por aqui, e é
+          isso que faz alguém querer uma. */}
+      <Link href="/artistas" className={item(local.startsWith("/artista"))}>
+        <Mic2 className="h-4 w-4" aria-hidden /> Artistas
+      </Link>
       {autenticado && (
         <Link href="/seguindo" className={item(local === "/seguindo")}>
-          <Users className="h-4 w-4" aria-hidden /> Seguindo
+          <Library className="h-4 w-4" aria-hidden /> Biblioteca
         </Link>
       )}
       {/* Só para quem escolheu apelido: sem ele não existe perfil, e um link

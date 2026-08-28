@@ -20,6 +20,8 @@ import { TelaModeracao } from "@/pages/TelaModeracao";
 import { TelaDenuncias } from "@/pages/TelaDenuncias";
 import { TelaPainel } from "@/pages/TelaPainel";
 import { TelaNovidades } from "@/pages/TelaNovidades";
+import { TelaArtista } from "@/pages/TelaArtista";
+import { TelaArtistas } from "@/pages/TelaArtistas";
 import { TelaGirasPublicas } from "@/pages/TelaGirasPublicas";
 import { TelaGiraPublica } from "@/pages/TelaGiraPublica";
 import { TelaLogin } from "@/pages/TelaLogin";
@@ -174,6 +176,15 @@ function App() {
                       quem não tem conta, pelo mesmo motivo da vitrine. */}
                   <Route path="/perfil/:apelido">
                     <TelaPerfil />
+                  </Route>
+                  {/* Sem `RotaProtegida`: descobrir artista é aberto, e é
+                      isso que faz alguém querer conta. Seguir, dentro da
+                      página, é que pede login. */}
+                  <Route path="/artistas">
+                    <TelaArtistas />
+                  </Route>
+                  <Route path="/artista/:id">
+                    <TelaArtista />
                   </Route>
                   <Route path="/seguindo">
                     <RotaProtegida>
