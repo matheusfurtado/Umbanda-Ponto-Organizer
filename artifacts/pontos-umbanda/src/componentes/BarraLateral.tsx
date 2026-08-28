@@ -25,9 +25,16 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
   const [local] = useLocation();
   const { dados } = useApp();
   const favoritos = dados.pontos.filter((p) => p.favorito).length;
-  // Só as entidades: "Início" é momento da gira, e contá-lo como orixá
-  // é a mesma informação errada que o grid dava.
-  const orixas = dados.orixas.filter((o) => o.tipo !== "momento").length;
+  // Só os orixás MESMO. Isto era `tipo !== "momento"`, o que bastava enquanto
+  // havia dois tipos — e passou a contar Preto Velho, Boiadeiro e as outras
+  // linhas como orixás no instante em que o terceiro nasceu.
+  //
+  // `tipo` ausente conta como orixá: é o cache de quem abriu o app antes desta
+  // versão, e some-lo da conta seria pior que contá-lo junto.
+  const orixas = dados.orixas.filter(
+    (o) => o.tipo === "orixa" || o.tipo === undefined,
+  ).length;
+  const linhas = dados.orixas.filter((o) => o.tipo === "linha").length;
   const { ent } = useEntitlements();
   const { autenticado, user } = useAuth();
 
@@ -145,7 +152,7 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
           <Palette className="h-4 w-4" aria-hidden /> Aparência
         </button>
         <p className="px-3 text-[11px] text-muted-foreground">
-          {dados.pontos.length} pontos · {orixas} orixás
+          {dados.pontos.length} pontos · {orixas} orixás{linhas > 0 ? ` · ${linhas} linhas` : ""}
         </p>
       </div>
     </aside>

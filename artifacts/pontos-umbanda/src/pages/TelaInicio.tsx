@@ -78,8 +78,18 @@ export function TelaInicio({
 
   // `tipo` ausente conta como orixá: é o cache de quem abriu o app antes desta
   // versão, e sumir com os cartões dele seria pior que mostrá-los juntos.
+  //
+  // Os três grupos são exaustivos DE PROPÓSITO — cada um testa o seu valor, e
+  // o dos orixás recolhe o desconhecido. Enquanto isto era "orixás" e "o
+  // resto", o terceiro tipo nasceu dentro do grid dos orixás sem que nada
+  // avisasse; um quarto tipo, amanhã, aparece entre os orixás em vez de sumir
+  // da tela, que é o modo menos ruim de errar.
   const entidades = useMemo(
-    () => dados.orixas.filter((o) => o.tipo !== "momento"),
+    () => dados.orixas.filter((o) => o.tipo !== "momento" && o.tipo !== "linha"),
+    [dados.orixas],
+  );
+  const linhas = useMemo(
+    () => dados.orixas.filter((o) => o.tipo === "linha"),
     [dados.orixas],
   );
   const momentos = useMemo(
@@ -196,6 +206,28 @@ export function TelaInicio({
               </div>
             )}
           </section>
+
+          {/* Também não são orixás — são falanges. Preto Velho e Beijada
+              estavam no grid dos orixás desde sempre; Boiadeiro, Malandro,
+              Cigano e Marujo nascem aqui, ainda sem ponto dentro. */}
+          {linhas.length > 0 && (
+            <section aria-label="Linhas" className="mt-8">
+              <h2 className="mb-1 px-2 text-lg font-bold text-foreground">Linhas</h2>
+              <p className="mb-3 px-2 text-sm text-muted-foreground">
+                Falanges que se saúdam na gira. Não são orixás.
+              </p>
+              <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
+                {linhas.map((o) => (
+                  <CardOrixa
+                    key={o.id}
+                    orixa={o}
+                    quantos={porOrixa.get(o.id) ?? 0}
+                    onClick={() => onAbrirOrixa(o)}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Separado dos orixás porque NÃO é orixá.
               "Início" é a abertura da gira — dentro dela vêm Defumação, Almas,

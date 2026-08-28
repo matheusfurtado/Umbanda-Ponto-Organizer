@@ -68,16 +68,22 @@ export interface Orixa {
   emoji: string;
   ordem: number;
   /**
-   * `orixa` ou `momento`. Nem toda linha do acervo é um orixá.
+   * O que esta entrada É. Nem toda linha do acervo é um orixá.
    *
-   * "Início" é a abertura da gira, e dentro dela vêm Defumação, Almas, Exu,
-   * Oxalá, Anjo de Guarda e Saudações. No mesmo grid, ele aparecia ao lado de
-   * Iemanjá como se fosse uma entidade — e Oxalá aparecia com zero pontos,
-   * porque os pontos de Oxalá estão justamente ali dentro.
+   * - `orixa` — a entidade: Exu, Ogum, Iemanjá.
+   * - `momento` — parte da sequência da gira. "Início" é a abertura, e
+   *   "Defumação" abre a abertura. Misturados no grid, apareciam ao lado de
+   *   Iemanjá como se fossem entidades — e Oxalá aparecia com zero pontos,
+   *   porque os pontos de Oxalá estão justamente dentro da abertura.
+   * - `linha` — falange, que também não é orixá: Preto Velho, Beijada,
+   *   Boiadeiro, Malandro, Cigano, Marujo.
+   *
+   * A união é cruzada com `TIPOS`, de `models/acervo.py`, por um teste do lado
+   * do Python: divergir aqui é card que a tela não sabe agrupar.
    *
    * Opcional para o cache de quem abriu o app antes desta versão.
    */
-  tipo?: "orixa" | "momento";
+  tipo?: "orixa" | "momento" | "linha";
   criadoEm: number;
 }
 
