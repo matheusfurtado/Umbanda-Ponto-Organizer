@@ -1,5 +1,8 @@
 import { Link, useLocation } from "wouter";
-import { Home, Search, ListMusic, Plus, Palette, Send, ShieldCheck, Sparkles, Globe, Star, Users } from "lucide-react";
+import {
+  BarChart3, Globe, Home, ListMusic, Palette, Plus, Search, Send, ShieldCheck,
+  Sparkles, Star, Users,
+} from "lucide-react";
 import { useApp } from "@/context";
 import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -93,9 +96,14 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
           {/* O link só aparece para admin por conveniência. A defesa está na
               rota, que responde 404 a quem não for. */}
           {user?.admin && (
-            <Link href="/moderacao" className={item(local === "/moderacao")}>
-              <ShieldCheck className="h-4 w-4" aria-hidden /> Moderação
-            </Link>
+            <>
+              <Link href="/moderacao" className={item(local === "/moderacao")}>
+                <ShieldCheck className="h-4 w-4" aria-hidden /> Moderação
+              </Link>
+              <Link href="/painel" className={item(local === "/painel")}>
+                <BarChart3 className="h-4 w-4" aria-hidden /> Painel
+              </Link>
+            </>
           )}
         </div>
       )}

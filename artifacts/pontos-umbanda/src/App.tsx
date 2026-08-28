@@ -17,6 +17,7 @@ import { useAcoesDePonto } from "@/componentes/AcoesDePonto";
 import { TelaEnviarPonto } from "@/pages/TelaEnviarPonto";
 import { TelaMeusEnvios } from "@/pages/TelaMeusEnvios";
 import { TelaModeracao } from "@/pages/TelaModeracao";
+import { TelaPainel } from "@/pages/TelaPainel";
 import { TelaNovidades } from "@/pages/TelaNovidades";
 import { TelaGirasPublicas } from "@/pages/TelaGirasPublicas";
 import { TelaGiraPublica } from "@/pages/TelaGiraPublica";
@@ -199,6 +200,14 @@ function App() {
                   <Route path="/moderacao">
                     <RotaProtegida>
                       <TelaModeracao />
+                    </RotaProtegida>
+                  </Route>
+                  {/* Mesma proteção da moderação: só login aqui, e a API
+                      responde 404 a quem não é admin. A tela não decide isso
+                      sozinha — esconder o link é conveniência, nunca a defesa. */}
+                  <Route path="/painel">
+                    <RotaProtegida>
+                      <TelaPainel />
                     </RotaProtegida>
                   </Route>
                   {/* Para onde o Mercado Pago devolve quem pagou. Protegida:
