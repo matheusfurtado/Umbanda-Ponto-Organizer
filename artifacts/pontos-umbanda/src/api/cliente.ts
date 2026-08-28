@@ -122,9 +122,15 @@ export function enviarAcervo(dados: AppData): Promise<ResultadoEnvio> {
     // Vai junto: é o que permite ao servidor recusar gravação sobre mudança
     // que este aparelho não viu.
     versao: dados.versao ?? null,
+    // `tipo` VAI JUNTO, pelo mesmo motivo do `autor` logo abaixo: o campo tem
+    // default `"orixa"` no servidor, então esquecê-lo aqui não dá erro — dá
+    // silêncio. "Início" voltava a ser tratado como entidade na cópia de quem
+    // sincronizasse, desfazendo a curadoria. O servidor passou a preservar o
+    // que já tem quando o campo não vem, para um app antigo não apagar o que
+    // não conhece.
     orixas: dados.orixas.map(
-      ({ id, nome, cor, emoji, ordem, criadoEm }: Orixa) =>
-        ({ id, nome, cor, emoji, ordem, criadoEm }),
+      ({ id, nome, cor, emoji, ordem, tipo, criadoEm }: Orixa) =>
+        ({ id, nome, cor, emoji, ordem, tipo, criadoEm }),
     ),
     subcategorias: dados.subcategorias.map(
       ({ id, orixaId, nome, ordem, criadoEm }: Subcategoria) =>
