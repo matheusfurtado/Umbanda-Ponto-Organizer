@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { BarChart3, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { BadgeCheck, BarChart3, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { useApp } from "@/context";
 import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -74,6 +74,11 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
         <Mic2 className="h-4 w-4" aria-hidden /> Artistas
       </Link>
       {autenticado && (
+        <Link href="/quero-meu-perfil" className={item(local === "/quero-meu-perfil")}>
+          <BadgeCheck className="h-4 w-4" aria-hidden /> Tenho um canal
+        </Link>
+      )}
+      {autenticado && (
         <Link href="/seguindo" className={item(local === "/seguindo")}>
           <Library className="h-4 w-4" aria-hidden /> Biblioteca
         </Link>
@@ -108,6 +113,12 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
             <>
               <Link href="/moderacao" className={item(local === "/moderacao")}>
                 <ShieldCheck className="h-4 w-4" aria-hidden /> Moderação
+              </Link>
+              <Link
+                href="/moderacao/artistas"
+                className={item(local === "/moderacao/artistas")}
+              >
+                <BadgeCheck className="h-4 w-4" aria-hidden /> Perfis de artista
               </Link>
               <Link href="/denuncias" className={item(local === "/denuncias")}>
                 <Flag className="h-4 w-4" aria-hidden /> Denúncias

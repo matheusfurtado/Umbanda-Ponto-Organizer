@@ -26,12 +26,18 @@
 /** De onde partiu o clique. Cruzada com `ORIGENS` do Python por teste. */
 export type OrigemDoClique = "acervo" | "artista" | "gira";
 
+const BASE = "/api/v1";
+
 export function registrarCliqueNoPonto(
   pontoId: string,
   origem: OrigemDoClique = "acervo",
 ): void {
   try {
-    const url = `/api/v1/pontos/${encodeURIComponent(pontoId)}/clique?origem=${origem}`;
+    // O caminho é montado com `${BASE}` de propósito: é essa forma que a cerca
+    // do lado do Python sabe ler para conferir a rota contra o OpenAPI. Escrito
+    // de outro jeito, este arquivo passava sem conferência nenhuma — foi o que
+    // aconteceu na primeira versão, e a guarda de "arquivo mudo" o pegou.
+    const url = `${BASE}/pontos/${encodeURIComponent(pontoId)}/clique?origem=${origem}`;
     if (typeof navigator !== "undefined" && navigator.sendBeacon) {
       navigator.sendBeacon(url);
       return;

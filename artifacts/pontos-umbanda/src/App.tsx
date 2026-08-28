@@ -21,6 +21,8 @@ import { TelaDenuncias } from "@/pages/TelaDenuncias";
 import { TelaPainel } from "@/pages/TelaPainel";
 import { TelaNovidades } from "@/pages/TelaNovidades";
 import { TelaArtista } from "@/pages/TelaArtista";
+import { TelaModerarArtistas } from "@/pages/TelaModerarArtistas";
+import { TelaPedirArtista } from "@/pages/TelaPedirArtista";
 import { TelaArtistas } from "@/pages/TelaArtistas";
 import { TelaGirasPublicas } from "@/pages/TelaGirasPublicas";
 import { TelaGiraPublica } from "@/pages/TelaGiraPublica";
@@ -209,6 +211,18 @@ function App() {
                   </Route>
                   {/* Protegida só por login. Quem não é admin recebe 404 da
                       API — a tela não decide isso sozinha. */}
+                  <Route path="/quero-meu-perfil">
+                    <RotaProtegida>
+                      <TelaPedirArtista />
+                    </RotaProtegida>
+                  </Route>
+                  {/* Mesma proteção da moderação: só login aqui, e a API
+                      responde 404 a quem não é admin. */}
+                  <Route path="/moderacao/artistas">
+                    <RotaProtegida>
+                      <TelaModerarArtistas />
+                    </RotaProtegida>
+                  </Route>
                   <Route path="/moderacao">
                     <RotaProtegida>
                       <TelaModeracao />
