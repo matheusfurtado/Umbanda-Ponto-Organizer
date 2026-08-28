@@ -49,11 +49,60 @@ export interface PontoDoArtista {
 
 export interface Artista extends ArtistaResumo {
   canalUrl: string | null;
+  bio: string | null;
+  /** Endereço da foto, com a versão embutida. `null` quando não há. */
+  foto: string | null;
+  /**
+   * Esta pessoa pode editar este perfil? Vem do SERVIDOR — decidir isso no
+   * cliente seria botão que aparece e não funciona, e o servidor é quem sabe
+   * quem é dono e quem é admin.
+   */
+  possoEditar: boolean;
   /** `null` para quem não está logado: a tela convida a entrar em vez de
    *  mostrar um botão que não vai funcionar. */
   seguindo: boolean | null;
   pontosDoArtista: PontoDoArtista[];
 }
+
+export interface EdicaoDoArtista {
+  /** Ausente = não mexi. String vazia = apaga. */
+  bio?: string;
+  canalUrl?: string;
+}
+
+export const editarArtista = (id: string, corpo: EdicaoDoArtista) =>
+  chamar<Artista>(`/artistas/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify(corpo),
+  });
+
+/**
+ * A foto vai como `multipart`, então NÃO leva `Content-Type` — o navegador
+ * precisa pôr o dele, com o `boundary` dentro. Escrever o cabeçalho à mão aqui
+ * quebra o upload de um jeito que só aparece no servidor.
+ */
+export async function trocarFotoDoArtista(id: string, arquivo: File) {
+  const corpo = new FormData();
+  corpo.append("arquivo", arquivo);
+  const r = await fetch(`/api/v1/artistas/${encodeURIComponent(id)}/foto`, {
+    method: "PUT",
+    body: corpo,
+    credentials: "same-origin",
+  });
+  if (!r.ok) {
+    let detalhe = r.statusText;
+    try {
+      detalhe = (await r.json())?.detail ?? detalhe;
+    } catch {
+      /* corpo não-JSON */
+    }
+    throw new Error(String(detalhe));
+  }
+  return (await r.json()) as { foto: string | null };
+}
+
+export const tirarFotoDoArtista = (id: string) =>
+  chamar<void>(`/artistas/${encodeURIComponent(id)}/foto`, { method: "DELETE" });
 
 export const listarArtistas = () => chamar<ArtistaResumo[]>("/artistas");
 export const verArtista = (id: string) =>

@@ -31,6 +31,7 @@ import {
   type Artista,
 } from "@/api/artista";
 import { BotaoSeguirArtista } from "@/componentes/BotaoSeguirArtista";
+import { EditarArtista } from "@/componentes/EditarArtista";
 import { registrarCliqueNoPonto } from "@/api/metricas";
 
 export function TelaArtista() {
@@ -75,12 +76,36 @@ export function TelaArtista() {
   return (
     <div className="max-w-3xl px-4 pb-24 pt-5 sm:px-8">
       <header className="rounded-2xl border bg-card/40 p-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Artista
-        </p>
-        <h1 className="mt-1 text-2xl font-black text-foreground sm:text-3xl">
-          {artista.nome}
-        </h1>
+        <div className="flex items-start gap-4">
+          {artista.foto ? (
+            <img
+              src={artista.foto}
+              alt=""
+              width={72}
+              height={72}
+              className="h-18 w-18 shrink-0 rounded-full object-cover"
+              style={{ width: 72, height: 72 }}
+            />
+          ) : (
+            // Sem foto, a inicial do nome. Vazio deixaria o cabeçalho torto e
+            // faria a página parecer quebrada em vez de simplesmente nova.
+            <span
+              aria-hidden
+              className="flex shrink-0 items-center justify-center rounded-full bg-primary/15 text-2xl font-black text-primary"
+              style={{ width: 72, height: 72 }}
+            >
+              {artista.nome.trim().charAt(0).toUpperCase()}
+            </span>
+          )}
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Artista
+            </p>
+            <h1 className="mt-1 text-2xl font-black text-foreground sm:text-3xl">
+              {artista.nome}
+            </h1>
+          </div>
+        </div>
         <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
             <Music2 className="h-4 w-4" aria-hidden />
@@ -115,6 +140,21 @@ export function TelaArtista() {
             {artista.canalUrl ? "Abrir o canal" : "Procurar no YouTube"}
           </a>
         </div>
+
+        {artista.bio && (
+          <p className="mt-4 whitespace-pre-line text-sm text-foreground/90">
+            {artista.bio}
+          </p>
+        )}
+
+        {artista.possoEditar && (
+          <div className="mt-4">
+            <EditarArtista
+              artista={artista}
+              onMudou={(a) => setArtista(a)}
+            />
+          </div>
+        )}
 
         {!artista.curado && (
           <p className="mt-4 flex gap-2 rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
