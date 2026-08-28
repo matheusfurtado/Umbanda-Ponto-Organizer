@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { redefinirSenha } from "@/api/conta";
 import { ehErroDeApi, ehErroDeRede } from "@/api/cliente";
 import { useAuth } from "@/auth/AuthContext";
+import { tokenDoLink } from "@/lib/tokenDoLink";
 
 const MINIMO_SENHA = 10;
 
@@ -26,7 +27,7 @@ export function TelaRedefinir() {
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
-    setToken(new URLSearchParams(window.location.search).get("token"));
+    setToken(tokenDoLink());
   }, []);
 
   const submeter = async (e: React.FormEvent) => {

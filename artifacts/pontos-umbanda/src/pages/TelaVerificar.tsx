@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { confirmarEmail } from "@/api/conta";
 import { ehErroDeApi, ehErroDeRede } from "@/api/cliente";
 import { useAuth } from "@/auth/AuthContext";
+import { tokenDoLink } from "@/lib/tokenDoLink";
 
 type Estado = "confirmando" | "pronto" | "erro";
 
@@ -30,7 +31,7 @@ export function TelaVerificar() {
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get("token");
+    const token = tokenDoLink();
     if (!token) {
       setEstado("erro");
       setErro("Abra o link exatamente como veio no e-mail.");
