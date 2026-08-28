@@ -18,6 +18,7 @@ import {
   CloudOff,
   GripVertical,
   Loader2,
+  Users,
   Music,
   Plus,
   Search,
@@ -620,9 +621,22 @@ export function TelaRepertorios() {
     <div className="min-h-full">
       <div className="max-w-5xl px-4 pb-24 pt-5 sm:px-8">
         <h1 className="text-2xl font-black text-foreground sm:text-3xl">Minhas giras</h1>
-        <p className="mb-6 mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-sm text-muted-foreground">
           A sequência de pontos da sua gira, na ordem em que serão cantados.
         </p>
+        {/* O caminho da vitrine no CELULAR.
+            Ela só existia na barra lateral, que aparece de `lg:` para cima —
+            então a camada da comunidade inteira era exclusiva de desktop, no
+            aparelho que ninguém leva para a gira. Entra aqui, e não como sexta
+            aba da barra de baixo, porque qual dos cinco lugares sai é decisão
+            de produto, e esta não é. Ver ADR 0006. */}
+        <Link
+          href="/giras-publicas"
+          className="mb-6 mt-3 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-primary underline underline-offset-2 lg:hidden"
+        >
+          <Users className="h-4 w-4" aria-hidden />
+          Ver as giras da comunidade
+        </Link>
 
         <FaixaSincronia
             fonte={fonte}

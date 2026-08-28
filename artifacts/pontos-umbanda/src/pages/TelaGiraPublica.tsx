@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useRoute } from "wouter";
+import { Compartilhar } from "@/componentes/Compartilhar";
 import { ArrowLeft, Globe, Youtube, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CapaGira } from "@/componentes/CapaGira";
@@ -84,6 +85,11 @@ export function TelaGiraPublica() {
               {" · "}{gira.itens.length} {gira.itens.length === 1 ? "ponto" : "pontos"}
               {duracao > 0 && ` · cerca de ${Math.round(duracao / 60)} min`}
             </p>
+            {/* A gira é o que circula no grupo do terreiro — e era o que menos
+                tinha como circular: nem botão havia. Ver ADR 0006. */}
+            <div className="mt-3">
+              <Compartilhar titulo={`${gira.nome} — Pontos de Umbanda`} caminho={`/gira/${gira.id}`} />
+            </div>
           </div>
         </div>
 

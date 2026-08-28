@@ -4,6 +4,7 @@ import {
   Camera, Check, Eye, EyeOff, ListMusic, Loader2, Star, Trash2, UserPen, UserPlus,
 } from "lucide-react";
 import { Avatar } from "@/componentes/Avatar";
+import { Compartilhar } from "@/componentes/Compartilhar";
 import { TrocarApelido } from "@/componentes/TrocarApelido";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
@@ -277,6 +278,15 @@ export function TelaPerfil() {
                   </Button>
                 </Link>
               )}
+              {/* Aparece para os dois lados: para o dono, é como o perfil dele
+                  circula; para quem visita, é como ele mostra a alguém a gira
+                  de quem admira. É o mecanismo de descoberta que este app tem
+                  de verdade (ADR 0006). */}
+              <Compartilhar
+                titulo={`${perfil.apelido} — Pontos de Umbanda`}
+                caminho={`/perfil/${encodeURIComponent(perfil.apelido)}`}
+                rotulo={perfil.souEu ? "Compartilhar meu perfil" : "Compartilhar"}
+              />
             </div>
             {perfil.souEu && (
               // O aviso fica colado no botão, e não numa tela de ajuda: é aqui

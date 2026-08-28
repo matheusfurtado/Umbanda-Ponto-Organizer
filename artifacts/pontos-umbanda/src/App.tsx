@@ -35,7 +35,7 @@ import { Orixa } from "@/types";
 
 const FLAG_MIGRACAO = "migracao-oferecida";
 
-function AppInner() {
+function AppInner({ focarBusca = false }: { focarBusca?: boolean }) {
   const [orixaAberto, setOrixaAberto] = useState<Orixa | null>(null);
   const { adicionar, sugerir, modais } = useAcoesDePonto();
 
@@ -54,7 +54,12 @@ function AppInner() {
           onSugerirAutor={sugerir}
         />
       ) : (
-        <TelaInicio onAbrirOrixa={setOrixaAberto} onAdicionar={adicionar} onSugerirAutor={sugerir} />
+        <TelaInicio
+          onAbrirOrixa={setOrixaAberto}
+          onAdicionar={adicionar}
+          onSugerirAutor={sugerir}
+          focarBusca={focarBusca}
+        />
       )}
       {modais}
     </>
@@ -146,6 +151,13 @@ function App() {
                   </Route>
                   <Route path="/planos">
                     <TelaPlanos />
+                  </Route>
+                  {/* As duas barras têm "Buscar" apontando para cá. Sem esta
+                      rota o link caía no catch-all e renderizava a tela inicial
+                      sem o campo em foco — parecia funcionar, e não funcionava:
+                      a aba nunca ficava marcada e o teclado nunca abria. */}
+                  <Route path="/buscar">
+                    <AppInner focarBusca />
                   </Route>
                   <Route path="/favoritos">
                     <TelaFavoritos />

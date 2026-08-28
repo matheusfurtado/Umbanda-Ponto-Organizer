@@ -44,10 +44,13 @@ export function TelaInicio({
   onAbrirOrixa,
   onAdicionar,
   onSugerirAutor,
+  focarBusca = false,
 }: {
   onAbrirOrixa: (o: Orixa) => void;
   onAdicionar?: (p: Ponto) => void;
   onSugerirAutor?: (p: Ponto) => void;
+  /** Ligado quando se chega por "Buscar": o campo já vem pronto para digitar. */
+  focarBusca?: boolean;
 }) {
   const { dados, estado } = useApp();
   const { ent } = useEntitlements();
@@ -100,6 +103,10 @@ export function TelaInicio({
       <div className="relative mb-8 max-w-xl">
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
         <input
+          // `autoFocus` só quando se chegou pela aba Buscar. Na abertura normal
+          // do app ele abriria o teclado do celular por cima do acervo, que é
+          // justamente o que a pessoa veio ver.
+          autoFocus={focarBusca}
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Buscar pelo nome ou por um trecho da letra..."
