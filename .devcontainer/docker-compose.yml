@@ -1,0 +1,107 @@
+# .devcontainer/docker-compose.yml
+#
+# Orquestra TODA a infra local do projeto dentro do dev container:
+#   - app     : container onde você trabalha (Node 24 + pnpm), monta o repo inteiro
+#   - db      : Postgres 16 com volume persistente
+#   - adminer : UI web para inspecionar o Postgres (opcional, profile "tools")
+#   - pgweb   : UI web alternativa para o Postgres (opcional, profile "tools")
+#
+# O VS Code (via devcontainer.json) sobe este compose e anexa ao serviço "app".
+# Os serviços opcionais (adminer/pgweb) só sobem se você pedir explicitamente:
+#   docker compose --profile tools up -d adminer pgweb
+
+services:
+  app:
+    # IMPORTANTE (Apple Silicon / M1-M4): forçamos linux/amd64 (x64).
+    # O pnpm-workspace.yaml remove via `overrides` TODOS os binários nativos arm64
+    # (esbuild, rollup, lightningcss, @tailwindcss/oxide) e mantém só os *linux-x64-gnu*.
+    # Num container arm64 nativo o build QUEBRARIA (faltariam os .node arm64).
+    # amd64 casa com esses overrides e com produção (Vercel/Fly são x64).
+    # Em Macs M-series roda via Rosetta 2 (habilite "Use Rosetta" no Docker Desktop).
+    platform: linux/amd64
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    init: true
+    command: sleep infinity
+    volumes:
+      # Bind mount do repo inteiro — editar no host (VS Code) reflete direto no container.
+      - ..:/workspace:cached
+      # Volume nomeado para o pnpm store: cache de pacotes sobrevive a rebuilds
+      # do container e evita poluir/baguncar node_modules do host com binários linux.
+      - pnpm-store:/pnpm
+    environment:
+      NODE_ENV: development
+      # DATABASE_URL já resolvida para o serviço "db" deste compose (nome de host = "db").
+      DATABASE_URL: postgresql://umbanda:umbanda@db:5432/umbanda
+      # Portas padrão usadas pelos scripts dev do monorepo.
+      PORT: "3001"
+      VITE_PORT: "3000"
+    ports:
+      - "3000:3000" # frontend (pontos-umbanda / vite dev server)
+      - "3001:3001" # api-server (Express)
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - umbanda-net
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: umbanda
+      POSTGRES_PASSWORD: umbanda
+      POSTGRES_DB: umbanda
+    volumes:
+      # Volume nomeado = dados do Postgres persistem entre "docker compose down"/rebuilds.
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umbanda -d umbanda"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - umbanda-net
+
+  # Opcional: UI web leve para inspecionar tabelas rapidamente.
+  # Subir com: docker compose --profile tools up -d adminer
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    profiles: ["tools"]
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - umbanda-net
+
+  # Opcional: alternativa ao Adminer, mais focada em Postgres.
+  # Subir com: docker compose --profile tools up -d pgweb
+  pgweb:
+    image: sosedoff/pgweb:latest
+    restart: unless-stopped
+    profiles: ["tools"]
+    environment:
+      PGWEB_DATABASE_URL: postgresql://umbanda:umbanda@db:5432/umbanda?sslmode=disable
+    ports:
+      - "8081:8081"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - umbanda-net
+
+volumes:
+  pgdata:
+    name: umbanda-pgdata
+  pnpm-store:
+    name: umbanda-pnpm-store
+
+networks:
+  umbanda-net:
+    name: umbanda-net

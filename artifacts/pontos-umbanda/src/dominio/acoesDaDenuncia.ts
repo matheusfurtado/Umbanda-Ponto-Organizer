@@ -1,0 +1,59 @@
+/**
+ * Que providência cabe em cada tipo de conteúdo denunciado.
+ *
+ * Mora aqui, e não dentro da tela, por um motivo concreto: **o servidor tem a
+ * mesma tabela** (`ACOES_POR_ALVO`, em `routers/denuncia.py`) e recusa com 422
+ * o que não couber. Se as duas divergirem, o admin vê um botão que sempre
+ * falha — e descobre isso no meio de uma decisão de moderação.
+ *
+ * Com o mapa num arquivo só e em forma de dado, um teste do lado do Python lê
+ * este arquivo e compara com o dele. Enquanto isso vivia dentro de um `if` no
+ * meio do JSX, não havia como cruzar.
+ *
+ * O rótulo e o aviso são deste lado: o servidor não tem opinião sobre como se
+ * escreve para quem vai clicar. Mas o **aviso é obrigatório** para toda ação
+ * que muda a vida de alguém — quem acolhe uma denúncia precisa saber, antes de
+ * clicar, que tirar a foto não tem volta.
+ */
+
+import type { AcaoDeDenuncia, AlvoDeDenuncia } from "@/api/denuncia";
+
+export interface OpcaoDeAcao {
+  valor: AcaoDeDenuncia;
+  rotulo: string;
+  /** O que a ação custa a quem é alvo. Obrigatório quando ela muda algo. */
+  aviso?: string;
+}
+
+/** "Procede, mas a providência é fora do app" — vale para todo alvo. */
+const NENHUMA: OpcaoDeAcao = {
+  valor: "nenhuma",
+  rotulo: "Procede, sem mexer no app",
+};
+
+export const ACOES_POR_ALVO: Record<AlvoDeDenuncia, OpcaoDeAcao[]> = {
+  perfil: [
+    { valor: "foto_removida", rotulo: "Tirar a foto", aviso: "não tem volta" },
+    {
+      valor: "apelido_limpo",
+      rotulo: "Tirar o nome público",
+      aviso: "some o perfil inteiro, e o nome fica reservado",
+    },
+    NENHUMA,
+  ],
+  gira: [
+    {
+      valor: "gira_despublicada",
+      rotulo: "Tirar da vitrine",
+      aviso: "a gira continua com quem a montou",
+    },
+    NENHUMA,
+  ],
+  // Tirar ponto do acervo canônico ainda não existe como ação: sumiria para
+  // todo mundo, e isso precisa ser desenhado, não improvisado num botão.
+  ponto: [NENHUMA],
+};
+
+export function acoesDe(tipo: AlvoDeDenuncia): OpcaoDeAcao[] {
+  return ACOES_POR_ALVO[tipo] ?? [NENHUMA];
+}

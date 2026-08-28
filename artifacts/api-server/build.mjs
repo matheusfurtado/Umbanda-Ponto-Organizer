@@ -62,7 +62,9 @@ async function buildAll() {
       "@swc/*",
       "@aws-sdk/*",
       "@azure/*",
-      "@opentelemetry/*",
+      // @opentelemetry NÃO é externalizado: o better-auth importa
+      // @opentelemetry/semantic-conventions, e deps transitivas externalizadas não
+      // resolvem a partir do dist sob pnpm. Bundlar torna o artefato self-contained.
       "@google-cloud/*",
       "@google/*",
       "googleapis",

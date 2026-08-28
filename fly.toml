@@ -1,0 +1,32 @@
+# Fly.io — api-server (Express) colocalizado com o Postgres (Supabase) em São Paulo (gru).
+# Ajuste "app" para o nome real (crie com: fly apps create umbanda-ponto-api). Ver docs/deploy.md.
+app = "umbanda-ponto-api"
+primary_region = "gru"
+
+[build]
+  dockerfile = "artifacts/api-server/Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3001"
+  # Segredos (NÃO ficam aqui) via `fly secrets set`:
+  #   DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL, TRUSTED_ORIGINS,
+  #   RESEND_API_KEY, EMAIL_FROM, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0   # escala-a-zero (MVP barato). Suba p/ 1 se quiser sempre-ligado.
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "3s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/api/healthz"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

@@ -1,0 +1,10 @@
+# Contexto de build do Fly (raiz do repo). Reconstruímos deps/dist dentro da imagem.
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+.git
+.pnpm-store
+.vercel
+.cache
+*.log
+.DS_Store

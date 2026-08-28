@@ -1,9 +1,12 @@
 import { useState, useCallback } from "react";
-import { Plus, Edit2, Trash2, Download, Upload, Star, GripVertical } from "lucide-react";
+import { Plus, Edit2, Trash2, Download, Upload, Star, GripVertical, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/context";
+import { useEntitlements } from "@/billing/EntitlementsContext";
 import { ModalOrixa } from "@/components/ModalOrixa";
 import { ModalConfirmar } from "@/components/ModalConfirmar";
+import { Link } from "wouter";
+import { MenuUsuario } from "@/components/MenuUsuario";
 import { Orixa } from "@/types";
 import { exportarDados, importarDados } from "@/storage";
 import {
@@ -108,6 +111,7 @@ function SortableOrixaCard({
 
 export function TelaOrixas({ onSelectOrixa }: Props) {
   const { dados, adicionarOrixa, editarOrixa, excluirOrixa, reordenarOrixas } = useApp();
+  const { ent } = useEntitlements();
   const [modalAberto, setModalAberto] = useState(false);
   const [orixaEditar, setOrixaEditar] = useState<Orixa | null>(null);
   const [confirmarExcluir, setConfirmarExcluir] = useState<Orixa | null>(null);
@@ -159,13 +163,29 @@ export function TelaOrixas({ onSelectOrixa }: Props) {
         <div className="px-4 pt-8 pb-4">
           <div className="flex items-center justify-between mb-1">
             <h1 className="text-2xl font-bold text-foreground">Pontos de Umbanda</h1>
-            <button
-              onClick={() => { setOrixaEditar(null); setModalAberto(true); }}
-              className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform"
-              title="Novo Orixá"
-            >
-              <Plus className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              {/* Só aparece com plano: a rota responde 402 sem ele, e um botão
+                  que leva a um erro é pior que botão ausente. */}
+              {ent.repertorios && (
+                <Link href="/repertorios">
+                  <button
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-transform active:scale-95"
+                    title="Meus repertórios"
+                    aria-label="Meus repertórios"
+                  >
+                    <Music className="h-5 w-5" aria-hidden />
+                  </button>
+                </Link>
+              )}
+              <MenuUsuario />
+              <button
+                onClick={() => { setOrixaEditar(null); setModalAberto(true); }}
+                className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform"
+                title="Novo Orixá"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            </div>
           </div>
           <p className="text-muted-foreground text-sm">
             {orixas.length} orixás · {totalPontos} pontos · {totalFavoritos} favoritos
