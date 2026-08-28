@@ -42,6 +42,15 @@ export function TelaLogin() {
   const [querComunicacao, setQuerComunicacao] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  /**
+   * O recado do servidor depois de criar a conta.
+   *
+   * Quando existe, a tela troca o formulário por ele. Não é um "sucesso"
+   * decorativo: é a única coisa que a pessoa recebe, porque o cadastro deixou
+   * de logar — e a resposta é a mesma para e-mail livre e para e-mail que já
+   * tem conta, de propósito.
+   */
+  const [conferirCaixa, setConferirCaixa] = useState<string | null>(null);
 
   const criando = modo === "criar";
   const podeEnviar =
@@ -56,16 +65,19 @@ export function TelaLogin() {
     setErro(null);
     try {
       if (criando) {
-        await cadastrar({
+        const recado = await cadastrar({
           email: email.trim(),
           apelido: apelido.trim(),
           senha,
           consinto_dado_religioso: consentiu,
           consinto_comunicacao: querComunicacao,
         });
-      } else {
-        await entrar(email.trim(), senha);
+        // Nada de `navegar("/")` aqui: não há sessão para levar a lugar
+        // nenhum. Mandar para a tela principal faria parecer que deu errado.
+        setConferirCaixa(recado);
+        return;
       }
+      await entrar(email.trim(), senha);
       navegar("/");
     } catch (problema) {
       setErro(traduzir(problema));
@@ -73,6 +85,27 @@ export function TelaLogin() {
       setCarregando(false);
     }
   };
+
+  if (conferirCaixa !== null) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <div className="max-w-sm w-full mx-auto px-4 pt-8 flex-1 flex flex-col justify-center pb-16 text-center">
+          <div className="text-4xl mb-3">📬</div>
+          <h1 className="text-2xl font-bold text-foreground">Confira seu e-mail</h1>
+          <p className="text-muted-foreground text-sm mt-2">{conferirCaixa}</p>
+          <p className="text-muted-foreground text-xs mt-4">
+            O link vale por 24 horas. Se não chegar, veja também a caixa de spam.
+          </p>
+          {/* A saída continua existindo: o app funciona sem conta. */}
+          <Link href="/">
+            <Button variant="secondary" className="mt-8 min-h-11 w-full">
+              Continuar sem conta
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

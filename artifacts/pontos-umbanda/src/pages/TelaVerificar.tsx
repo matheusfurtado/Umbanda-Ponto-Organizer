@@ -9,11 +9,17 @@ import { useAuth } from "@/auth/AuthContext";
 type Estado = "confirmando" | "pronto" | "erro";
 
 /**
- * Confirma o e-mail pelo link recebido.
+ * Confirma a conta pelo link recebido — e é por aqui que se entra.
  *
  * Esta tela faltava, e o buraco era invisível: o e-mail de verificação apontava
  * para `/verificar`, o app não tinha essa rota, e a pessoa caía na tela
  * principal sem nada acontecer. O link parecia funcionar e não fazia nada.
+ *
+ * Desde 28/08 ela deixou de ser um extra e virou **a porta de entrada**: o
+ * cadastro não abre mais sessão (logar já contaria que o e-mail estava livre),
+ * então quem acabou de criar conta chega ao app por este link. O servidor abre
+ * a sessão ao consumir o token; o `recarregar` abaixo é o que faz o app
+ * perceber.
  *
  * Confirma sozinha ao abrir — pedir para a pessoa apertar um botão depois de já
  * ter clicado num link é um passo que não serve a ninguém.
@@ -63,9 +69,9 @@ export function TelaVerificar() {
         {estado === "pronto" && (
           <>
             <CheckCircle2 className="mx-auto mb-4 h-10 w-10 text-primary" aria-hidden />
-            <h1 className="text-xl font-bold text-foreground">E-mail confirmado</h1>
+            <h1 className="text-xl font-bold text-foreground">Conta confirmada</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Pronto. Isso ajuda a recuperar sua conta se você esquecer a senha.
+              Pronto, você está dentro. Seus 15 dias de teste começam agora.
             </p>
             <Link href="/">
               <Button className="mt-6 min-h-11 w-full">Ir para o app</Button>

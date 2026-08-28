@@ -85,8 +85,24 @@ export interface DadosCadastro {
   consinto_comunicacao?: boolean;
 }
 
-export function cadastrar(dados: DadosCadastro): Promise<Usuario | null> {
-  return chamar<Usuario>("/cadastro", { method: "POST", body: JSON.stringify(dados) });
+/** O que o cadastro devolve: uma frase, sempre a mesma. */
+export interface Recado {
+  mensagem: string;
+}
+
+/**
+ * Cria a conta — e **não** loga.
+ *
+ * Devolvia o usuário e a sessão vinha junto. Não podia continuar assim: "você
+ * está dentro" já é a informação de que o endereço estava livre, e com ela o
+ * cadastro dizia a qualquer anônimo quem tem conta num app de Umbanda.
+ *
+ * Hoje o servidor responde 202 e a mesma frase nos três casos (e-mail livre,
+ * conta pendente, conta ativa), e manda um link. Quem entra é quem abre o
+ * link, em `TelaVerificar`.
+ */
+export function cadastrar(dados: DadosCadastro): Promise<Recado | null> {
+  return chamar<Recado>("/cadastro", { method: "POST", body: JSON.stringify(dados) });
 }
 
 export function entrar(email: string, senha: string): Promise<Usuario | null> {

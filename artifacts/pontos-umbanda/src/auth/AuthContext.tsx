@@ -57,7 +57,7 @@ interface AuthContextType {
   isPending: boolean;
   autenticado: boolean;
   entrar: (email: string, senha: string) => Promise<void>;
-  cadastrar: (dados: DadosCadastro) => Promise<void>;
+  cadastrar: (dados: DadosCadastro) => Promise<string>;
   sair: () => Promise<void>;
   recarregar: () => Promise<void>;
 }
@@ -114,10 +114,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     lembrar(u);
   }, []);
 
+  /**
+   * Cria a conta e devolve o recado para a tela mostrar. **Não** loga.
+   *
+   * O `setUser` daqui saiu junto com a sessão: o cadastro parou de abrir uma,
+   * porque logar na resposta contava que o e-mail estava livre. Quem entra é
+   * quem abre o link — e aí é `recarregar` que atualiza este contexto.
+   */
   const cadastrar = useCallback(async (dados: DadosCadastro) => {
-    const u = await cadastrarNaApi(dados);
-    setUser(u);
-    lembrar(u);
+    const recado = await cadastrarNaApi(dados);
+    return recado?.mensagem ?? "";
   }, []);
 
   const sair = useCallback(async () => {
