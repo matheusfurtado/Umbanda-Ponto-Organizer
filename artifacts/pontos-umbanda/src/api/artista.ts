@@ -42,9 +42,66 @@ export interface PontoDoArtista {
   id: string;
   titulo: string;
   orixa: string | null;
+  /**
+   * A identidade do grupo a que o ponto pertence — é o que permite separar a
+   * lista por entidade, como o Spotify separa por álbum.
+   *
+   * Agrupa-se pelo `orixaId`, nunca pelo nome: duas entradas de topo podem
+   * repetir nome, e agrupar por texto juntaria o que é diferente.
+   */
+  orixaId: string | null;
+  orixaEmoji: string | null;
+  orixaCor: string | null;
+  /** `orixa`, `momento` ou `linha`. */
+  orixaTipo: string | null;
   videoUrl: string | null;
   /** `encontrado` ou `revisar`. Anda SEMPRE junto com a URL. */
   videoStatus: string | null;
+}
+
+/** Um bloco da página do artista: a entidade, e os pontos dela. */
+export interface GrupoDoArtista {
+  id: string;
+  nome: string;
+  emoji: string | null;
+  cor: string | null;
+  tipo: string | null;
+  pontos: PontoDoArtista[];
+}
+
+/**
+ * Agrupa os pontos por entidade, preservando a ordem em que apareceram.
+ *
+ * **Por chave, e não por corrida contígua.** O servidor já manda ordenado por
+ * orixá, então varrer somando enquanto o vizinho for igual funcionaria hoje —
+ * e quebraria em silêncio no dia em que a ordenação mudasse, espalhando o mesmo
+ * orixá em três blocos. O `Map` é indiferente à ordem e custa o mesmo.
+ *
+ * Ponto sem entidade cai num grupo próprio no fim, em vez de sumir: 47 pontos
+ * do acervo já abrem com a letra em branco, e engolir o que não se encaixa é
+ * como esse tipo de buraco fica invisível.
+ */
+export function agruparPorEntidade(pontos: PontoDoArtista[]): GrupoDoArtista[] {
+  const grupos = new Map<string, GrupoDoArtista>();
+  for (const p of pontos) {
+    const id = p.orixaId ?? "";
+    let grupo = grupos.get(id);
+    if (!grupo) {
+      grupo = {
+        id,
+        nome: p.orixa ?? "Sem orixá",
+        emoji: p.orixaEmoji,
+        cor: p.orixaCor,
+        tipo: p.orixaTipo,
+        pontos: [],
+      };
+      grupos.set(id, grupo);
+    }
+    grupo.pontos.push(p);
+  }
+  const lista = [...grupos.values()];
+  // O grupo dos órfãos por último, sempre.
+  return [...lista.filter((g) => g.id), ...lista.filter((g) => !g.id)];
 }
 
 export interface Artista extends ArtistaResumo {

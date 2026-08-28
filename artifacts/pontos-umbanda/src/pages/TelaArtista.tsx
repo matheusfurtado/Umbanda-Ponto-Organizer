@@ -26,6 +26,7 @@ import { useEffect, useState } from "react";
 import { Link, useRoute } from "wouter";
 import { AlertTriangle, ExternalLink, Music2, Users } from "lucide-react";
 import {
+  agruparPorEntidade,
   buscaNoYoutube,
   verArtista,
   type Artista,
@@ -183,40 +184,73 @@ export function TelaArtista() {
           Nenhum ponto ligado a este artista por enquanto.
         </p>
       ) : (
-        <ul className="space-y-2">
-          {artista.pontosDoArtista.map((p) => (
-            <li
-              key={p.id}
-              className="flex items-center justify-between gap-3 rounded-xl border bg-card/40 p-3"
-            >
-              <span className="min-w-0">
-                <span className="block truncate font-medium text-foreground">
-                  {p.titulo}
+        /* SEPARADO POR ENTIDADE, como o Spotify separa por álbum.
+
+           O ganho está no que SAIU: o nome do orixá repetia em toda linha, e
+           subir para o cabeçalho do bloco deixa a lista mais leve, não mais
+           pesada. Era esse o pedido de "algo mais sutil".
+
+           Cabeçalho e não card: um card por entidade transformaria os 8 grupos
+           da Juliana em 8 caixas, e a página viraria uma parede. Aqui é uma
+           linha com o emoji e a contagem, e um filete da cor da entidade à
+           esquerda dos pontos — amarra o bloco sem desenhar moldura. */
+        <div className="space-y-6">
+          {agruparPorEntidade(artista.pontosDoArtista).map((grupo) => (
+            <section key={grupo.id || "sem-orixa"} aria-label={grupo.nome}>
+              <h3 className="mb-2 flex items-baseline gap-2 px-1">
+                <span aria-hidden className="text-base">
+                  {grupo.emoji}
                 </span>
-                <span className="block text-xs text-muted-foreground">
-                  {p.orixa}
-                  {p.videoStatus === "revisar" && (
-                    // A nota de confiança viaja SEMPRE com a URL: apresentar um
-                    // casamento duvidoso como certo é mentir para quem clica.
-                    <> · casamento a conferir</>
-                  )}
+                <span className="font-semibold text-foreground">{grupo.nome}</span>
+                <span className="text-xs text-muted-foreground">
+                  {grupo.pontos.length}
+                  {grupo.pontos.length === 1 ? " ponto" : " pontos"}
                 </span>
-              </span>
-              {p.videoUrl && (
-                <a
-                  href={p.videoUrl}
-                  onClick={() => registrarCliqueNoPonto(p.id, "artista")}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="inline-flex min-h-11 shrink-0 items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-2"
-                >
-                  <ExternalLink className="h-4 w-4" aria-hidden />
-                  Ouvir
-                </a>
-              )}
-            </li>
+              </h3>
+              <ul
+                className="space-y-1 border-l-2 pl-3"
+                /* A cor da entidade, e só ela: um filete. Pintar o fundo com a
+                   cor do orixá deixaria a página listrada, e cor forte compete
+                   com o título, que é o que a pessoa está procurando. */
+                style={{ borderColor: grupo.cor ?? "transparent" }}
+              >
+                {grupo.pontos.map((p) => (
+                  <li
+                    key={p.id}
+                    className="flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 transition hover:bg-accent/40"
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm text-foreground">
+                        {p.titulo}
+                      </span>
+                      {p.videoStatus === "revisar" && (
+                        /* A nota de confiança viaja SEMPRE com a URL:
+                           apresentar um casamento duvidoso como certo é mentir
+                           para quem clica. */
+                        <span className="block text-xs text-muted-foreground">
+                          casamento a conferir
+                        </span>
+                      )}
+                    </span>
+                    {p.videoUrl && (
+                      <a
+                        href={p.videoUrl}
+                        onClick={() => registrarCliqueNoPonto(p.id, "artista")}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        aria-label={`Ouvir ${p.titulo} no YouTube`}
+                        className="inline-flex min-h-11 shrink-0 items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-2"
+                      >
+                        <ExternalLink className="h-4 w-4" aria-hidden />
+                        Ouvir
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
