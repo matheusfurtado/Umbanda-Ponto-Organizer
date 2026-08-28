@@ -28,9 +28,11 @@ import { AlertTriangle, ExternalLink, Music2, Users } from "lucide-react";
 import {
   agruparPorEntidade,
   buscaNoYoutube,
+  maisOuvidos,
   verArtista,
   type Artista,
 } from "@/api/artista";
+import { PontoDoArtista as PontoDoArtistaLinha } from "@/componentes/PontoDoArtista";
 import { BotaoSeguirArtista } from "@/componentes/BotaoSeguirArtista";
 import { Denunciar } from "@/componentes/Denunciar";
 import { EditarArtista } from "@/componentes/EditarArtista";
@@ -41,6 +43,8 @@ export function TelaArtista() {
   const id = params?.id ?? "";
   const [artista, setArtista] = useState<Artista | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  /** `null` = todos. O id da entidade quando a pessoa escolhe um "álbum". */
+  const [filtro, setFiltro] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -52,6 +56,11 @@ export function TelaArtista() {
         setErro(e instanceof Error ? e.message : "Falha ao carregar."),
       );
   }, [id]);
+
+  // Fora de `useMemo` por simplicidade: são até 44 pontos, e a página só
+  // re-renderiza ao seguir, editar ou trocar de filtro.
+  const grupos = artista ? agruparPorEntidade(artista.pontosDoArtista) : [];
+  const populares = artista ? maisOuvidos(artista.pontosDoArtista) : [];
 
   if (erro) {
     return (
@@ -178,79 +187,102 @@ export function TelaArtista() {
         <Denunciar alvoTipo="artista" alvoId={artista.id} oQueE="esta página" />
       </div>
 
-      <h2 className="mb-2 mt-8 px-1 text-lg font-bold text-foreground">Pontos</h2>
+      <h2 className="mb-3 mt-8 px-1 text-lg font-bold text-foreground">Pontos</h2>
       {artista.pontosDoArtista.length === 0 ? (
         <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
           Nenhum ponto ligado a este artista por enquanto.
         </p>
       ) : (
-        /* SEPARADO POR ENTIDADE, como o Spotify separa por álbum.
-
-           O ganho está no que SAIU: o nome do orixá repetia em toda linha, e
-           subir para o cabeçalho do bloco deixa a lista mais leve, não mais
-           pesada. Era esse o pedido de "algo mais sutil".
-
-           Cabeçalho e não card: um card por entidade transformaria os 8 grupos
-           da Juliana em 8 caixas, e a página viraria uma parede. Aqui é uma
-           linha com o emoji e a contagem, e um filete da cor da entidade à
-           esquerda dos pontos — amarra o bloco sem desenhar moldura. */
-        <div className="space-y-6">
-          {agruparPorEntidade(artista.pontosDoArtista).map((grupo) => (
-            <section key={grupo.id || "sem-orixa"} aria-label={grupo.nome}>
-              <h3 className="mb-2 flex items-baseline gap-2 px-1">
-                <span aria-hidden className="text-base">
-                  {grupo.emoji}
-                </span>
-                <span className="font-semibold text-foreground">{grupo.nome}</span>
-                <span className="text-xs text-muted-foreground">
-                  {grupo.pontos.length}
-                  {grupo.pontos.length === 1 ? " ponto" : " pontos"}
-                </span>
+        <>
+          {/* MAIS OUVIDOS — a seção que o Spotify chama de "Popular".
+              
+              Some quando ninguém clicou ainda: um ranking de zeros ordenado
+              por desempate é ruído com cara de informação. */}
+          {populares.length > 0 && (
+            <section aria-label="Mais ouvidos" className="mb-8">
+              <h3 className="mb-2 px-1 text-sm font-semibold text-foreground">
+                Mais ouvidos
               </h3>
-              <ul
-                className="space-y-1 border-l-2 pl-3"
-                /* A cor da entidade, e só ela: um filete. Pintar o fundo com a
-                   cor do orixá deixaria a página listrada, e cor forte compete
-                   com o título, que é o que a pessoa está procurando. */
-                style={{ borderColor: grupo.cor ?? "transparent" }}
-              >
-                {grupo.pontos.map((p) => (
-                  <li
-                    key={p.id}
-                    className="flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 transition hover:bg-accent/40"
-                  >
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm text-foreground">
-                        {p.titulo}
-                      </span>
-                      {p.videoStatus === "revisar" && (
-                        /* A nota de confiança viaja SEMPRE com a URL:
-                           apresentar um casamento duvidoso como certo é mentir
-                           para quem clica. */
-                        <span className="block text-xs text-muted-foreground">
-                          casamento a conferir
-                        </span>
-                      )}
-                    </span>
-                    {p.videoUrl && (
-                      <a
-                        href={p.videoUrl}
-                        onClick={() => registrarCliqueNoPonto(p.id, "artista")}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        aria-label={`Ouvir ${p.titulo} no YouTube`}
-                        className="inline-flex min-h-11 shrink-0 items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-2"
-                      >
-                        <ExternalLink className="h-4 w-4" aria-hidden />
-                        Ouvir
-                      </a>
-                    )}
-                  </li>
+              <ul className="space-y-1">
+                {populares.map((p, i) => (
+                  <PontoDoArtistaLinha key={p.id} ponto={p} posicao={i + 1} />
                 ))}
               </ul>
             </section>
-          ))}
-        </div>
+          )}
+
+          {/* AS ENTIDADES COMO ÁLBUM. Chips e não abas de verdade: são até 8
+              por artista, e um componente de aba com rolagem horizontal seria
+              peso para uma escolha que cabe em duas linhas de texto. */}
+          <div className="mb-3 flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => setFiltro(null)}
+              aria-pressed={filtro === null}
+              className={`min-h-11 rounded-full px-3 text-sm transition ${
+                filtro === null
+                  ? "bg-primary text-primary-foreground"
+                  : "border text-muted-foreground hover:border-primary/40"
+              }`}
+            >
+              Todos
+            </button>
+            {grupos.map((g) => (
+              <button
+                key={g.id || "sem-orixa"}
+                type="button"
+                onClick={() => setFiltro(filtro === g.id ? null : g.id)}
+                aria-pressed={filtro === g.id}
+                className={`inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm transition ${
+                  filtro === g.id
+                    ? "bg-primary text-primary-foreground"
+                    : "border text-muted-foreground hover:border-primary/40"
+                }`}
+              >
+                <span aria-hidden>{g.emoji}</span>
+                {g.nome}
+                <span className="text-xs opacity-70">{g.pontos.length}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-6">
+            {grupos
+              .filter((g) => filtro === null || g.id === filtro)
+              .map((grupo) => (
+                <section key={grupo.id || "sem-orixa"} aria-label={grupo.nome}>
+                  {/* O cabeçalho some quando já se filtrou por ele: o chip
+                      aceso acima já diz o que se está vendo, e repetir logo
+                      abaixo é ruído. */}
+                  {filtro === null && (
+                    <h3 className="mb-2 flex items-baseline gap-2 px-1">
+                      <span aria-hidden className="text-base">
+                        {grupo.emoji}
+                      </span>
+                      <span className="font-semibold text-foreground">
+                        {grupo.nome}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {grupo.pontos.length}
+                        {grupo.pontos.length === 1 ? " ponto" : " pontos"}
+                      </span>
+                    </h3>
+                  )}
+                  <ul
+                    className="space-y-1 border-l-2 pl-3"
+                    /* A cor da entidade como filete, e não como fundo: fundo
+                       colorido deixaria a página listrada e competiria com o
+                       título, que é o que a pessoa procura. */
+                    style={{ borderColor: grupo.cor ?? "transparent" }}
+                  >
+                    {grupo.pontos.map((p) => (
+                      <PontoDoArtistaLinha key={p.id} ponto={p} />
+                    ))}
+                  </ul>
+                </section>
+              ))}
+          </div>
+        </>
       )}
     </div>
   );

@@ -13,12 +13,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { agruparPorEntidade, type PontoDoArtista } from "./artista.ts";
+import {
+  agruparPorEntidade,
+  maisOuvidos,
+  type PontoDoArtista,
+} from "./artista.ts";
 
 function ponto(
   id: string,
   orixaId: string | null,
   nome: string | null = orixaId,
+  cliques = 0,
 ): PontoDoArtista {
   return {
     id,
@@ -28,6 +33,8 @@ function ponto(
     orixaEmoji: orixaId ? "🔥" : null,
     orixaCor: orixaId ? "#dc2626" : null,
     orixaTipo: "orixa",
+    letra: `letra de ${id}`,
+    cliques,
     videoUrl: null,
     videoStatus: null,
   };
@@ -95,4 +102,48 @@ test("nenhum ponto é perdido nem duplicado", () => {
   );
   const vistos = agruparPorEntidade(pontos).flatMap((g) => g.pontos.map((p) => p.id));
   assert.deepEqual([...vistos].sort(), ["a", "b", "c", "d", "e"]);
+});
+
+
+test("os mais ouvidos vêm do mais clicado para o menos", () => {
+  const lista = maisOuvidos([
+    ponto("a", "exu", "Exu", 3),
+    ponto("b", "exu", "Exu", 9),
+    ponto("c", "exu", "Exu", 5),
+  ]);
+  assert.deepEqual(lista.map((p) => p.id), ["b", "c", "a"]);
+});
+
+test("ponto sem clique nenhum fica de fora", () => {
+  // Um ranking que inclui zeros é uma lista ordenada por desempate com cara de
+  // popularidade. A seção inteira some quando ninguém clicou.
+  assert.deepEqual(maisOuvidos([ponto("a", "exu", "Exu", 0)]), []);
+  assert.deepEqual(maisOuvidos([]), []);
+});
+
+test("empate desempata pelo título, e não pela ordem do servidor", () => {
+  // Sem desempate explícito, dois pontos com a mesma contagem trocam de lugar
+  // entre carregamentos e a lista "pula" na tela sem nada ter mudado.
+  const lista = maisOuvidos([
+    ponto("zebra", "exu", "Exu", 4),
+    ponto("abelha", "exu", "Exu", 4),
+  ]);
+  assert.deepEqual(lista.map((p) => p.id), ["abelha", "zebra"]);
+});
+
+test("corta em cinco por padrão", () => {
+  const muitos = Array.from({ length: 12 }, (_, i) =>
+    ponto(`p${i}`, "exu", "Exu", i + 1),
+  );
+  assert.equal(maisOuvidos(muitos).length, 5);
+  assert.equal(maisOuvidos(muitos, 3).length, 3);
+});
+
+test("não mexe na lista que recebeu", () => {
+  // `sort` ordena no lugar. Sem a cópia, a ordem litúrgica que o servidor
+  // mandou seria destruída — e os blocos por entidade sairiam embaralhados na
+  // mesma tela.
+  const pontos = [ponto("a", "exu", "Exu", 1), ponto("b", "exu", "Exu", 9)];
+  maisOuvidos(pontos);
+  assert.deepEqual(pontos.map((p) => p.id), ["a", "b"]);
 });

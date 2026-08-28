@@ -54,6 +54,17 @@ export interface PontoDoArtista {
   orixaCor: string | null;
   /** `orixa`, `momento` ou `linha`. */
   orixaTipo: string | null;
+  /**
+   * A letra vem junto, e antes não vinha.
+   *
+   * Buscar sob demanda não funcionaria: `GET /pontos/{id}` casa por DONO, e
+   * esta lista traz o ponto CANÔNICO — quem organizou o acervo levaria 404 ao
+   * abrir a letra. E o peso é pequeno: medido, as letras do maior artista somam
+   * 8,5 KB contra os 10,3 KB que a resposta já tinha.
+   */
+  letra: string | null;
+  /** Quantas vezes levou alguém ao YouTube, somando todos os dias. */
+  cliques: number;
   videoUrl: string | null;
   /** `encontrado` ou `revisar`. Anda SEMPRE junto com a URL. */
   videoStatus: string | null;
@@ -180,4 +191,19 @@ export const deixarDeSeguirArtista = (id: string) =>
  */
 export function buscaNoYoutube(nome: string): string {
   return `https://www.youtube.com/results?search_query=${encodeURIComponent(nome)}`;
+}
+
+
+/**
+ * Os mais ouvidos deste artista — a seção que o Spotify chama de "Popular".
+ *
+ * Devolve lista vazia quando ninguém clicou ainda, e a tela não desenha a
+ * seção: um ranking de zeros ordenado por desempate é ruído com cara de
+ * informação.
+ */
+export function maisOuvidos(pontos: PontoDoArtista[], quantos = 5): PontoDoArtista[] {
+  return [...pontos]
+    .filter((p) => p.cliques > 0)
+    .sort((a, b) => b.cliques - a.cliques || a.titulo.localeCompare(b.titulo, "pt-BR"))
+    .slice(0, quantos);
 }
