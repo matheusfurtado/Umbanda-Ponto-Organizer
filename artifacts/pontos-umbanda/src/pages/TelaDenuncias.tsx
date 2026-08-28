@@ -40,6 +40,7 @@ const ALVO: Record<string, string> = {
   perfil: "Perfil",
   gira: "Gira pública",
   ponto: "Ponto",
+  artista: "Página de artista",
 };
 
 export function TelaDenuncias() {

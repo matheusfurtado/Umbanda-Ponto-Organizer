@@ -52,6 +52,13 @@ export const ACOES_POR_ALVO: Record<AlvoDeDenuncia, OpcaoDeAcao[]> = {
   // Tirar ponto do acervo canônico ainda não existe como ação: sumiria para
   // todo mundo, e isso precisa ser desenhado, não improvisado num botão.
   ponto: [NENHUMA],
+  // Nenhuma delas apaga o artista. Apagar levaria junto os pontos e quem
+  // seguia — castigo desproporcional a um texto ou a uma imagem.
+  artista: [
+    { valor: "bio_limpa", rotulo: "Limpar o texto", aviso: "não tem volta" },
+    { valor: "foto_removida", rotulo: "Tirar a foto", aviso: "não tem volta" },
+    NENHUMA,
+  ],
 };
 
 export function acoesDe(tipo: AlvoDeDenuncia): OpcaoDeAcao[] {

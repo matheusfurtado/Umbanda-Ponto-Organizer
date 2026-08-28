@@ -31,6 +31,7 @@ import {
   type Artista,
 } from "@/api/artista";
 import { BotaoSeguirArtista } from "@/componentes/BotaoSeguirArtista";
+import { Denunciar } from "@/componentes/Denunciar";
 import { EditarArtista } from "@/componentes/EditarArtista";
 import { registrarCliqueNoPonto } from "@/api/metricas";
 
@@ -166,6 +167,15 @@ export function TelaArtista() {
           </p>
         )}
       </header>
+
+      {/* Discreto e no fim do cabeçalho, nunca ao lado de "Seguir": botão de
+          denúncia em destaque convida a denúncia por desavença. A bio é texto
+          público escrito por quem não modera, e sem este caminho a única
+          remediação seria apagar o artista — levando junto os pontos e quem
+          seguia. */}
+      <div className="mt-3">
+        <Denunciar alvoTipo="artista" alvoId={artista.id} oQueE="esta página" />
+      </div>
 
       <h2 className="mb-2 mt-8 px-1 text-lg font-bold text-foreground">Pontos</h2>
       {artista.pontosDoArtista.length === 0 ? (

@@ -8,7 +8,7 @@
 
 const BASE = "/api/v1";
 
-export type AlvoDeDenuncia = "perfil" | "gira" | "ponto";
+export type AlvoDeDenuncia = "perfil" | "gira" | "ponto" | "artista";
 export type MotivoDeDenuncia =
   | "ofensivo"
   | "nao_e_ponto"
@@ -19,7 +19,8 @@ export type AcaoDeDenuncia =
   | "nenhuma"
   | "foto_removida"
   | "gira_despublicada"
-  | "apelido_limpo";
+  | "apelido_limpo"
+  | "bio_limpa";
 
 export interface DenunciaNaFila {
   id: string;
