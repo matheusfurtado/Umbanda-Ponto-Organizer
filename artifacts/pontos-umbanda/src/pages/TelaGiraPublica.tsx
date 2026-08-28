@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useRoute } from "wouter";
 import { Compartilhar } from "@/componentes/Compartilhar";
+import { Denunciar } from "@/componentes/Denunciar";
+import { useAuth } from "@/auth/AuthContext";
 import { ArrowLeft, Globe, Youtube, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CapaGira } from "@/componentes/CapaGira";
@@ -14,6 +16,9 @@ import { giraPublica, type GiraPublica } from "@/api/repertorio";
  * publicar uma gira seria caminho para entregar de graça o que o plano cobra.
  */
 export function TelaGiraPublica() {
+  // Denunciar exige conta: denúncia anônima não tem como ser contida.
+  const { user } = useAuth();
+  const autenticado = Boolean(user);
   const [, params] = useRoute("/gira/:id");
   const [gira, setGira] = useState<GiraPublica | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -87,8 +92,11 @@ export function TelaGiraPublica() {
             </p>
             {/* A gira é o que circula no grupo do terreiro — e era o que menos
                 tinha como circular: nem botão havia. Ver ADR 0006. */}
-            <div className="mt-3">
+            <div className="mt-3 flex flex-wrap items-center gap-3">
               <Compartilhar titulo={`${gira.nome} — Pontos de Umbanda`} caminho={`/gira/${gira.id}`} />
+              {autenticado && (
+                <Denunciar alvoTipo="gira" alvoId={gira.id} oQueE="esta gira" />
+              )}
             </div>
           </div>
         </div>

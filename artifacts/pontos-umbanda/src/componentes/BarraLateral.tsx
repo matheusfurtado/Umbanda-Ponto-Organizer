@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import {
-  BarChart3, Globe, Home, ListMusic, Palette, Plus, Search, Send, ShieldCheck,
+  BarChart3, Flag, Globe, Home, ListMusic, Palette, Plus, Search, Send, ShieldCheck,
   Sparkles, Star, Users,
 } from "lucide-react";
 import { useApp } from "@/context";
@@ -99,6 +99,9 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
             <>
               <Link href="/moderacao" className={item(local === "/moderacao")}>
                 <ShieldCheck className="h-4 w-4" aria-hidden /> Moderação
+              </Link>
+              <Link href="/denuncias" className={item(local === "/denuncias")}>
+                <Flag className="h-4 w-4" aria-hidden /> Denúncias
               </Link>
               <Link href="/painel" className={item(local === "/painel")}>
                 <BarChart3 className="h-4 w-4" aria-hidden /> Painel

@@ -17,6 +17,7 @@ import { useAcoesDePonto } from "@/componentes/AcoesDePonto";
 import { TelaEnviarPonto } from "@/pages/TelaEnviarPonto";
 import { TelaMeusEnvios } from "@/pages/TelaMeusEnvios";
 import { TelaModeracao } from "@/pages/TelaModeracao";
+import { TelaDenuncias } from "@/pages/TelaDenuncias";
 import { TelaPainel } from "@/pages/TelaPainel";
 import { TelaNovidades } from "@/pages/TelaNovidades";
 import { TelaGirasPublicas } from "@/pages/TelaGirasPublicas";
@@ -208,6 +209,11 @@ function App() {
                   <Route path="/painel">
                     <RotaProtegida>
                       <TelaPainel />
+                    </RotaProtegida>
+                  </Route>
+                  <Route path="/denuncias">
+                    <RotaProtegida>
+                      <TelaDenuncias />
                     </RotaProtegida>
                   </Route>
                   {/* Para onde o Mercado Pago devolve quem pagou. Protegida:

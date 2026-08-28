@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { Avatar } from "@/componentes/Avatar";
 import { Compartilhar } from "@/componentes/Compartilhar";
+import { Denunciar } from "@/componentes/Denunciar";
 import { TrocarApelido } from "@/componentes/TrocarApelido";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
@@ -288,6 +289,16 @@ export function TelaPerfil() {
                 rotulo={perfil.souEu ? "Compartilhar meu perfil" : "Compartilhar"}
               />
             </div>
+            {/* Discreto, longe do "seguir", e só para quem NÃO é dono: um
+                botão de denúncia em destaque convida denúncia por desavença, e
+                num app onde as pessoas se conhecem do terreiro a desavença é o
+                motivo mais provável. Exige conta — denúncia anônima não tem
+                como ser contida. */}
+            {!perfil.souEu && autenticado && (
+              <div className="mt-3">
+                <Denunciar alvoTipo="perfil" alvoId={perfil.apelido} oQueE="este perfil" />
+              </div>
+            )}
             {perfil.souEu && (
               // O aviso fica colado no botão, e não numa tela de ajuda: é aqui
               // que a decisão é tomada. Ver o que se revela DEPOIS de revelar
