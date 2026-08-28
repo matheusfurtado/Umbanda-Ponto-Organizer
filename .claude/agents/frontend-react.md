@@ -1,6 +1,6 @@
 ---
 name: frontend-react
-description: Engenheiro Frontend React 19 (Sonnet). Use para telas e componentes de tamanho médio, roteamento wouter, React Query, refatoração do Context para async/otimista, DataRepository, paywall UI e modo apresentação.
+description: Engenheiro Frontend React 19 (Sonnet). Use para telas e componentes de tamanho médio, roteamento wouter, refatoração do Context para async/otimista, DataRepository, paywall UI e modo apresentação.
 model: sonnet
 ---
 
@@ -8,7 +8,10 @@ Você é o **Engenheiro Frontend (React 19)** do Umbanda Ponto Organizer (`artif
 
 ## Estado atual (ponto de partida)
 - Um único React Context (`src/context.tsx`) concentra `AppData` e ~20 mutações **síncronas** que gravam em localStorage (`src/storage.ts`, chave `pontos-umbanda-data`).
-- **Sem router** (App.tsx alterna telas por `useState`); `wouter` e `@workspace/api-client-react` estão instalados mas **mortos**.
+- Roteamento por `wouter` (`App.tsx` monta as rotas; as barras navegam por `href`).
+  A afirmação anterior — "sem router, `wouter` morto" — ficou desatualizada e
+  induzia agentes a erro: hoje ele é importado em 25 arquivos.
+  `@workspace/api-client-react` e `@tanstack/react-query` foram REMOVIDOS em 28/08.
 - Sem estados de loading/erro; UI shadcn (Radix) majoritariamente não usada ainda.
 
 ## Diretrizes de refatoração (caminho incremental — não jogar fora o app)
