@@ -9,6 +9,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { definirDono } from "@/dados/repositorio";
+import { esquecerDoAparelho } from "@/dados/esquecer";
 import {
   cadastrar as cadastrarNaApi,
   entrar as entrarNaApi,
@@ -131,6 +132,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     // Esquece na hora: sair tem que valer mesmo se a rede cair no meio.
     lembrar(null);
+    // E o resto do aparelho junto — acervo, giras, fila. Sem isto o logout
+    // limpava só o cookie, e no tablet do terreiro a próxima pessoa abria o
+    // app vendo o acervo de quem saiu. Ver `dados/esquecer.ts`.
+    esquecerDoAparelho();
   }, []);
 
   return (
