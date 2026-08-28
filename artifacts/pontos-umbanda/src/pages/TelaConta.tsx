@@ -3,13 +3,16 @@ import { Link, useLocation } from "wouter";
 import {
   AlertCircle,
   ArrowLeft,
+  BarChart3,
   CheckCircle2,
   CloudUpload,
   Download,
   DownloadCloud,
+  Flag,
   Loader2,
   LogOut,
   MailCheck,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -127,6 +130,50 @@ export function TelaConta() {
         </div>
 
         <TrocarApelido aberto={trocando} onFechar={() => setTrocando(false)} />
+
+        {/* O CAMINHO DE ADMIN NO CELULAR.
+            Moderação, denúncias e painel só existiam na barra lateral, que
+            aparece de `lg:` para cima — então a área inteira de administração
+            era exclusiva de desktop. Quem modera este app é uma pessoa só, e o
+            aparelho dela é o celular. A fila de contribuições e a de denúncias
+            ficavam inalcançáveis justamente onde ela está.
+
+            Entra aqui, e não como aba nova na barra de baixo: os cinco lugares
+            de lá são de quem canta, não de quem modera. `lg:hidden` porque no
+            desktop a barra lateral já leva.
+
+            O link só aparece para admin por conveniência — a defesa é a rota,
+            que responde 404 a quem não for. */}
+        {user?.admin && (
+          <div className="mb-6 rounded-xl border p-4 lg:hidden">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Administração
+            </p>
+            <div className="mt-3 flex flex-col gap-1">
+              <Link
+                href="/moderacao"
+                className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-foreground"
+              >
+                <ShieldCheck className="h-4 w-4 text-primary" aria-hidden />
+                Fila de moderação
+              </Link>
+              <Link
+                href="/denuncias"
+                className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-foreground"
+              >
+                <Flag className="h-4 w-4 text-primary" aria-hidden />
+                Denúncias
+              </Link>
+              <Link
+                href="/painel"
+                className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-foreground"
+              >
+                <BarChart3 className="h-4 w-4 text-primary" aria-hidden />
+                Painel
+              </Link>
+            </div>
+          </div>
+        )}
 
         {entLoading ? (
           <div className="mb-6 h-16 rounded-xl bg-muted/40 animate-pulse" />
