@@ -24,9 +24,9 @@ import {
   acolher,
   filaDeDenuncias,
   recusarDenuncia,
-  type AcaoDeDenuncia,
   type DenunciaNaFila,
 } from "@/api/denuncia";
+import { acoesDe } from "@/dominio/acoesDaDenuncia";
 
 const MOTIVO: Record<string, string> = {
   ofensivo: "Ofensivo ou desrespeitoso",
@@ -41,29 +41,6 @@ const ALVO: Record<string, string> = {
   gira: "Gira pública",
   ponto: "Ponto",
 };
-
-/** As ações que fazem sentido para cada tipo de alvo, com o que cada uma custa. */
-function acoesDe(tipo: string): { valor: AcaoDeDenuncia; rotulo: string; aviso?: string }[] {
-  const nada = { valor: "nenhuma" as const, rotulo: "Procede, sem mexer no app" };
-  if (tipo === "perfil") {
-    return [
-      { valor: "foto_removida", rotulo: "Tirar a foto", aviso: "não tem volta" },
-      { valor: "apelido_limpo", rotulo: "Tirar o nome público", aviso: "some o perfil inteiro" },
-      nada,
-    ];
-  }
-  if (tipo === "gira") {
-    return [
-      {
-        valor: "gira_despublicada",
-        rotulo: "Tirar da vitrine",
-        aviso: "a gira continua com quem a montou",
-      },
-      nada,
-    ];
-  }
-  return [nada];
-}
 
 export function TelaDenuncias() {
   const [fila, setFila] = useState<DenunciaNaFila[] | null>(null);
