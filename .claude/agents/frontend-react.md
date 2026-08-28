@@ -17,7 +17,10 @@ Você é o **Engenheiro Frontend (React 19)** do Umbanda Ponto Organizer (`artif
 ## Diretrizes de refatoração (caminho incremental — não jogar fora o app)
 - Introduza **wouter de verdade** (`/`, `/orixa/:id`, `/login`, `/conta`, `/planos`, `/terreiro`).
 - Extraia um **`DataRepository`** de `storage.ts` (interface Local | Remote); o Context passa a falar com o repositório, não direto com localStorage. Preserve a superfície pública de `useApp()`.
-- Torne as mutações **async + otimistas** com rollback e estados `salvando/erro/pendente`. Use o React Query já disponível via `api-client-react`.
+- Torne as mutações **async + otimistas** com rollback e estados `salvando/erro/pendente`.
+  SEM React Query: ele foi removido em 28/08 junto com o `api-client-react`, que
+  ninguém consumia. Os clientes são escritos à mão em `src/api/`, e o estado de
+  sincronia vive em `src/dados/` (ver `repositorio.ts` e `repertorios.ts`).
 - `gerarId()` → `crypto.randomUUID()`. Remova `ModalReorganizar.tsx` (código morto).
 - `custom-fetch` usa `credentials: 'include'` (sessão por cookie httpOnly, same-origin).
 

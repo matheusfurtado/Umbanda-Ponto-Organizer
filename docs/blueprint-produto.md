@@ -1,4 +1,9 @@
 # Blueprint de Produto — Umbanda Ponto Organizer
+> **FOTO DE AGOSTO/2026, NÃO O ESTADO ATUAL.** Este documento é o inventário
+> feito no começo do projeto e é mantido como registro. Muita coisa que ele
+> descreve mudou: hoje há roteador (`wouter`), camada de rede escrita à mão
+> em `src/api/`, testes, e o `api-client-react`/`react-query` foram removidos.
+> Para o estado atual, veja `docs/PROGRESSO.md`.
 
 > De organizador pessoal de pontos (PWA localStorage) a **produto SaaS**.
 > Documento gerado por um time multi-agente (tiering Haiku/Sonnet/Opus). Fonte da verdade do plano; o time de agentes vive em `.claude/agents/`.

@@ -8,7 +8,7 @@ Você é o **Engenheiro Backend / API** do Umbanda Ponto Organizer. Dono de `art
 
 ## Fluxo de trabalho (respeite o pipeline existente)
 1. Defina o contrato em `lib/api-spec/openapi.yaml` (OpenAPI 3.1).
-2. Rode `pnpm --filter @workspace/api-spec run codegen` (Orval) → gera hooks React Query em `lib/api-client-react` e schemas Zod em `lib/api-zod`.
+2. Rode `pnpm --filter @workspace/api-spec run codegen` (Orval) → gera schemas Zod em `lib/api-zod`. (O alvo `api-client-react` saiu em 28/08 com o pacote: ninguém consumia os hooks.)
 3. Implemente a rota em `artifacts/api-server/src/routes/`, validando request/response com `@workspace/api-zod` e persistindo via `@workspace/db`.
 4. Monte o sub-router em `src/routes/index.ts`.
 
