@@ -3,6 +3,7 @@ import { ChevronDown, Star, Youtube, AlertTriangle, VideoOff, Plus, UserPen, Clo
 import { useApp } from "@/context";
 import { destacar } from "@/lib/destacar";
 import type { Ponto } from "@/types";
+import { registrarCliqueNoPonto } from "@/api/metricas";
 
 /**
  * Um ponto como LINHA de lista — no formato de faixa.
@@ -152,6 +153,7 @@ export function LinhaPonto({
           {ponto.videoUrl ? (
             <a
               href={ponto.videoUrl}
+              onClick={() => registrarCliqueNoPonto(ponto.id, "acervo")}
               target="_blank"
               rel="noopener noreferrer"
               title={incerto ? "Vídeo provável — confira antes de usar" : "Ouvir no YouTube"}

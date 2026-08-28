@@ -7,6 +7,7 @@ import { ArrowLeft, Globe, Youtube, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CapaGira } from "@/componentes/CapaGira";
 import { giraPublica, type GiraPublica } from "@/api/repertorio";
+import { registrarCliqueNoPonto } from "@/api/metricas";
 
 /**
  * Uma gira pública, aberta por link — é assim que ela se compartilha.
@@ -127,6 +128,7 @@ export function TelaGiraPublica() {
               {i.videoUrl && (
                 <a
                   href={i.videoUrl}
+                  onClick={() => registrarCliqueNoPonto(i.pontoId, "gira")}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Ouvir ${i.titulo ?? "ponto"} no YouTube`}

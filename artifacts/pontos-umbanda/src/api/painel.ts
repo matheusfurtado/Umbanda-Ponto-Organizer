@@ -36,3 +36,38 @@ export async function verMetricas(): Promise<GrupoDoPainel[]> {
   }
   return ((await r.json()) as { grupos: GrupoDoPainel[] }).grupos;
 }
+
+
+/**
+ * Uma linha de ranking. **Ponto, nunca pessoa** — a regra do painel é "diz
+ * quantos, nunca quem", e ela vale aqui igual. Uma lista de pontos não é uma
+ * lista de gente.
+ */
+export interface PontoNoRanking {
+  id: string;
+  titulo: string;
+  orixa: string | null;
+  /** Quem gravou o vídeo casado, quando o canal virou artista. */
+  artista: string | null;
+  quantos: number;
+}
+
+async function ranking(caminho: string): Promise<PontoNoRanking[]> {
+  const r = await fetch(`/api/v1${caminho}`, { credentials: "same-origin" });
+  if (!r.ok) {
+    const erro = new Error(
+      r.status === 404
+        ? "Esta área é de quem modera o acervo."
+        : `O servidor respondeu ${r.status}.`,
+    ) as Error & { status?: number };
+    erro.status = r.status;
+    throw erro;
+  }
+  return (await r.json()) as PontoNoRanking[];
+}
+
+export const pontosMaisClicados = () =>
+  ranking("/admin/metricas/pontos-mais-clicados");
+
+export const pontosEmMaisGiras = () =>
+  ranking("/admin/metricas/pontos-em-mais-giras");

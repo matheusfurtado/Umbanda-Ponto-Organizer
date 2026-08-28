@@ -16,6 +16,7 @@
 
 import { AlertTriangle, Youtube } from "lucide-react";
 import type { Ponto } from "@/types";
+import { registrarCliqueNoPonto } from "@/api/metricas";
 
 function duracao(segundos?: number | null): string | null {
   if (!segundos || segundos <= 0) return null;
@@ -36,7 +37,12 @@ export function LinkVideo({ ponto }: { ponto: Ponto }) {
         href={ponto.videoUrl}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          // `stopPropagation` já estava aqui: sem ele o clique no link
+          // também abre o card. O registro entra junto, não no lugar.
+          e.stopPropagation();
+          registrarCliqueNoPonto(ponto.id, "acervo");
+        }}
         className={`flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
           incerto
             ? "bg-amber-400/10 text-amber-300 hover:bg-amber-400/20"

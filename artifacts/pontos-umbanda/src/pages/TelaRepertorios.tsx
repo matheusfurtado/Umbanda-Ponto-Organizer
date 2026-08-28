@@ -45,6 +45,7 @@ import { useApp } from "@/context";
 import { ehErroDeRede } from "@/api/cliente";
 import { destacar, semAcento } from "@/lib/destacar";
 import { apagar, criar, type ItemRepertorio, type Repertorio } from "@/api/repertorio";
+import { registrarCliqueNoPonto } from "@/api/metricas";
 import {
   carregar as carregarRepertorios,
   definirSequencia,
@@ -114,6 +115,7 @@ function ItemArrastavel({
       {item.videoUrl && (
         <a
           href={item.videoUrl}
+          onClick={() => registrarCliqueNoPonto(item.pontoId, "gira")}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Ouvir no YouTube"

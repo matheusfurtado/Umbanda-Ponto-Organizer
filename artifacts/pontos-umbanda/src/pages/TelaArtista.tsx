@@ -31,6 +31,7 @@ import {
   type Artista,
 } from "@/api/artista";
 import { BotaoSeguirArtista } from "@/componentes/BotaoSeguirArtista";
+import { registrarCliqueNoPonto } from "@/api/metricas";
 
 export function TelaArtista() {
   const [, params] = useRoute("/artista/:id");
@@ -154,6 +155,7 @@ export function TelaArtista() {
               {p.videoUrl && (
                 <a
                   href={p.videoUrl}
+                  onClick={() => registrarCliqueNoPonto(p.id, "artista")}
                   target="_blank"
                   rel="noreferrer noopener"
                   className="inline-flex min-h-11 shrink-0 items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-2"

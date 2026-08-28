@@ -25,6 +25,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { AlertCircle, BarChart3, Loader2, RefreshCw } from "lucide-react";
 import { verMetricas, type GrupoDoPainel } from "@/api/painel";
+import { pontosEmMaisGiras, pontosMaisClicados, type PontoNoRanking } from "@/api/painel";
+import { RankingDePontos } from "@/componentes/RankingDePontos";
 
 /** Centavos viram "R$ 9,90" — o painel é lido por gente, não por contador. */
 function emReais(centavos: number): string {
@@ -81,7 +83,23 @@ export function TelaPainel() {
       .finally(() => setBuscando(false));
   }, []);
 
+  const [clicados, setClicados] = useState<PontoNoRanking[] | null>(null);
+  const [emGiras, setEmGiras] = useState<PontoNoRanking[] | null>(null);
+  const [erroRanking, setErroRanking] = useState<string | null>(null);
+
   useEffect(carregar, [carregar]);
+
+  // Os rankings carregam à parte dos números: são consultas mais caras, e uma
+  // falha nelas não pode esconder o painel inteiro — quem abre isto quer os
+  // números do negócio antes de qualquer lista.
+  useEffect(() => {
+    pontosMaisClicados().then(setClicados).catch((e) =>
+      setErroRanking(e instanceof Error ? e.message : "Falha ao carregar."),
+    );
+    pontosEmMaisGiras().then(setEmGiras).catch((e) =>
+      setErroRanking(e instanceof Error ? e.message : "Falha ao carregar."),
+    );
+  }, []);
 
   if (erro && !grupos) {
     return (
@@ -169,6 +187,21 @@ export function TelaPainel() {
             </div>
           </section>
         ))}
+
+        <RankingDePontos
+          titulo="Pontos que mais levaram ao YouTube (30 dias)"
+          ressalva="Conta cliques, não escutas — e não diz quem clicou: o servidor não guarda isso. A rota é aberta a quem não tem conta, então o número vale como sinal, não como medida exata."
+          linhas={clicados}
+          unidade={(n) => `${n} ${n === 1 ? "clique" : "cliques"}`}
+          erro={erroRanking}
+        />
+
+        <RankingDePontos
+          titulo="Pontos em mais giras"
+          ressalva="Sai dos repertórios montados, sem coleta nenhuma. Mede intenção de cantar, que é mais forte que clique — e por isso mexe devagar."
+          linhas={emGiras}
+          unidade={(n) => `${n} ${n === 1 ? "gira" : "giras"}`}
+        />
       </div>
     </div>
   );
