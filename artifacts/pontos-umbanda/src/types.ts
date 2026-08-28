@@ -49,6 +49,17 @@ export interface Ponto {
   // Crédito de quem gravou, e sinal de procedência: ajuda a decidir se aquela
   // versão do ponto é confiável antes de levá-la para a gira.
   videoCanal?: string | null;
+  /**
+   * Quem gravou, quando o canal do vídeo virou artista com página.
+   *
+   * **Vem SEM plano**, ao contrário do resto do bloco de vídeo: o ADR 0007 já
+   * publica este mapeamento — a página do artista lista os pontos dele para
+   * qualquer um. Cortar aqui não esconderia nada, só tiraria o caminho de ida.
+   *
+   * Nulo nos pontos cujo canal está abaixo do corte de 10 pontos.
+   */
+  artistaId?: string | null;
+  artistaNome?: string | null;
   videoTitulo?: string | null;
   videoDuracaoSeg?: number | null;
 }

@@ -4,6 +4,7 @@ import { useApp } from "@/context";
 import { destacar } from "@/lib/destacar";
 import type { Ponto } from "@/types";
 import { registrarCliqueNoPonto } from "@/api/metricas";
+import { CreditoDoArtista } from "@/componentes/CreditoDoArtista";
 
 /**
  * Um ponto como LINHA de lista — no formato de faixa.
@@ -91,16 +92,22 @@ export function LinhaPonto({
               a lista, e sugere lacuna a preencher onde não há: no plano
               grátis o canal simplesmente não vem, e a maior parte do acervo
               não tem autoria conhecida. */}
-          {(ponto.autor || ponto.videoCanal?.trim() || ponto.enviadoPor) && (
+          {(ponto.autor || ponto.videoCanal?.trim() || ponto.artistaNome
+            || ponto.enviadoPor) && (
             <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-              {ponto.autor || ponto.videoCanal?.trim()}
+              {/* Sem link AQUI: a linha inteira é um `<button>`, e âncora
+                  dentro de botão é HTML inválido — o clique some. O link
+                  para o artista vive no card expandido. */}
+              {ponto.autor || ponto.videoCanal?.trim() || ponto.artistaNome}
               {/* Quem mandou vem DEPOIS do autor e mais apagado, porque são
                   coisas diferentes: autor é quem compôs o ponto, e este é quem
                   o trouxe para cá. Trocar um pelo outro atribuiria obra
                   religiosa a quem não a fez. */}
               {ponto.enviadoPor && (
                 <span className="text-muted-foreground/70">
-                  {(ponto.autor || ponto.videoCanal?.trim()) ? " · " : ""}
+                  {(ponto.autor || ponto.videoCanal?.trim() || ponto.artistaNome)
+                    ? " · "
+                    : ""}
                   enviado por {ponto.enviadoPor}
                 </span>
               )}
@@ -201,6 +208,11 @@ export function LinhaPonto({
           <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground/90">
             {destacar(ponto.letra, busca)}
           </pre>
+          {/* O link para quem gravou mora AQUI, e não na linha fechada: lá o
+              nome vive dentro de um `<button>`, e âncora dentro de botão é
+              HTML inválido — o clique some. Aberto, a letra já está fora do
+              botão, e o link funciona. */}
+          <CreditoDoArtista ponto={ponto} className="mt-2" />
           {incerto && (
             <p className="mt-2 text-[11px] leading-snug text-amber-400/80">
               Achamos este vídeo pela letra, mas a correspondência ficou fraca
