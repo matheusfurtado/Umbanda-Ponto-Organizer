@@ -4,6 +4,23 @@ description: Engenheiro Backend / API (Sonnet). Use para endpoints Express de ta
 model: sonnet
 ---
 
+> [!CAUTION]
+> **ESTE TIME FOI SUPERADO. Não siga as instruções abaixo sem conferir.**
+>
+> Estes arquivos descrevem o scaffold original — Express (`artifacts/api-server`),
+> Better-Auth, Drizzle e o pipeline OpenAPI/Orval. **Nada disso está no caminho de
+> execução hoje.** A aplicação é FastAPI + SQLAlchemy + Alembic em `api/`, com auth
+> própria (Argon2id, cookie `pontos_sessao`), e o `api-server` nem sobe no dev
+> container.
+>
+> O time vivo é o da raiz: `../../.claude/agents/` (o `CLAUDE.md` do guarda-chuva
+> aponta para lá). Comece pelo `tech-lead` de lá.
+>
+> Conferido em 28/08/2026: uma varredura da documentação contra o código achou 86
+> afirmações falsas, e ~30 estavam nestes nove arquivos — rotas que respondem 404,
+> "não há testes" onde há 403, e ordens para usar pacotes já removidos.
+
+
 Você é o **Engenheiro Backend / API** do Umbanda Ponto Organizer. Dono de `artifacts/api-server` (Express 5, hoje só `/healthz`) e do pipeline OpenAPI/Orval.
 
 ## Fluxo de trabalho (respeite o pipeline existente)

@@ -1,5 +1,20 @@
 # Workspace
 
+> [!IMPORTANT]
+> **A stack Node descrita abaixo é SCAFFOLD, não o que roda.**
+>
+> A aplicação é **Python + PostgreSQL** (FastAPI + SQLAlchemy + Alembic), em
+> `../api/`, com auth própria. O `artifacts/api-server` (Express + Better-Auth)
+> **não sobe no dev container**, e o pipeline OpenAPI/Orval declara um único
+> caminho (`/healthz`). Drizzle sobrevive em `lib/db`, fora do caminho de
+> execução.
+>
+> O que está VIVO neste repositório é `artifacts/pontos-umbanda` — o PWA — e ele
+> fala com a API Python. Para o estado real, veja `../docs/PROGRESSO.md` e
+> `../CLAUDE.md`.
+>
+> Conferido em 28/08/2026.
+
 ## Overview
 
 pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
@@ -20,14 +35,21 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 
 ### `artifacts/pontos-umbanda` — Pontos de Umbanda PWA
 
-React + Vite frontend-only PWA. All data stored in localStorage. No backend needed.
+React + Vite PWA. **Fala com a API Python** em `/api/v1` (same-origin; o Vite faz
+proxy em dev, e em produção a própria API serve o `dist`). O `localStorage` é
+**cache**, não fonte da verdade — quem manda é o servidor.
 
 - **Technology**: React, TypeScript, Tailwind CSS, Shadcn UI, vite-plugin-pwa
 - **Data model**: Orixás → Subcategorias → Pontos (3-level hierarchy)
 - **Features**: Full CRUD, accordion pontos, real-time search with highlight, favorites, export/import JSON backup, PWA install prompt
-- **Storage**: localStorage via `src/storage.ts`
-- **State**: React Context (`src/context.tsx`)
-- **Pages**: `TelaOrixas` (home), `TelaSubcategorias` (with search)
+- **Rede**: clientes escritos à mão em `src/api/`; sincronia e fila offline em
+  `src/dados/` (`repositorio.ts` para o acervo, `repertorios.ts` para as giras)
+- **Storage**: `localStorage` como cache, via `src/storage.ts`
+- **State**: React Context (`src/context.tsx`) com `estado`/`fonte`/`envio`, mais
+  `AuthProvider` e `EntitlementsProvider`
+- **Routing**: wouter (`Switch`/`Route` em `src/App.tsx`, ~25 rotas)
+- **Pages**: ~23 telas em `src/pages/`
+- **Tests**: 27, com `pnpm test` (node:test, sem runner instalado)
 - **PWA**: Service Worker via vite-plugin-pwa, offline support, install banner
 
 ---
@@ -83,7 +105,10 @@ Database layer using Drizzle ORM with PostgreSQL. Exports a Drizzle client insta
 
 - `src/index.ts` — creates a `Pool` + Drizzle instance, exports schema
 - `src/schema/index.ts` — barrel re-export of all models
-- `src/schema/<modelname>.ts` — table definitions with `drizzle-zod` insert schemas (no models definitions exist right now)
+- `src/schema/<modelname>.ts` — table definitions with `drizzle-zod` insert schemas.
+Existem 11 arquivos aqui (auth, org, conteudo, colecoes, faturamento, auditoria,
+consentimento e outros, ~556 linhas). **Nada disso está em uso**: o schema vivo é
+o do Alembic em `../api/migrations/`.
 - `drizzle.config.ts` — Drizzle Kit config (requires `DATABASE_URL`, automatically provided by Replit)
 - Exports: `.` (pool, db, schema), `./schema` (schema only)
 
@@ -91,7 +116,10 @@ Production migrations are handled by Replit when publishing. In development, we 
 
 ### `lib/api-spec` (`@workspace/api-spec`)
 
-Owns the OpenAPI 3.1 spec (`openapi.yaml`) and the Orval config (`orval.config.ts`). Running codegen produces output into one sibling package:
+Owns the OpenAPI 3.1 spec (`openapi.yaml`) and the Orval config (`orval.config.ts`).
+**O spec declara um único caminho, `/healthz`** — o contrato real da aplicação é o
+que o FastAPI gera em `/openapi.json`. Running codegen produces output into one
+sibling package:
 
 1. `lib/api-zod/src/generated/` — Zod schemas
 

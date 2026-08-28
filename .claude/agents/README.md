@@ -1,3 +1,19 @@
+> [!CAUTION]
+> **ESTE TIME FOI SUPERADO. Não siga as instruções abaixo sem conferir.**
+>
+> Estes arquivos descrevem o scaffold original — Express (`artifacts/api-server`),
+> Better-Auth, Drizzle e o pipeline OpenAPI/Orval. **Nada disso está no caminho de
+> execução hoje.** A aplicação é FastAPI + SQLAlchemy + Alembic em `api/`, com auth
+> própria (Argon2id, cookie `pontos_sessao`), e o `api-server` nem sobe no dev
+> container.
+>
+> O time vivo é o da raiz: `../../.claude/agents/` (o `CLAUDE.md` do guarda-chuva
+> aponta para lá). Comece pelo `tech-lead` de lá.
+>
+> Conferido em 28/08/2026: uma varredura da documentação contra o código achou 86
+> afirmações falsas, e ~30 estavam nestes nove arquivos — rotas que respondem 404,
+> "não há testes" onde há 403, e ordens para usar pacotes já removidos.
+
 # Time de agentes — Umbanda Ponto Organizer
 
 Time de alta performance com **tiering de modelos**: tarefas simples usam modelos leves (baratos/rápidos), problemas difíceis usam o modelo mais capaz. O tiering **é** o principal controle de custo de desenvolvimento.
