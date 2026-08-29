@@ -16,6 +16,13 @@
  * `assentar()` deixa a fila de promessas terminar dentro de um `act`. Toda
  * tela que busca dado precisa dele depois de montar.
  *
+ * ## `naPagina`, para o que sai do container
+ *
+ * Diálogo do Radix — e este app usa vários — é renderizado em PORTAL, direto
+ * no `document.body`. Procurar só dentro do container devolve vazio, e um
+ * teste que procura vazio e não acha nada passa a afirmar "o botão não está
+ * lá" quando o botão está, um nível acima.
+ *
  * `import "./dom.ts"` vem primeiro e não é decoração: o `react-dom/client`
  * precisa do `document` existindo quando é avaliado. Por isso ele entra por
  * `import()` dinâmico aqui embaixo, e não por `import` no topo — assim a ordem
@@ -48,6 +55,10 @@ export interface Tela {
   /** Exige que exista: seletor que não casa é erro do teste, não `null`. */
   exigir: (seletor: string) => Element;
   clicar: (alvo: Element | string) => Promise<void>;
+  /** Igual a `todos`, mas na PÁGINA inteira: pega portal de diálogo. */
+  todosNaPagina: (seletor: string) => Element[];
+  /** O texto da página inteira, portais incluídos. */
+  textoNaPagina: () => string;
   /** Ver `assentar` — o mesmo, já preso a esta tela. */
   assentar: () => Promise<void>;
   /** Re-renderiza a MESMA raiz — é assim que se troca uma prop sem remontar. */
@@ -86,6 +97,8 @@ export async function renderizar(no: ReactNode): Promise<Tela> {
         el.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
       });
     },
+    todosNaPagina: (seletor) => [...document.body.querySelectorAll(seletor)],
+    textoNaPagina: () => document.body.textContent ?? "",
     assentar,
     reRenderizar: async (novo) => {
       await act(async () => {

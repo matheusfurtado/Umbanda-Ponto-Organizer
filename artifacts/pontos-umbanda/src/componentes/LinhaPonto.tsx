@@ -40,6 +40,26 @@ function eNovo(aprovadoEm?: number | null): boolean {
   return Date.now() - aprovadoEm < DIAS_DE_NOVIDADE * 24 * 60 * 60 * 1000;
 }
 
+/**
+ * Segundos no formato de faixa: `2:05`, e `1:19:21` quando passa da hora.
+ *
+ * Sem o ramo da hora, um vídeo de 1h19 saía como **"79:21"**. Ninguém lê
+ * duração assim — quem procura um ponto curto para ensaiar teria de fazer a
+ * conta. Hoje é 1 vídeo em 360 no acervo, e vai crescer: os canais que o
+ * casamento encontra publicam gira inteira, e gira inteira passa da hora.
+ *
+ * Devolve `null` para nulo e para zero: "0:00" não é informação, é ruído numa
+ * coluna que existe para ser lida de relance.
+ */
+function duracao(segundos?: number | null): string | null {
+  if (!segundos || segundos < 0) return null;
+  const h = Math.floor(segundos / 3600);
+  const m = Math.floor((segundos % 3600) / 60);
+  const s = segundos % 60;
+  const dois = (n: number) => String(n).padStart(2, "0");
+  return h > 0 ? `${h}:${dois(m)}:${dois(s)}` : `${m}:${dois(s)}`;
+}
+
 export function LinhaPonto({
   ponto,
   indice,
@@ -57,9 +77,7 @@ export function LinhaPonto({
   const { toggleFavorito } = useApp();
 
   const incerto = ponto.videoStatus === "revisar";
-  const tempo = ponto.videoDuracaoSeg
-    ? `${Math.floor(ponto.videoDuracaoSeg / 60)}:${String(ponto.videoDuracaoSeg % 60).padStart(2, "0")}`
-    : null;
+  const tempo = duracao(ponto.videoDuracaoSeg);
 
   return (
     <div className="group rounded-lg transition hover:bg-accent/40">
@@ -69,6 +87,7 @@ export function LinhaPonto({
         </span>
 
         <button
+          type="button"
           onClick={() => setAberto((v) => !v)}
           className="min-w-0 flex-1 text-left"
           aria-expanded={aberto}
@@ -135,6 +154,7 @@ export function LinhaPonto({
         <div className="flex shrink-0 items-center gap-1">
           {onAdicionar && (
             <button
+              type="button"
               onClick={() => onAdicionar(ponto)}
               title="Adicionar a um repertório"
               aria-label={`Adicionar ${ponto.titulo} a um repertório`}
@@ -146,6 +166,7 @@ export function LinhaPonto({
 
           {onSugerirAutor && !ponto.emAprovacao && (
             <button
+              type="button"
               onClick={() => onSugerirAutor(ponto)}
               title={ponto.autor ? "Corrigir o autor" : "Sugerir o autor"}
               aria-label={`Sugerir o autor de ${ponto.titulo}`}
@@ -156,6 +177,7 @@ export function LinhaPonto({
           )}
 
           <button
+            type="button"
             onClick={() => toggleFavorito(ponto.id)}
             title={ponto.favorito ? "Desfavoritar" : "Favoritar"}
             aria-label={ponto.favorito ? "Desfavoritar" : "Favoritar"}
@@ -205,7 +227,15 @@ export function LinhaPonto({
           )}
 
           <button
+            type="button"
             onClick={() => setAberto((v) => !v)}
+            // O MESMO `aria-expanded` do botão do título.
+            //
+            // São dois controles para a mesma abertura, e só um contava o
+            // estado: quem usa leitor de tela apertava a seta e não ouvia
+            // nada mudar. Pior que silêncio — a seta é o afordance, é por ela
+            // que a pessoa tenta primeiro.
+            aria-expanded={aberto}
             aria-label={aberto ? "Fechar letra" : "Abrir letra"}
             className="rounded-md p-2 text-muted-foreground transition hover:bg-accent hover:text-foreground"
           >

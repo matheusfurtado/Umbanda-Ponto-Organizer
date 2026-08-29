@@ -11,6 +11,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Ponto } from "@/types";
 import { destacar } from "@/lib/destacar";
 
+/**
+ * O ponto como CARTÃO, na tela de organizar — a que arrasta e move.
+ *
+ * ## Os `stopPropagation` daqui eram inertes, e saíram
+ *
+ * Quatro botões da barra de ações chamavam `e.stopPropagation()` como se
+ * estivessem dentro do botão que abre a letra. Não estão: a barra vive no
+ * bloco `expandido &&`, que é IRMÃO do cabeçalho clicável. O clique nunca
+ * chegaria lá.
+ *
+ * É o mesmo achado #12 do `PontoDoArtista`, no segundo arquivo — e o mesmo
+ * risco, que nunca foi o código morto: é o próximo a mexer aqui acreditar que
+ * a estrutura é aninhada e desenhar em cima disso.
+ */
 interface Props {
   ponto: Ponto;
   busca: string;
@@ -42,11 +56,24 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
         .sort((a, b) => a.ordem - b.ordem)
     : [];
 
-  // Todas as subcategorias de outros orixás
+  // Todas as subcategorias de outros orixás, NA ORDEM DA GIRA.
+  //
+  // Ordenava só por `s.ordem`, e `ordem` é POR ORIXÁ: no acervo há 12 orixás
+  // com `ordem = 0`, 11 com `ordem = 1`, e assim por diante. A lista saía
+  // embaralhada — Ogum, Oxum, Xangô, Iemanjá, e então Ogum de novo — com o
+  // mesmo orixá aparecendo três ou quatro vezes espalhado por 43 entradas.
+  //
+  // Quem move um ponto está procurando um ORIXÁ primeiro e a subcategoria
+  // depois. E ordem litúrgica não é estética neste app: é requisito.
+  const ordemDoOrixa = new Map(dados.orixas.map((o) => [o.id, o.ordem]));
   const subcategoriasOutrosOrixas = subcategoriaAtual
     ? dados.subcategorias
         .filter((s) => s.orixaId !== subcategoriaAtual.orixaId)
-        .sort((a, b) => a.ordem - b.ordem)
+        .sort(
+          (a, b) =>
+            (ordemDoOrixa.get(a.orixaId) ?? Infinity) -
+              (ordemDoOrixa.get(b.orixaId) ?? Infinity) || a.ordem - b.ordem,
+        )
     : [];
 
 
@@ -67,16 +94,26 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
         <div className="flex items-start">
           {sortable && (
             <button
+              type="button"
               className="touch-none shrink-0 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing px-2 py-4 self-stretch flex items-center"
               {...attributes}
               {...listeners}
+              // DEPOIS do spread, de propósito: o nome é nosso, não do dnd-kit.
+              // Sem ele o leitor de tela anuncia só "botão" — e é o controle
+              // que REORDENA o acervo, onde a ordem é requisito funcional.
+              aria-label={`Reordenar ${ponto.titulo}`}
             >
               <GripVertical className="w-4 h-4" />
             </button>
           )}
           <button
+            type="button"
             className="flex-1 flex items-start gap-3 p-3.5 text-left active:bg-muted/50 transition-colors min-w-0"
             onClick={() => setExpandido((v) => !v)}
+            // Nenhum controle contava o estado: quem usa leitor de tela abria
+            // a letra e não ouvia nada mudar. É o único jeito de saber que
+            // este cartão abre alguma coisa.
+            aria-expanded={expandido}
           >
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground leading-snug">
@@ -113,7 +150,8 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
             <LinkVideo ponto={ponto} />
             <div className="flex items-center gap-1 px-3.5 py-2 border-t border-border">
               <button
-                onClick={(e) => { e.stopPropagation(); toggleFavorito(ponto.id); }}
+                type="button"
+                onClick={() => toggleFavorito(ponto.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   ponto.favorito
                     ? "bg-yellow-400/20 text-yellow-400"
@@ -126,7 +164,8 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
               <div className="flex-1" />
               {(subcategoriasDoOrixa.length > 0 || subcategoriasOutrosOrixas.length > 0) && (
                 <button
-                  onClick={(e) => { e.stopPropagation(); setModalMover(true); }}
+                  type="button"
+                  onClick={() => setModalMover(true)}
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   title="Mover para outra subcategoria"
                 >
@@ -134,13 +173,15 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
                 </button>
               )}
               <button
-                onClick={(e) => { e.stopPropagation(); setModalEditar(true); }}
+                type="button"
+                onClick={() => setModalEditar(true)}
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
                 <Edit2 className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); setConfirmarExcluir(true); }}
+                type="button"
+                onClick={() => setConfirmarExcluir(true)}
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -181,6 +222,7 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
                   {subcategoriasDoOrixa.map((sub) => (
                     <button
                       key={sub.id}
+                      type="button"
                       onClick={() => { moverPontoParaSubcategoria(ponto.id, sub.id); setModalMover(false); }}
                       className="w-full text-left px-3 py-2.5 rounded-lg text-sm hover:bg-muted transition-colors text-foreground"
                     >
@@ -201,6 +243,7 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
                     return (
                       <button
                         key={sub.id}
+                        type="button"
                         onClick={() => { moverPontoParaSubcategoria(ponto.id, sub.id); setModalMover(false); }}
                         className="w-full text-left px-3 py-2.5 rounded-lg text-sm hover:bg-muted transition-colors text-foreground"
                       >
