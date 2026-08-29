@@ -26,7 +26,23 @@ function dobrar(texto: string): string {
   for (const c of texto) {
     // NFD separa a letra do sinal; o primeiro caractere é a letra base.
     // 'ç' vira 'c', 'ã' vira 'a'. Quem não tem decomposição fica como está.
-    saida += c.normalize("NFD")[0].toLowerCase();
+    const dobrado = c.normalize("NFD")[0].toLowerCase();
+    // E o comprimento é o CONTRATO, não um detalhe.
+    //
+    // `for...of` anda por ponto de código, mas `.length` conta unidades
+    // UTF-16: um emoji ocupa duas. Emoji não decompõe, então `NFD[0]` devolvia
+    // metade do par substituto — uma unidade no lugar de duas — e a partir
+    // dali TODA posição saía uma casa adiantada. O realce marcava as letras
+    // erradas, e podia fatiar no meio de um par e produzir o losango de
+    // caractere inválido.
+    //
+    // Não é hipótese: nome de gira e ponto enviado pela comunidade são texto
+    // que a pessoa digita, e emoji em título é comum. `TelaRepertorios`,
+    // `LinhaPonto`, `CardPonto` e `TelaAcervoSimples` realçam esses campos.
+    //
+    // Quando o dobrado não tem o mesmo tamanho, fica o original: comparar
+    // acento vale menos que não deslocar o resto da frase.
+    saida += dobrado.length === c.length ? dobrado : c;
   }
   return saida;
 }
