@@ -52,8 +52,27 @@ export function exportarDados(): void {
   URL.revokeObjectURL(url);
 }
 
-export function importarDados(arquivo: File): Promise<void> {
-  return new Promise((resolve, reject) => {
+/**
+ * Lê o arquivo e devolve o acervo. **Não grava nada.**
+ *
+ * Ela fazia `salvarDados` e pronto, e isso não restaurava nada para quem tem
+ * conta: a tela recarrega, o `carregar()` do boot não acha pendente, cai no
+ * caminho normal e grava o do servidor por cima. O backup era descartado antes
+ * de aparecer na tela — sem erro e sem aviso, com a pessoa vendo o app
+ * recarregar e concluindo que restaurou.
+ *
+ * Isso importa mais que os outros defeitos de dado: **este é o caminho de
+ * recuperação deles.** Quem perdeu o acervo tenta o backup, e ele não fazia
+ * nada.
+ *
+ * Quem grava é `dados/repositorio.persistir`, chamado por quem importa —
+ * restaurar um backup É dizer "este é o meu acervo agora", então ele precisa
+ * virar pendente para vencer o servidor e subir. `storage` não pode chamar
+ * `repositorio` (ele já depende daqui: importar de volta fecha um ciclo e
+ * quebra o módulo inteiro, medido).
+ */
+export function importarDados(arquivo: File): Promise<AppData> {
+  return new Promise<AppData>((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
@@ -61,8 +80,10 @@ export function importarDados(arquivo: File): Promise<void> {
         if (!dados.orixas || !dados.subcategorias || !dados.pontos) {
           throw new Error("Arquivo inválido");
         }
-        salvarDados(dados);
-        resolve();
+        // A marca `parcial` NÃO volta do arquivo: um backup exportado por
+        // quem pagava não é a visão do portão, e ela impediria o envio.
+        const { parcial: _ignorado, ...limpo } = dados;
+        resolve(limpo);
       } catch {
         reject(new Error("Arquivo de backup inválido"));
       }

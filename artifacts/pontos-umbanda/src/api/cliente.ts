@@ -96,8 +96,22 @@ async function requisitar<T>(caminho: string, init?: RequestInit): Promise<T> {
  * distingue "este é o acervo dela" de "esta é a visão reduzida do portão" —
  * sem ele, o cliente tratava as duas como a mesma coisa.
  */
-export function baixarAcervo(): Promise<AppData & { acesso?: AcessoDoAcervo }> {
-  return requisitar<AppData & { acesso?: AcessoDoAcervo }>("/acervo");
+export async function baixarAcervo(): Promise<AppData & { acesso?: AcessoDoAcervo }> {
+  const resposta = await requisitar<AppData & { acesso?: AcessoDoAcervo }>("/acervo");
+  if (resposta === null) return resposta as never;
+  // **A marca `parcial` nasce AQUI**, e não em quem chama.
+  //
+  // Ela vivia dentro de `dados/repositorio.carregar()`, e por isso
+  // `lib/apiConta.baixarDadosDaConta` — que chama esta função direto — devolvia
+  // o AppData CRU, sem marca. Quem estava sem plano e apertava "Baixar os
+  // pontos da minha conta neste aparelho" recebia a cópia achatada pelo portão
+  // e o app a gravava como se fosse o acervo dela, enfileirando para envio: a
+  // bomba que o comentário de `persistir` diz estar impedindo, montada por
+  // outro caminho.
+  //
+  // É a mesma lição de `escopo.do_dono` no servidor: invariante que vale em
+  // vários caminhos vira função, não linha no caminho que se estava olhando.
+  return { ...resposta, parcial: resposta.acesso?.acervoOrganizado === false };
 }
 
 /**

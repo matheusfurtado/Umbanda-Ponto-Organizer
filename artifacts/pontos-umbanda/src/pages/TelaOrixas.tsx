@@ -9,6 +9,7 @@ import { Link } from "wouter";
 import { MenuUsuario } from "@/components/MenuUsuario";
 import { Orixa } from "@/types";
 import { exportarDados, importarDados } from "@/storage";
+import { persistir } from "@/dados/repositorio";
 import {
   DndContext,
   closestCenter,
@@ -143,7 +144,10 @@ export function TelaOrixas({ onSelectOrixa }: Props) {
     if (!file) return;
     setImportando(true);
     try {
-      await importarDados(file);
+      // `persistir` e não só gravar: restaurar um backup é dizer "este é o
+      // meu acervo agora", e sem virar pendente o `carregar()` do boot grava o
+      // do servidor por cima — o backup sumia antes de aparecer na tela.
+      persistir(await importarDados(file));
       window.location.reload();
     } catch (err) {
       alert("Erro ao importar: arquivo inválido");

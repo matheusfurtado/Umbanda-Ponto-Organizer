@@ -41,6 +41,25 @@ function descrever(erro: unknown): string {
   return "falha desconhecida";
 }
 
+/**
+ * Os favoritos que só existem neste aparelho, mantidos por cima do servidor.
+ *
+ * Quem não paga não sincroniza (o `PUT` responde 402), então o favorito dela
+ * nunca sobe — e o `carregar` seguinte gravava o do servidor por cima e o
+ * apagava. Casa por id: o ponto que sumiu do servidor some junto, que é o
+ * certo.
+ */
+function comFavoritosLocais(doServidor: AppData["pontos"], local: AppData): AppData["pontos"] {
+  const favoritosDaqui = new Set(
+    local.pontos.filter((p) => p.favorito).map((p) => p.id),
+  );
+  if (favoritosDaqui.size === 0) return doServidor;
+  return doServidor.map((p) =>
+    favoritosDaqui.has(p.id) && !p.favorito ? { ...p, favorito: true } : p,
+  );
+}
+
+
 export async function carregar(): Promise<ResultadoCarga> {
   try {
     const doServidor = await baixarAcervo();
@@ -78,12 +97,17 @@ export async function carregar(): Promise<ResultadoCarga> {
       return { dados, fonte: "cache", motivo: "há mudanças suas ainda não enviadas" };
     }
 
-    // `parcial` é a diferença entre "o acervo dela" e "a visão do portão".
-    // Guardar sem a marca é o que fazia a visão virar verdade no aparelho.
+    // `parcial` já vem marcado por `baixarAcervo` — ver o comentário lá. Aqui
+    // só se preserva o que é DESTE aparelho.
     const dados: AppData = {
       ...doServidor,
       ultimoOrixaId: local.ultimoOrixaId,
-      parcial: doServidor.acesso?.acervoOrganizado === false,
+      // Os favoritos de quem não paga são deste aparelho e de mais lugar
+      // nenhum: o `PUT /acervo` responde 402 para quem não tem plano, então
+      // eles nunca sobem. Sem preservar aqui, favoritar um ponto sumia na
+      // próxima abertura com rede — sem fila, sem aviso, sem erro, porque o
+      // `salvarDados` abaixo grava o do servidor por cima.
+      pontos: doServidor.parcial ? comFavoritosLocais(doServidor.pontos, local) : doServidor.pontos,
     };
     salvarDados(dados);
     return { dados, fonte: "servidor" };

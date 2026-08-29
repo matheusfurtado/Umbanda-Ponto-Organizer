@@ -763,3 +763,67 @@ test("dois salvamentos a partir do MESMO objeto da tela não inventam conflito",
     c.encerrar();
   }
 });
+
+
+test("o favorito de quem não paga sobrevive a reabrir o app", async () => {
+  // Quem não paga não sincroniza (o `PUT` responde 402), então o favorito dela
+  // é deste aparelho e de mais lugar nenhum. O `carregar()` gravava o do
+  // servidor por cima e ele sumia — sem fila, sem aviso, sem erro. Favoritar é
+  // a única coisa que o plano grátis deixa a pessoa fazer.
+  const c = await montar("favorito-gratis", {
+    servidor: acervo([
+      { id: "p1", titulo: "Um" },
+      { id: "p2", titulo: "Dois" },
+    ]),
+  });
+  try {
+    c.mod.definirDono("u1");
+    c.servidor.portaoFechado = true;
+
+    const primeira = await c.mod.carregar();
+    assert.equal(primeira.dados.parcial, true, "o cenário não vale: não veio reduzido");
+
+    // Ela favorita, como o `LinhaPonto` faz.
+    c.mod.persistir({
+      ...primeira.dados,
+      pontos: primeira.dados.pontos.map((p: { id: string }) =>
+        p.id === "p2" ? { ...p, favorito: true } : p,
+      ),
+    });
+
+    // Reabre o app com rede.
+    const segunda = await c.mod.carregar();
+    const p2 = segunda.dados.pontos.find((p: { id: string }) => p.id === "p2");
+    assert.equal(p2.favorito, true, "o favorito sumiu ao reabrir");
+
+    // E o que o servidor manda continua mandando no resto: nada de inventar
+    // ponto que não existe mais lá.
+    assert.deepEqual(
+      segunda.dados.pontos.map((p: { id: string }) => p.id),
+      ["p1", "p2"],
+    );
+  } finally {
+    c.encerrar();
+  }
+});
+
+test("baixar o acervo da conta traz a marca `parcial`", async () => {
+  // A marca era calculada dentro de `carregar()`, então `baixarDadosDaConta`
+  // — que chama `baixarAcervo` direto — devolvia o AppData CRU. Quem estava
+  // sem plano e apertava "Baixar os pontos da minha conta neste aparelho"
+  // recebia a cópia achatada e o app a enfileirava como trabalho dela: a bomba
+  // que `persistir` diz impedir, montada por outro caminho.
+  const c = await montar("parcial-no-cliente", {
+    servidor: acervo([{ id: "p1", titulo: "Um" }]),
+  });
+  try {
+    c.mod.definirDono("u1");
+    c.servidor.portaoFechado = true;
+
+    const { baixarAcervo } = await import(`../api/cliente.ts?cenario=parcial-no-cliente`);
+    const cru = await baixarAcervo();
+    assert.equal(cru.parcial, true, "a marca não nasce no cliente");
+  } finally {
+    c.encerrar();
+  }
+});
