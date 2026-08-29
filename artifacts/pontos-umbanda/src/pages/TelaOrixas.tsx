@@ -5,6 +5,7 @@ import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { ModalOrixa } from "@/components/ModalOrixa";
 import { ModalConfirmar } from "@/components/ModalConfirmar";
+import { apagarOrixa } from "@/dominio/quantoSePerde";
 import { Link } from "wouter";
 import { MenuUsuario } from "@/components/MenuUsuario";
 import { Orixa } from "@/types";
@@ -292,7 +293,18 @@ export function TelaOrixas({ onSelectOrixa }: Props) {
       <ModalConfirmar
         aberto={!!confirmarExcluir}
         titulo={`Excluir ${confirmarExcluir?.nome}?`}
-        descricao="Isso também excluirá todas as subcategorias e pontos deste Orixá. Esta ação não pode ser desfeita."
+        descricao={
+          confirmarExcluir
+            ? apagarOrixa(
+                dados.subcategorias.filter((s) => s.orixaId === confirmarExcluir.id).length,
+                dados.pontos.filter((p) =>
+                  dados.subcategorias
+                    .filter((s) => s.orixaId === confirmarExcluir.id)
+                    .some((s) => s.id === p.subcategoriaId),
+                ).length,
+              )
+            : ""
+        }
         onConfirmar={() => {
           if (confirmarExcluir) excluirOrixa(confirmarExcluir.id);
           setConfirmarExcluir(null);

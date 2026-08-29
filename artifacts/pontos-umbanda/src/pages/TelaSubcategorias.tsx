@@ -1,5 +1,6 @@
 import { CardPonto } from "@/components/CardPonto";
 import { ModalConfirmar } from "@/components/ModalConfirmar";
+import { apagarSubcategoria } from "@/dominio/quantoSePerde";
 import { ModalPonto } from "@/components/ModalPonto";
 import { ModalSubcategoria } from "@/components/ModalSubcategoria";
 import { Input } from "@/components/ui/input";
@@ -532,7 +533,13 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
       <ModalConfirmar
         aberto={!!confirmarExcluirSub}
         titulo={`Excluir "${confirmarExcluirSub?.nome}"?`}
-        descricao="Isso também excluirá todos os pontos desta subcategoria. Esta ação não pode ser desfeita."
+        descricao={
+          confirmarExcluirSub
+            ? apagarSubcategoria(
+                dados.pontos.filter((p) => p.subcategoriaId === confirmarExcluirSub.id).length,
+              )
+            : ""
+        }
         onConfirmar={() => {
           if (confirmarExcluirSub) excluirSubcategoria(confirmarExcluirSub.id);
           setConfirmarExcluirSub(null);
