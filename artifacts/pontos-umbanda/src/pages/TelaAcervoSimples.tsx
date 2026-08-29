@@ -1,4 +1,23 @@
 /**
+ * ⚠️ ESTA TELA NÃO ESTÁ LIGADA A NADA. Não é a tela do plano grátis.
+ *
+ * Nenhum arquivo a importa — conferido no `src/` inteiro. A decisão que a
+ * substituiu está escrita no `App.tsx`, no `AppInner`: **"a MESMA navegação
+ * para quem paga e para quem não paga; a diferença aparece DENTRO do orixá,
+ * sozinha"**. O servidor sustenta isso — o `GET /acervo` manda os orixás
+ * também para o plano grátis, e só as subcategorias ficam de fora (ADR 0002).
+ * Quem não paga vê `TelaOrixas` → `TelaOrixa`, com os pontos em lista única.
+ *
+ * O aviso está aqui porque o docstring abaixo descreve um PRODUTO QUE NÃO
+ * EXISTE MAIS, e neste repositório isso já custou caro quatro vezes: agente e
+ * gente leem o texto antes do código e tomam por verdade. Ver
+ * `api/tests/test_documentacao_cita_o_que_existe.py`.
+ *
+ * **Candidata a apagar** — a decisão é do Matheus, e está no `PROGRESSO.md`.
+ * Enquanto ela existir, o que está escrito abaixo vale só como história.
+ *
+ * ---
+ *
  * O acervo do plano grátis: uma lista corrida, em ordem alfabética.
  *
  * Existe porque a tela de hierarquia **mentia** para quem não tem plano. O
@@ -110,9 +129,22 @@ export function TelaAcervoSimples() {
             </div>
           ) : pontos.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
-              <p className="mb-3 text-4xl">🔎</p>
-              <p className="font-medium">Nenhum ponto com “{busca}”</p>
-              <p className="mt-1 text-sm">Tente outra palavra da letra.</p>
+              {/* Sem busca, a lista vazia NÃO é resultado de busca.
+              
+                  Dizia "Nenhum ponto com “”" e "Tente outra palavra da letra"
+                  quando o acervo simplesmente não tinha carregado — culpando a
+                  pessoa por uma busca que ela não fez. É exatamente a mentira
+                  que esta tela foi escrita para corrigir, cometida por ela
+                  mesma três linhas abaixo do comentário que a denuncia. */}
+              <p className="mb-3 text-4xl">{busca ? "🔎" : "📥"}</p>
+              <p className="font-medium">
+                {busca ? `Nenhum ponto com “${busca}”` : "O acervo ainda não chegou"}
+              </p>
+              <p className="mt-1 text-sm">
+                {busca
+                  ? "Tente outra palavra da letra."
+                  : "Conecte-se uma vez para baixar os pontos neste aparelho."}
+              </p>
             </div>
           ) : (
             pontos.map((p) => <CardSimples key={p.id} ponto={p} busca={busca} />)
