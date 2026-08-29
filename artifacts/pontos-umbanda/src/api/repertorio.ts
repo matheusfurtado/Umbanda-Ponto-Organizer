@@ -36,7 +36,24 @@ export interface Repertorio {
   versao?: string;
 }
 
-/** Uma gira vista por OUTRA pessoa. `de` é o apelido — nunca o e-mail. */
+/**
+ * Uma gira na LISTA da vitrine. Sem os itens, com a contagem.
+ *
+ * A lista mandava os itens inteiros de até 60 giras, cada uma com até 500
+ * pontos e cada ponto com a letra — 5,6 MB numa rota anônima — e esta tela
+ * usava `g.itens.length` e mais nada. O servidor serializava trinta mil itens
+ * para o front contar.
+ */
+export interface GiraNaVitrine {
+  id: string;
+  nome: string;
+  publico: boolean;
+  de: string;
+  /** Quantos pontos a gira tem. É o que o cartão mostra. */
+  pontos: number;
+}
+
+/** Uma gira ABERTA por outra pessoa. `de` é o apelido — nunca o e-mail. */
 export interface GiraPublica {
   id: string;
   nome: string;
@@ -145,10 +162,10 @@ export function definirVisibilidade(
 }
 
 /** A vitrine. Não exige conta: é por aqui que o app circula no boca a boca. */
-export async function publicas(): Promise<GiraPublica[]> {
+export async function publicas(): Promise<GiraNaVitrine[]> {
   const r = await fetch(`${BASE}/publicos`);
   if (!r.ok) throw new Error("Não consegui carregar as giras públicas.");
-  return (await r.json()) as GiraPublica[];
+  return (await r.json()) as GiraNaVitrine[];
 }
 
 export async function giraPublica(id: string): Promise<GiraPublica> {

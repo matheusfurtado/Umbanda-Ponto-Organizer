@@ -3,7 +3,7 @@ import { useAuth } from "@/auth/AuthContext";
 import { girasDeQuemSigo, type GiraDeQuemSigo } from "@/api/perfil";
 import { Globe, Users } from "lucide-react";
 import { CartaoGira } from "@/componentes/CartaoGira";
-import { publicas, type GiraPublica } from "@/api/repertorio";
+import { publicas, type GiraNaVitrine } from "@/api/repertorio";
 
 /**
  * A vitrine das giras que as pessoas escolheram compartilhar.
@@ -15,7 +15,7 @@ import { publicas, type GiraPublica } from "@/api/repertorio";
  * Cada cartão mostra o APELIDO de quem montou, nunca o e-mail.
  */
 export function TelaGirasPublicas() {
-  const [giras, setGiras] = useState<GiraPublica[] | null>(null);
+  const [giras, setGiras] = useState<GiraNaVitrine[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const { autenticado } = useAuth();
   const [deQuemSigo, setDeQuemSigo] = useState<GiraDeQuemSigo[]>([]);
@@ -83,7 +83,7 @@ export function TelaGirasPublicas() {
               id={g.id}
               nome={g.nome}
               de={g.de}
-              pontos={g.itens.length}
+              pontos={g.pontos}
             />
           ))}
         </div>
