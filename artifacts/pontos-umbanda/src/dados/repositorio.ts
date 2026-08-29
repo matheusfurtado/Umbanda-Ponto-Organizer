@@ -32,7 +32,12 @@ const ESPERA_ENVIO_MS = 1500;
 
 function descrever(erro: unknown): string {
   if (ehErroDeRede(erro)) return "sem conexão com o servidor";
-  if (ehErroDeApi(erro)) return `servidor respondeu ${erro.status}`;
+  // O texto do servidor, quando existe, é melhor que qualquer um daqui: ele
+  // foi escrito para a pessoa ler. O 402 do sync, por exemplo, diz "guardar
+  // seus pontos na nuvem faz parte do plano pago; seu acervo continua salvo
+  // neste aparelho — nada foi perdido" — e isso é exatamente o que ela precisa
+  // saber. "Servidor respondeu 402" não é informação, é ruído com número.
+  if (ehErroDeApi(erro)) return erro.detalhe || `servidor respondeu ${erro.status}`;
   return "falha desconhecida";
 }
 
@@ -95,6 +100,20 @@ export interface EstadoEnvio {
    * pergunta.
    */
   conflito: boolean;
+  /**
+   * O servidor recusou por um motivo que **insistir não resolve**: sem plano
+   * (402), sem sessão (401), payload que ele não aceita (422).
+   *
+   * Estado próprio pelo mesmo motivo do `conflito`: sem ele, o `finally`
+   * reagendava e o app entrava em laço — um `PUT` do acervo inteiro a cada
+   * 1,5 s, para sempre, contra uma rota que já tinha dito não. Em celular na
+   * gira isso é bateria e franquia de dados; no servidor é carga que nenhum
+   * usuário pediu.
+   *
+   * O dado NÃO se perde: ele continua no cache e no pendente. O que para é a
+   * insistência automática.
+   */
+  bloqueado: boolean;
 }
 
 /**
@@ -150,7 +169,7 @@ export function definirDono(id: string | null): void {
   if (!guardado || guardado.dono !== id) {
     aguardando = null;
     gravarPendente(null);
-    anunciar({ pendente: false, conflito: false, ultimoErro: undefined });
+    anunciar({ pendente: false, conflito: false, bloqueado: false, ultimoErro: undefined });
     return;
   }
   aguardando = guardado.dados;
@@ -172,7 +191,12 @@ function pendenteEmMemoria(): AppData | null {
 }
 let enviando = false;
 const ouvintes = new Set<Ouvinte>();
-let estado: EstadoEnvio = { enviando: false, pendente: false, conflito: false };
+let estado: EstadoEnvio = {
+  enviando: false,
+  pendente: false,
+  conflito: false,
+  bloqueado: false,
+};
 
 function anunciar(novo: Partial<EstadoEnvio>) {
   estado = { ...estado, ...novo };
@@ -217,6 +241,7 @@ async function empurrar() {
       pendente: aguardando !== null,
       ultimoErro: undefined,
       conflito: false,
+      bloqueado: false,
     });
   } catch (erro) {
     // O dado JÁ está no cache do aparelho — nada se perdeu, aconteça o que
@@ -230,6 +255,15 @@ async function empurrar() {
       anunciar({ enviando: false, pendente: true, conflito: true, ultimoErro: undefined });
       return;
     }
+    if (!insistirAdianta(erro)) {
+      anunciar({
+        enviando: false,
+        pendente: true,
+        bloqueado: true,
+        ultimoErro: descrever(erro),
+      });
+      return;
+    }
     anunciar({ enviando: false, pendente: true, ultimoErro: descrever(erro) });
   } finally {
     enviando = false;
@@ -237,10 +271,39 @@ async function empurrar() {
   }
 }
 
+/**
+ * Este erro muda de resposta se eu tentar de novo?
+ *
+ * A pergunta que faltava. O `catch` tratava só o 409 e mandava todo o resto
+ * para o mesmo caminho — reagendar em 1,5 s, para sempre. Só que 402 (sem
+ * plano) e 401 (sem sessão) não mudam por insistência: o usuário grátis
+ * logado, e o anônimo, ficavam num laço de `PUT` do acervo inteiro a cada
+ * 1,5 s enquanto o app estivesse aberto.
+ *
+ * - **Rede caída** → tentar de novo. É o caso normal da gira.
+ * - **5xx** → tentar de novo. O servidor tropeçou, pode se levantar.
+ * - **429** → tentar de novo. É "devagar", não "nunca".
+ * - **409** → caminho próprio: exige decisão da pessoa, e reenviar sozinho
+ *   apagaria o que o outro aparelho gravou.
+ * - **Qualquer outro 4xx** → parar. O servidor não vai mudar de ideia porque
+ *   perguntei mais vezes.
+ */
+function insistirAdianta(erro: unknown): boolean {
+  if (!ehErroDeApi(erro)) return true;
+  if (erro.status === 429) return true;
+  return erro.status < 400 || erro.status >= 500;
+}
+
+
 function agendar() {
   // Em conflito não reagenda: insistir sozinho é justamente o que apagaria o
   // trabalho do outro aparelho.
   if (estado.conflito) return;
+  // Bloqueado também não. Quem destrava é uma AÇÃO da pessoa — `persistir`
+  // (ela editou de novo), `forcarEnvio`, ou trocar de conta —, nunca o
+  // relógio. É a diferença entre uma tentativa por edição e uma por segundo e
+  // meio para sempre.
+  if (estado.bloqueado) return;
   if (relogio) clearTimeout(relogio);
   relogio = setTimeout(empurrar, ESPERA_ENVIO_MS);
 }
@@ -296,7 +359,10 @@ export function persistir(dados: AppData): void {
   // PWA em segundo plano apagava o pendente, e o `carregar()` seguinte
   // sobrescrevia o cache com o do servidor. A edição feita sem sinal sumia.
   gravarPendente(dados);
-  anunciar({ pendente: true });
+  // Editar de novo destrava. Se o motivo do bloqueio passou — ela assinou,
+  // ela entrou na conta —, a próxima edição sincroniza; se não passou, custa
+  // UMA tentativa, não uma a cada segundo e meio.
+  anunciar({ pendente: true, bloqueado: false });
   agendar();
 }
 
@@ -314,7 +380,11 @@ export function ligarRetomadaAutomatica(): () => void {
     // `sincronizarAgora()` direto e passava por fora do guarda — bastava o
     // Wi-Fi oscilar para o aparelho reenviar por cima de um conflito que ele
     // mesmo tinha acabado de detectar.
-    if (estado.pendente && !estado.conflito) sincronizarAgora();
+    // Nem em conflito, nem bloqueado: a rede voltar não muda que falta plano
+    // nem que falta sessão, e chamar `sincronizarAgora()` passa por fora do
+    // `agendar()`. Sem esta metade, bastava o Wi-Fi oscilar para o laço
+    // recomeçar pela porta dos fundos.
+    if (estado.pendente && !estado.conflito && !estado.bloqueado) sincronizarAgora();
   };
   window.addEventListener("online", aoVoltar);
   return () => window.removeEventListener("online", aoVoltar);

@@ -70,6 +70,8 @@ interface Servidor {
   duranteOProximoPut: (() => void) | null;
   /** Liga para o `fetch` falhar como rede caída. */
   fora: boolean;
+  /** Faz todo PUT ser recusado com este status. 402 = sem plano, 401 = sem sessão. */
+  recusaPutCom: number | null;
 }
 
 /**
@@ -97,6 +99,7 @@ async function montar(cenario: string, inicial: {
     puts: [],
     duranteOProximoPut: null,
     fora: false,
+    recusaPutCom: null,
   };
 
   Object.assign(globalThis, {
@@ -124,6 +127,12 @@ async function montar(cenario: string, inicial: {
 
     const corpo = JSON.parse(String(init.body));
     servidor.puts.push({ versao: corpo.versao, pontos: corpo.pontos });
+
+    if (servidor.recusaPutCom !== null) {
+      return resposta(servidor.recusaPutCom, {
+        detail: "Guardar seus pontos na nuvem faz parte do plano pago.",
+      });
+    }
 
     if (servidor.duranteOProximoPut) {
       const f = servidor.duranteOProximoPut;
@@ -471,4 +480,135 @@ test("forçar o envio sem rede avisa, em vez de sumir com a decisão", async (t)
   await respirar();
   assert.equal(a.noServidor(), "p1,meu");
   assert.equal(estado.conflito, false);
+});
+
+
+/** Espera de verdade: o reenvio é agendado com `setTimeout`. */
+function esperar(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+test("402 não vira laço: o app para de insistir e nada se perde", async () => {
+  // O achado: usuário grátis logado (e anônimo, com 401) mandava o acervo
+  // INTEIRO a cada 1,5 s, para sempre, contra uma rota que já tinha dito não.
+  // Bateria e franquia de dados na gira; carga que ninguém pediu no servidor.
+  const c = await montar("bloqueio-402", { servidor: acervo([{ id: "p1", titulo: "Um" }]) });
+  try {
+    c.mod.definirDono("u1");
+    c.servidor.recusaPutCom = 402;
+
+    c.mod.persistir(acervo([{ id: "p1", titulo: "Um" }, { id: "p2", titulo: "Dois" }]));
+    // Duas janelas de reenvio inteiras. Sem o conserto, seriam ~3 PUTs.
+    await esperar(3400);
+
+    assert.equal(
+      c.servidor.puts.length,
+      1,
+      `mandou ${c.servidor.puts.length} PUTs contra um 402 — o laço voltou`,
+    );
+
+    // E o que ela escreveu continua guardado: parar de insistir não é desistir.
+    assert.equal(c.pendenteNoDisco()?.dados.pontos.length, 2);
+    assert.equal(c.cache().pontos.length, 2);
+  } finally {
+    c.encerrar();
+  }
+});
+
+test("editar de novo destrava — uma tentativa por edição, não por segundo", async () => {
+  // Quem assinou no meio da sessão precisa que a próxima edição suba. E quem
+  // não assinou paga UMA tentativa, não uma a cada 1,5 s.
+  const c = await montar("bloqueio-destrava", { servidor: acervo([{ id: "p1", titulo: "Um" }]) });
+  try {
+    c.mod.definirDono("u1");
+    c.servidor.recusaPutCom = 402;
+    c.mod.persistir(acervo([{ id: "p1", titulo: "Um" }, { id: "p2", titulo: "Dois" }]));
+    await esperar(1800);
+    assert.equal(c.servidor.puts.length, 1);
+
+    // Ela assinou. O servidor volta a aceitar, e a próxima edição sobe.
+    //
+    // A versão é a que o SERVIDOR tem ("vp1"), e não a do conteúdo novo: o
+    // envio recusado com 402 nunca chegou a mudar nada lá, então o aparelho
+    // continua com a versão de antes. Mandar a versão do conteúdo faria o
+    // servidor de mentira responder 409 e o teste acusaria o código certo.
+    c.servidor.recusaPutCom = null;
+    c.mod.persistir(acervo([
+      { id: "p1", titulo: "Um" },
+      { id: "p2", titulo: "Dois" },
+      { id: "p3", titulo: "Três" },
+    ], "vp1"));
+    await esperar(1800);
+
+    assert.equal(c.servidor.puts.length, 2);
+    assert.equal(c.noServidor(), "p1,p2,p3");
+    assert.equal(c.pendenteNoDisco(), null, "o pendente devia ter saído depois do 200");
+  } finally {
+    c.encerrar();
+  }
+});
+
+test("erro que passa continua sendo tentado de novo", async () => {
+  // O contrapeso: parar cedo demais deixaria a gira sem sinal sem sincronizar
+  // nunca, que é o caso NORMAL deste app. 5xx e rede caída seguem insistindo.
+  const c = await montar("bloqueio-5xx", { servidor: acervo([{ id: "p1", titulo: "Um" }]) });
+  try {
+    c.mod.definirDono("u1");
+    c.servidor.recusaPutCom = 503;
+    c.mod.persistir(acervo([{ id: "p1", titulo: "Um" }, { id: "p2", titulo: "Dois" }]));
+    await esperar(3400);
+
+    assert.ok(
+      c.servidor.puts.length >= 2,
+      `só ${c.servidor.puts.length} tentativa(s) contra um 503 — parou cedo demais`,
+    );
+  } finally {
+    c.encerrar();
+  }
+});
+
+test("a rede voltar não desperta o laço bloqueado", async () => {
+  // `sincronizarAgora()` passa POR FORA do `agendar()`. Sem o guarda aqui,
+  // bastava o Wi-Fi oscilar para o laço recomeçar pela porta dos fundos.
+  const c = await montar("bloqueio-online", { servidor: acervo([{ id: "p1", titulo: "Um" }]) });
+  try {
+    c.mod.definirDono("u1");
+    c.mod.ligarRetomadaAutomatica();
+    c.servidor.recusaPutCom = 402;
+    c.mod.persistir(acervo([{ id: "p1", titulo: "Um" }, { id: "p2", titulo: "Dois" }]));
+    await esperar(1800);
+    assert.equal(c.servidor.puts.length, 1);
+
+    c.redeVoltou();
+    c.redeVoltou();
+    await esperar(300);
+    assert.equal(c.servidor.puts.length, 1, "o evento `online` reabriu o laço");
+  } finally {
+    c.encerrar();
+  }
+});
+
+
+test("a tela mostra o motivo do servidor, não o número do status", async () => {
+  // "Servidor respondeu 402" não é informação: é ruído com número. A API já
+  // escreve a frase certa ("faz parte do plano pago; seu acervo continua salvo
+  // neste aparelho"), e era o cliente que a jogava fora.
+  const c = await montar("motivo-legivel", { servidor: acervo([{ id: "p1", titulo: "Um" }]) });
+  try {
+    c.mod.definirDono("u1");
+    c.servidor.recusaPutCom = 402;
+
+    let visto = "";
+    const parar = c.mod.observarEnvio((e: { ultimoErro?: string }) => {
+      if (e.ultimoErro) visto = e.ultimoErro;
+    });
+    c.mod.persistir(acervo([{ id: "p1", titulo: "Um" }, { id: "p2", titulo: "Dois" }]));
+    await esperar(1800);
+    parar();
+
+    assert.match(visto, /plano pago/);
+    assert.doesNotMatch(visto, /402/);
+  } finally {
+    c.encerrar();
+  }
 });
