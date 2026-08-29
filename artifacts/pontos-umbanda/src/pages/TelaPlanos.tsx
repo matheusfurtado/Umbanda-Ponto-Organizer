@@ -179,7 +179,10 @@ export function TelaPlanos() {
             atrás do link: renovação automática e os 7 dias de arrependimento
             são o que a pessoa precisa saber para decidir. */}
         <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-          A assinatura se renova sozinha todo mês até você cancelar, e você tem{" "}
+          {/* "todo mês" era falso para quem assina o anual, e este parágrafo
+              fica embaixo dos DOIS cartões. */}
+          A assinatura se renova sozinha ao fim de cada período até você
+          cancelar, e você tem{" "}
           <strong className="text-foreground">7 dias para desistir</strong> e
           receber tudo de volta (CDC, art. 49). Nada do que é seu é apagado se o
           plano acabar. Leia os{" "}

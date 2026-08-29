@@ -74,13 +74,29 @@ export function TelaTermos() {
             <strong>Todo cadastro começa com 15 dias de teste</strong>, com os
             mesmos direitos do plano pago. Não pedimos cartão para isso.
           </li>
+          {/* SEM PREÇO ESCRITO AQUI, e isso é o conserto.
+              
+              Dizia "R$ 9,90 por mês" e "renova a cada mês" — com o plano ANUAL
+              ativo no banco. Quem assinasse o anual lia preço e periodicidade
+              errados no exato lugar onde o CDC art. 46 exige a apresentação
+              prévia, que é o motivo declarado desta página existir.
+              
+              Preço escrito à mão numa página estática é uma tabela que mente
+              assim que alguém muda o valor no banco. Os planos vêm do servidor
+              na tela de assinatura; aqui fica a REGRA, que é o que os Termos
+              têm de dizer. */}
           <li>
-            <strong>R$ 9,90 por mês</strong>, cobrados pelo provedor de
+            <strong>O preço e a periodicidade de cada plano</strong> aparecem na{" "}
+            <Link href="/planos" className="text-primary underline">
+              tela de assinatura
+            </Link>
+            , antes de você confirmar. A cobrança é feita pelo provedor de
             pagamento.
           </li>
           <li>
-            <strong>A assinatura se renova sozinha</strong> a cada mês até você
-            cancelar.
+            <strong>A assinatura se renova sozinha</strong> ao fim de cada
+            período — mensal ou anual, conforme o plano que você escolher — até
+            você cancelar.
           </li>
         </ul>
       </Secao>

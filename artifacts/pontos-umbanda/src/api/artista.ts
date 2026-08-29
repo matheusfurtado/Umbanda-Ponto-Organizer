@@ -8,14 +8,36 @@
  * aqui achando que é furo do portão vai desfazer o produto que ele pediu.
  */
 
+import { ErroApi, ErroRede } from "@/api/cliente";
+
 const BASE = "/api/v1";
 
+/**
+ * Lança o MESMO vocabulário de erro do `api/cliente`.
+ *
+ * Este `chamar` jogava um `Error` cru com `.status` pendurado, e não embrulhava
+ * falha de rede. As telas que importam `ehErroDeApi`/`ehErroDeRede` de
+ * `@/api/cliente` — que testam `instanceof` ou `name` — recebiam `false` nos
+ * dois casos, e o ternário inteiro delas virava código morto: qualquer falha
+ * caía no texto genérico.
+ *
+ * Doeu em `PedirRemocao`, que é a tela de "tire minha página do ar": quem
+ * batia no limite por IP levava "Não consegui enviar agora." em vez de saber
+ * que era só esperar, num fluxo em que a pessoa está pedindo para sair de um
+ * app que a expõe. Duas famílias de erro para o mesmo backend é como isso
+ * acontece.
+ */
 async function chamar<T>(caminho: string, init?: RequestInit): Promise<T> {
-  const r = await fetch(`${BASE}${caminho}`, {
-    ...init,
-    headers: { "Content-Type": "application/json", ...init?.headers },
-    credentials: "same-origin",
-  });
+  let r: Response;
+  try {
+    r = await fetch(`${BASE}${caminho}`, {
+      ...init,
+      headers: { "Content-Type": "application/json", ...init?.headers },
+      credentials: "same-origin",
+    });
+  } catch (causa) {
+    throw new ErroRede(causa);
+  }
   if (!r.ok) {
     let detalhe = r.statusText;
     try {
@@ -23,9 +45,7 @@ async function chamar<T>(caminho: string, init?: RequestInit): Promise<T> {
     } catch {
       /* corpo não-JSON: fica o statusText */
     }
-    const erro = new Error(String(detalhe)) as Error & { status?: number };
-    erro.status = r.status;
-    throw erro;
+    throw new ErroApi(r.status, String(detalhe));
   }
   return r.status === 204 ? (undefined as T) : ((await r.json()) as T);
 }

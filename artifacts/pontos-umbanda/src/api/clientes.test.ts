@@ -142,3 +142,37 @@ test("erro de denúncia carrega o status, para a tela distinguir 409 de 429", as
     },
   );
 });
+
+
+test("o cliente de artista lança o MESMO erro do resto do app", async () => {
+  // Ele jogava um `Error` cru com `.status` pendurado e não embrulhava falha de
+  // rede. As telas testam `ehErroDeApi`/`ehErroDeRede`, que checam `instanceof`
+  // ou `name` — os dois davam `false`, e o ternário inteiro delas virava código
+  // morto: qualquer falha caía no texto genérico.
+  //
+  // Doeu em `PedirRemocao`, a tela de "tire minha página do ar": quem batia no
+  // limite por IP lia "Não consegui enviar agora." em vez de saber que era só
+  // esperar — num fluxo em que a pessoa está pedindo para sair de um app que a
+  // expõe.
+  const { pedirRemocaoDoArtista } = await import("./artista.ts");
+  const { ehErroDeApi, ehErroDeRede } = await import("./cliente.ts");
+
+  globalThis.fetch = (async () =>
+    new Response(JSON.stringify({ detail: "Muitas tentativas. Tente de novo em 4 minutos." }), {
+      status: 429,
+      headers: { "Content-Type": "application/json" },
+    })) as typeof fetch;
+
+  const daApi = await pedirRemocaoDoArtista("x", {}).catch((e: unknown) => e);
+  assert.ok(ehErroDeApi(daApi), "o 429 não é reconhecido como erro de API");
+  assert.equal((daApi as { status: number }).status, 429);
+  assert.match((daApi as { detalhe: string }).detalhe, /Muitas tentativas/);
+
+  globalThis.fetch = (async () => {
+    throw new TypeError("fetch failed");
+  }) as typeof fetch;
+
+  const daRede = await pedirRemocaoDoArtista("x", {}).catch((e: unknown) => e);
+  assert.ok(ehErroDeRede(daRede), "a falha de rede não é reconhecida");
+  assert.equal(ehErroDeApi(daRede), false);
+});
