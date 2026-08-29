@@ -2,7 +2,13 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <!-- Sem `maximum-scale`: bloquear o zoom é barrar quem precisa dele.
+         Este app é lido cantando, em luz baixa, e boa parte de quem canta tem
+         mais de cinquenta anos. A WCAG 1.4.4 pede que a página amplie até
+         200%, e o motivo original de travar (evitar o zoom acidental do iOS ao
+         focar um input) já não existe: o Safari só faz isso quando a fonte do
+         campo é menor que 16px, e a daqui não é. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#7c3aed" />
     <meta name="description" content="Organize e acesse pontos de umbanda de forma rápida e offline" />
     <meta name="apple-mobile-web-app-capable" content="yes" />

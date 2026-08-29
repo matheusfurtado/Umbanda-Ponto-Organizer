@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronDown, Star, Youtube, AlertTriangle, VideoOff, Plus, UserPen, Clock } from "lucide-react";
+import { Link } from "wouter";
 import { useApp } from "@/context";
 import { destacar } from "@/lib/destacar";
 import type { Ponto } from "@/types";
@@ -205,9 +206,25 @@ export function LinhaPonto({
 
       {aberto && (
         <div className="px-3 pb-3 pl-11">
-          <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground/90">
-            {destacar(ponto.letra, busca)}
-          </pre>
+          {ponto.letra?.trim() ? (
+            <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground/90">
+              {destacar(ponto.letra, busca)}
+            </pre>
+          ) : (
+            /* 47 dos 520 pontos do acervo chegaram sem letra, e a linha abria
+               num vazio — indistinguível de erro de carregamento ou de app
+               quebrado. Dizer que falta é honesto e transforma o buraco em
+               convite: quem sabe a letra pode mandar. */
+            <p className="text-sm italic text-muted-foreground">
+              A letra deste ponto ainda não está no acervo.{" "}
+              <Link
+                href="/enviar-ponto"
+                className="not-italic underline underline-offset-2 hover:text-foreground"
+              >
+                Você sabe? Mande para a gente.
+              </Link>
+            </p>
+          )}
           {/* O link para quem gravou mora AQUI, e não na linha fechada: lá o
               nome vive dentro de um `<button>`, e âncora dentro de botão é
               HTML inválido — o clique some. Aberto, a letra já está fora do
