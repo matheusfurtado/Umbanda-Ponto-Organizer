@@ -201,8 +201,11 @@ export async function escolherApelido(apelido: string): Promise<Usuario> {
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ apelido }),
   });
-  if (r.status === 409) throw new Error("Este apelido já está em uso.");
-  if (!r.ok) throw new Error("Não consegui salvar o apelido.");
+  // `ErroApi` e não `Error`: é o vocabulário que a tela lê. Com o `Error` cru,
+  // "Este apelido já está em uso." virava o texto genérico de quem chamou —
+  // e a pessoa ficava sem saber POR QUE o apelido não entrou.
+  if (r.status === 409) throw new ErroApi(409, "Este apelido já está em uso.");
+  if (!r.ok) throw new ErroApi(r.status, "Não consegui salvar o apelido.");
   return (await r.json()) as Usuario;
 }
 
@@ -226,7 +229,7 @@ export async function apagarConta(senha: string): Promise<void> {
     } catch {
       /* corpo não-JSON: fica o statusText */
     }
-    throw new Error(String(detalhe));
+    throw new ErroApi(r.status, String(detalhe));
   }
 }
 

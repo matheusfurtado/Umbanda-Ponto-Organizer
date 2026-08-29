@@ -9,6 +9,11 @@
  * admin. Ver `routers/submissao.py` para o porquê.
  */
 
+// O MESMO cliente do resto do app: é ele que lança `ErroApi`/`ErroRede`,
+// o vocabulário que `ehErroDeApi`, `ehErroDeRede` e `mensagemDeErro` leem.
+// Havia um `chamar` copiado aqui, lançando `Error` cru com `.status`
+// pendurado — e para ele os três respondiam sempre "não é".
+import { chamarApi as chamar } from "@/api/cliente";
 import { ehErroDeApi } from "./cliente";
 
 export type TipoSubmissao = "ponto" | "autor";
@@ -34,22 +39,6 @@ export interface SubmissaoNaFila extends Submissao {
   autorAtual: string | null;
 }
 
-async function chamar<T>(caminho: string, init?: RequestInit): Promise<T> {
-  const r = await fetch(`/api/v1${caminho}`, {
-    headers: init?.body ? { "content-type": "application/json" } : undefined,
-    ...init,
-  });
-  if (!r.ok) {
-    let detalhe = "";
-    try {
-      detalhe = (await r.json())?.detail ?? "";
-    } catch {
-      /* resposta sem corpo JSON: fica a mensagem genérica */
-    }
-    throw new Error(detalhe || `Falha (${r.status})`);
-  }
-  return r.status === 204 ? (undefined as T) : ((await r.json()) as T);
-}
 
 export function enviarPonto(dados: {
   titulo: string;

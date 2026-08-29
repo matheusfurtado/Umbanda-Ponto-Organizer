@@ -114,14 +114,37 @@ async function requisitar<T>(caminho: string, init?: RequestInit): Promise<T> {
     let detalhe = resposta.statusText;
     try {
       const corpo = await resposta.json();
-      detalhe = corpo?.detail ?? detalhe;
+      // O 422 do Pydantic vem como LISTA; o nosso vem como frase. A tela
+      // precisa de frase — mostrar `[object Object]` é pior que não mostrar.
+      // Isto vivia só no `api/pedidoArtista.ts`, e por isso valia só lá.
+      detalhe = Array.isArray(corpo?.detail)
+        ? (corpo.detail[0]?.msg ?? detalhe)
+        : (corpo?.detail ?? detalhe);
     } catch {
       /* corpo não-JSON: fica o statusText */
     }
     throw new ErroApi(resposta.status, String(detalhe));
   }
 
+  // 204/205 não têm corpo, e `json()` neles estoura.
+  if (resposta.status === 204 || resposta.status === 205) return undefined as T;
   return (await resposta.json()) as T;
+}
+
+/**
+ * O MESMO `requisitar`, aberto para os outros módulos de API.
+ *
+ * Cinco módulos tinham um `chamar` próprio, copiado, e quatro deles lançavam
+ * `new Error(detalhe)` com um `.status` pendurado — não `ErroApi`. Consequência:
+ * `ehErroDeApi` e `ehErroDeRede` respondiam **false** para eles, e todo
+ * tratamento que depende desse vocabulário virava código morto naquelas telas.
+ * Já tinha doído uma vez, no `api/artista.ts`, e ficou nos outros quatro.
+ *
+ * Agora há um caminho só. Quem precisar de comportamento diferente muda aqui,
+ * onde a mudança vale para todos — que é o oposto de copiar de novo.
+ */
+export function chamarApi<T>(caminho: string, init?: RequestInit): Promise<T> {
+  return requisitar<T>(caminho, init);
 }
 
 /** O acervo inteiro, do jeito que o app já usa. */

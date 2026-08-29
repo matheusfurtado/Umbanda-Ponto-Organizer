@@ -172,11 +172,16 @@ export const editarArtista = (id: string, corpo: EdicaoDoArtista) =>
 export async function trocarFotoDoArtista(id: string, arquivo: File) {
   const corpo = new FormData();
   corpo.append("arquivo", arquivo);
-  const r = await fetch(`/api/v1/artistas/${encodeURIComponent(id)}/foto`, {
-    method: "PUT",
-    body: corpo,
-    credentials: "same-origin",
-  });
+  let r: Response;
+  try {
+    r = await fetch(`/api/v1/artistas/${encodeURIComponent(id)}/foto`, {
+      method: "PUT",
+      body: corpo,
+      credentials: "same-origin",
+    });
+  } catch (causa) {
+    throw new ErroRede(causa);
+  }
   if (!r.ok) {
     let detalhe = r.statusText;
     try {
@@ -184,7 +189,10 @@ export async function trocarFotoDoArtista(id: string, arquivo: File) {
     } catch {
       /* corpo não-JSON */
     }
-    throw new Error(String(detalhe));
+    // `ErroApi` e `ErroRede`, como o resto deste arquivo. O desvio de
+    // `multipart` é sobre o CABEÇALHO, não sobre o vocabulário de erro — e
+    // este `throw` cru fazia o `ehErroDeApi` das telas responder "não é".
+    throw new ErroApi(r.status, String(detalhe));
   }
   return (await r.json()) as { foto: string | null };
 }

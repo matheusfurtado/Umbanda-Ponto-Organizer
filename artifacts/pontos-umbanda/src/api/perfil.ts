@@ -1,3 +1,8 @@
+// O MESMO cliente do resto do app: é ele que lança `ErroApi`/`ErroRede`,
+// o vocabulário que `ehErroDeApi`, `ehErroDeRede` e `mensagemDeErro` leem.
+// Havia um `chamar` copiado aqui, lançando `Error` cru com `.status`
+// pendurado — e para ele os três respondiam sempre "não é".
+import { chamarApi as chamar, ErroApi, ErroRede } from "@/api/cliente";
 /**
  * Perfil, seguir e favoritos públicos.
  *
@@ -9,25 +14,6 @@
 
 const BASE = "/api/v1";
 
-async function chamar<T>(caminho: string, init?: RequestInit): Promise<T> {
-  const r = await fetch(`${BASE}${caminho}`, {
-    ...init,
-    headers: { "Content-Type": "application/json", ...init?.headers },
-    credentials: "same-origin",
-  });
-  if (!r.ok) {
-    let detalhe = r.statusText;
-    try {
-      detalhe = (await r.json())?.detail ?? detalhe;
-    } catch {
-      /* corpo não-JSON: fica o statusText */
-    }
-    const erro = new Error(String(detalhe)) as Error & { status?: number };
-    erro.status = r.status;
-    throw erro;
-  }
-  return r.status === 204 ? (undefined as T) : ((await r.json()) as T);
-}
 
 export interface GiraDoPerfil {
   id: string;
@@ -111,11 +97,18 @@ export function girasDeQuemSigo(): Promise<GiraDeQuemSigo[]> {
 export async function enviarFoto(arquivo: File): Promise<string> {
   const corpo = new FormData();
   corpo.append("arquivo", arquivo);
-  const resposta = await fetch(`${BASE}/eu/foto`, {
-    method: "PUT",
-    body: corpo,
-    credentials: "same-origin",
-  });
+  let resposta: Response;
+  try {
+    resposta = await fetch(`${BASE}/eu/foto`, {
+      method: "PUT",
+      body: corpo,
+      credentials: "same-origin",
+    });
+  } catch (causa) {
+    // Sem isto, cair a rede no meio do upload chegava como `TypeError` — e
+    // `ehErroDeRede` respondia "não é rede" para uma falha de rede.
+    throw new ErroRede(causa);
+  }
   if (!resposta.ok) {
     let detalhe = resposta.statusText;
     try {
@@ -123,10 +116,11 @@ export async function enviarFoto(arquivo: File): Promise<string> {
     } catch {
       /* corpo não-JSON */
     }
-    // Mesma forma de erro do `chamar` acima: quem trata já sabe ler `status`.
-    const erro = new Error(String(detalhe)) as Error & { status?: number };
-    erro.status = resposta.status;
-    throw erro;
+    // `ErroApi`, e não um `Error` com `.status` pendurado: é este o
+    // vocabulário que `ehErroDeApi` e `mensagemDeErro` sabem ler. Com o
+    // `Error` cru, a foto recusada pelo servidor ("imagem grande demais")
+    // chegava à tela como o texto genérico de quem chamou.
+    throw new ErroApi(resposta.status, String(detalhe));
   }
   return ((await resposta.json()) as { foto: string }).foto;
 }

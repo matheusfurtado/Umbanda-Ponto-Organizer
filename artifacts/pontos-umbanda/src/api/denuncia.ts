@@ -1,3 +1,8 @@
+// O MESMO cliente do resto do app: é ele que lança `ErroApi`/`ErroRede`,
+// o vocabulário que `ehErroDeApi`, `ehErroDeRede` e `mensagemDeErro` leem.
+// Havia um `chamar` copiado aqui, lançando `Error` cru com `.status`
+// pendurado — e para ele os três respondiam sempre "não é".
+import { chamarApi as chamar } from "@/api/cliente";
 /**
  * Denunciar conteúdo, e a fila de quem decide.
  *
@@ -5,8 +10,6 @@
  * de "quem denunciou quem" seria um mapa de desavenças dentro de uma
  * comunidade religiosa. Ver `routers/denuncia.py`.
  */
-
-const BASE = "/api/v1";
 
 export type AlvoDeDenuncia = "perfil" | "gira" | "ponto" | "artista";
 export type MotivoDeDenuncia =
@@ -35,25 +38,6 @@ export interface DenunciaNaFila {
   alvoFoto: string | null;
 }
 
-async function chamar<T>(caminho: string, init?: RequestInit): Promise<T> {
-  const r = await fetch(`${BASE}${caminho}`, {
-    ...init,
-    headers: { "Content-Type": "application/json", ...init?.headers },
-    credentials: "same-origin",
-  });
-  if (!r.ok) {
-    let detalhe = r.statusText;
-    try {
-      detalhe = (await r.json())?.detail ?? detalhe;
-    } catch {
-      /* corpo não-JSON */
-    }
-    const erro = new Error(String(detalhe)) as Error & { status?: number };
-    erro.status = r.status;
-    throw erro;
-  }
-  return r.status === 204 ? (undefined as T) : ((await r.json()) as T);
-}
 
 export function denunciar(
   alvoTipo: AlvoDeDenuncia,

@@ -93,3 +93,34 @@ test("a exceção ainda precisa existir", () => {
     );
   }
 });
+
+/**
+ * O outro lado da mesma moeda: quem PRODUZ o erro fala o vocabulário?
+ *
+ * `mensagemDeErro`, `ehErroDeApi` e `ehErroDeRede` só funcionam sobre
+ * `ErroApi`/`ErroRede`. Cinco módulos de `api/` tinham um `chamar` copiado que
+ * lançava `new Error(detalhe)` com um `.status` pendurado — e para esses três
+ * a resposta era sempre "não é". Todo tratamento por status naquelas telas era
+ * código morto, e ninguém tinha como notar: a mensagem aparecia, só que era
+ * sempre a genérica.
+ *
+ * Já tinha doído uma vez, no `api/artista.ts`, e continuou nos outros quatro
+ * mais dois caminhos de `multipart`. Cerca para não voltar uma sétima vez.
+ */
+test("nenhum módulo de api/ inventa a própria forma de erro", () => {
+  const modulos = arquivos(join(SRC, "api"));
+  ok(modulos.length >= 8, `só ${modulos.length} módulos de api/ varridos`);
+
+  const culpados = modulos.filter((c) => {
+    if (c.endsWith("cliente.ts")) return false; // é ele quem DEFINE o vocabulário
+    const fonte = readFileSync(c, "utf8");
+    // `throw new Error(...)` numa resposta ruim, ou `.status` pendurado à mão.
+    return /throw new Error\(/.test(fonte) || /erro\.status = /.test(fonte);
+  });
+  equal(
+    culpados.length,
+    0,
+    "estes módulos lançam erro fora do vocabulário — use `chamarApi`, ou " +
+      `\`ErroApi\`/\`ErroRede\` direto:\n${culpados.map((c) => "  " + c.slice(SRC.length + 1)).join("\n")}`,
+  );
+});

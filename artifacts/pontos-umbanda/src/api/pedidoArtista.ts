@@ -1,3 +1,8 @@
+// O MESMO cliente do resto do app: é ele que lança `ErroApi`/`ErroRede`,
+// o vocabulário que `ehErroDeApi`, `ehErroDeRede` e `mensagemDeErro` leem.
+// Havia um `chamar` copiado aqui, lançando `Error` cru com `.status`
+// pendurado — e para ele os três respondiam sempre "não é".
+import { chamarApi as chamar } from "@/api/cliente";
 /**
  * "Este canal é meu": o pedido de perfil de artista.
  *
@@ -11,32 +16,6 @@
  * perfil dele, com o nome dele em cima.
  */
 
-const BASE = "/api/v1";
-
-async function chamar<T>(caminho: string, init?: RequestInit): Promise<T> {
-  const r = await fetch(`${BASE}${caminho}`, {
-    ...init,
-    headers: { "Content-Type": "application/json", ...init?.headers },
-    credentials: "same-origin",
-  });
-  if (!r.ok) {
-    let detalhe = r.statusText;
-    try {
-      const corpo = await r.json();
-      // O 422 do Pydantic vem como lista; o nosso vem como frase. A tela
-      // precisa de frase — mostrar `[object Object]` é pior que não mostrar.
-      detalhe = Array.isArray(corpo?.detail)
-        ? (corpo.detail[0]?.msg ?? detalhe)
-        : (corpo?.detail ?? detalhe);
-    } catch {
-      /* corpo não-JSON: fica o statusText */
-    }
-    const erro = new Error(String(detalhe)) as Error & { status?: number };
-    erro.status = r.status;
-    throw erro;
-  }
-  return r.status === 204 ? (undefined as T) : ((await r.json()) as T);
-}
 
 export type StatusDoPedido = "pendente" | "aprovado" | "recusado";
 

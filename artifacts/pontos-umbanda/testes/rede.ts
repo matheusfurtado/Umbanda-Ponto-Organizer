@@ -30,20 +30,30 @@ export interface Rede {
  */
 export function fingirRede(rota: Rota): Rede {
   const original = globalThis.fetch;
-  const beaconOriginal = window.navigator.sendBeacon;
   const chamadas: { url: string; metodo: string }[] = [];
+
+  // O DOM é OPCIONAL aqui.
+  //
+  // Teste de módulo de API não monta componente nenhum e não precisa de
+  // janela. Exigir `window` fazia o dublê estourar com "window is not
+  // defined" — um erro sobre navegador no meio de um teste que só queria
+  // saber o que o servidor respondeu.
+  const navegador = (globalThis as { window?: { navigator: Navigator } }).window?.navigator;
+  const beaconOriginal = navegador?.sendBeacon;
 
   // `sendBeacon` é síncrono e devolve booleano: quem o chama não espera nada e
   // não trata erro. Aqui ele só REGISTRA — o corpo da rota é ignorado de
   // propósito, porque nenhum código do app poderia lê-lo.
-  Object.defineProperty(window.navigator, "sendBeacon", {
-    configurable: true,
-    writable: true,
-    value: (url: string) => {
-      chamadas.push({ url, metodo: "BEACON" });
-      return true;
-    },
-  });
+  if (navegador) {
+    Object.defineProperty(navegador, "sendBeacon", {
+      configurable: true,
+      writable: true,
+      value: (url: string) => {
+        chamadas.push({ url, metodo: "BEACON" });
+        return true;
+      },
+    });
+  }
 
   globalThis.fetch = (async (entrada: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof entrada === "string" ? entrada : String((entrada as URL).toString());
@@ -67,11 +77,13 @@ export function fingirRede(rota: Rota): Rede {
     chamadas,
     restaurar: () => {
       globalThis.fetch = original;
-      Object.defineProperty(window.navigator, "sendBeacon", {
-        configurable: true,
-        writable: true,
-        value: beaconOriginal,
-      });
+      if (navegador) {
+        Object.defineProperty(navegador, "sendBeacon", {
+          configurable: true,
+          writable: true,
+          value: beaconOriginal,
+        });
+      }
     },
   };
 }
