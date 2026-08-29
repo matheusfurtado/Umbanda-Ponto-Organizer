@@ -5,6 +5,7 @@ import { Capa } from "@/componentes/Capa";
 import { LinhaPonto } from "@/componentes/LinhaPonto";
 import { useAcoesDePonto } from "@/componentes/AcoesDePonto";
 import { useApp } from "@/context";
+import { useEntitlements } from "@/billing/EntitlementsContext";
 import type { Ponto } from "@/types";
 
 /**
@@ -19,9 +20,17 @@ import type { Ponto } from "@/types";
  * Agrupado por orixá e não numa lista corrida pela mesma razão de "Novos do
  * mês": ponto de Umbanda sem o orixá é meio ponto, e quem separa favoritos está
  * quase sempre montando uma gira — que se pensa por orixá.
+ *
+ * ## A conta só é prometida a quem a tem
+ *
+ * Favorito é estado do acervo, e o acervo sobe pelo `PUT /acervo`, que exige o
+ * direito `sync` — o plano grátis não o tem, e leva 402. Para essas pessoas o
+ * favorito vive SÓ neste aparelho, e a frase de rodapé dizia "e na sua conta"
+ * para todo mundo.
  */
 export function TelaFavoritos() {
   const { dados, estado } = useApp();
+  const { ent } = useEntitlements();
   const { adicionar, sugerir, modais } = useAcoesDePonto();
 
   const grupos = useMemo(() => {
@@ -55,7 +64,14 @@ export function TelaFavoritos() {
       <p className="mb-6 mt-1 text-sm text-muted-foreground">
         {total > 0
           ? `${total} ${total === 1 ? "ponto marcado" : "pontos marcados"} com a estrela.`
-          : "Ficam guardados neste aparelho e na sua conta."}
+          : ent.sync
+            ? "Ficam guardados neste aparelho e na sua conta."
+            : // Sem `sync` os favoritos NÃO vão para a conta: o `PUT /acervo`
+              // responde 402 sem esse direito. A frase única prometia conta a
+              // quem não a tem — e é uma promessa sobre não perder o que se
+              // marcou, dita justamente a quem ainda vai decidir se confia na
+              // estrela.
+              "Ficam guardados neste aparelho. Com o plano, vão também para a sua conta e voltam em qualquer aparelho."}
       </p>
 
       {/* "Você não tem favoritos" e "não consegui carregar o acervo" são coisas
