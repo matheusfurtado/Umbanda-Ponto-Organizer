@@ -33,6 +33,10 @@ export const CHAVES_PESSOAIS = [
   "pontos-umbanda-pendente",
   "pontos-umbanda-usuario",
   "pagamento-pendente",
+  // Qual plano a pessoa tem. Não é trava de segurança — o servidor confere em
+  // toda rota —, mas dizer a quem pegar o aparelho depois qual plano o
+  // anterior assinava é informação sobre ele.
+  "pontos-umbanda-plano",
   // Não guarda dado, mas guarda uma DECISÃO sobre dado que não existe mais:
   // ela marca "já ofereci migrar o acervo local". Deixando-a de pé, a próxima
   // pessoa que usar o aparelho sem conta, montar um acervo e se cadastrar

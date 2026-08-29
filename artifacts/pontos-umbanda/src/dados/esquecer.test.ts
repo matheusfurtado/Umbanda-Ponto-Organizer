@@ -83,17 +83,29 @@ test("toda chave de localStorage do app está decidida", () => {
       achadas.add(chave);
     }
     // As chaves costumam morar numa constante, e é por ela que o código chama.
-    for (const [, chave] of texto.matchAll(/^const CHAVE[A-Z_]* = "([^"]+)";/gm)) {
-      achadas.add(chave);
-    }
-    for (const [, chave] of texto.matchAll(/^const STORAGE_KEY = "([^"]+)";/gm)) {
+    //
+    // O `export ` opcional não é detalhe: sem ele esta varredura tinha um furo
+    // que eu mesmo achei por mutação. `billing/ultimoPlano.ts` declara
+    // `export const CHAVE_ULTIMO_PLANO = "pontos-umbanda-plano"`, e como o
+    // resto do arquivo chama `localStorage.setItem(CHAVE_ULTIMO_PLANO)` — pela
+    // constante, não por literal —, a chave era invisível para o teste.
+    //
+    // Tirar aquela chave de `CHAVES_PESSOAIS` deixava tudo verde. Uma cerca
+    // com furo é pior que nenhuma: ela dá a garantia sem cumprir.
+    for (const [, chave] of texto.matchAll(
+      /^(?:export )?const [A-Z_]*(?:CHAVE|STORAGE_KEY)[A-Z_]* = "([^"]+)";/gm,
+    )) {
       achadas.add(chave);
     }
   }
 
   // Guarda de COMPLETUDE, não de quantidade: se a varredura parar de achar as
   // duas chaves que sabidamente existem, ela virou decoração.
-  for (const obrigatoria of ["pontos-umbanda-data", "paleta"]) {
+  // Uma de cada FORMA de declarar, e não só duas chaves quaisquer: literal
+  // solto no `localStorage.getItem` (paleta), `const` de módulo
+  // (pontos-umbanda-data) e `export const` (pontos-umbanda-plano) — que foi
+  // justamente a forma que escapou.
+  for (const obrigatoria of ["pontos-umbanda-data", "paleta", "pontos-umbanda-plano"]) {
     assert.ok(
       achadas.has(obrigatoria),
       `a varredura não achou ${obrigatoria} — o formato mudou e este teste parou de ler`,
