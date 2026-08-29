@@ -20,7 +20,7 @@ import { useAuth } from "@/auth/AuthContext";
 import { apelido, inicial } from "@/auth/apelido";
 import { TrocarApelido } from "@/componentes/TrocarApelido";
 import { ApagarConta } from "@/componentes/ApagarConta";
-import { pedirVerificacao } from "@/api/conta";
+import { mudarConsentimentoDeComunicacao, pedirVerificacao } from "@/api/conta";
 import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { exportarConta, baixarDadosDaConta } from "@/lib/apiConta";
@@ -37,7 +37,7 @@ export function TelaConta() {
   useEffect(() => {
     minhaAssinatura().then(setAssinatura).catch(() => setAssinatura(null));
   }, []);
-  const { user, sair: encerrarSessao } = useAuth();
+  const { user, sair: encerrarSessao, recarregar } = useAuth();
   const { substituirDados } = useApp();
   const { ent, loading: entLoading } = useEntitlements();
   const [, navegar] = useLocation();
@@ -48,6 +48,33 @@ export function TelaConta() {
   const [confirmandoBaixar, setConfirmandoBaixar] = useState(false);
   const [baixandoConta, setBaixandoConta] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  // O consentimento opcional. Estado local para o clique responder na hora, e
+  // `recarregar()` depois para o que a tela mostra ser o que o servidor gravou.
+  const [aceitaComunicacao, setAceitaComunicacao] = useState(
+    user?.consentiu_comunicacao_em != null,
+  );
+  const [mudandoConsentimento, setMudandoConsentimento] = useState(false);
+
+  useEffect(() => {
+    setAceitaComunicacao(user?.consentiu_comunicacao_em != null);
+  }, [user?.consentiu_comunicacao_em]);
+
+  async function trocarComunicacao(quer: boolean) {
+    setMudandoConsentimento(true);
+    setAceitaComunicacao(quer);
+    setMsg(null);
+    try {
+      await mudarConsentimentoDeComunicacao(quer);
+      await recarregar();
+    } catch {
+      // Volta ao que era: deixar o checkbox marcado sem o servidor saber
+      // seria a tela mentindo sobre um consentimento, que é o oposto do ponto.
+      setAceitaComunicacao(!quer);
+      setMsg("Não consegui salvar agora. Tente de novo.");
+    } finally {
+      setMudandoConsentimento(false);
+    }
+  }
   const [verificacao, setVerificacao] = useState<"parado" | "enviando" | "enviado" | "erro">(
     "parado",
   );
@@ -330,6 +357,34 @@ export function TelaConta() {
           />
         </div>
         {msg && <p className="text-sm text-muted-foreground mt-3">{msg}</p>}
+
+        {/* Os dois consentimentos, e o que dá para fazer com cada um.
+            
+            O de comunicação é opcional e se desmarca aqui. O de dado religioso
+            não tem botão: sem ele não há base para a conta existir, então
+            revogá-lo É apagar a conta — e dizer isso é mais honesto que
+            oferecer um interruptor que não poderia funcionar. */}
+        <div className="mt-10 pt-6 border-t border-border">
+          <h2 className="text-sm font-medium text-foreground">Consentimentos</h2>
+          <label className="mt-3 flex min-h-11 items-start gap-3 text-sm">
+            <input
+              type="checkbox"
+              className="mt-1"
+              checked={aceitaComunicacao}
+              disabled={mudandoConsentimento}
+              onChange={(e) => void trocarComunicacao(e.target.checked)}
+            />
+            <span className="text-muted-foreground">
+              Aceito receber avisos sobre o app por e-mail. Você pode desmarcar
+              quando quiser, e nada deixa de funcionar.
+            </span>
+          </label>
+          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+            O consentimento para tratar o dado da sua prática religiosa é o que
+            permite a conta existir — ele não se desmarca sozinho. Retirá-lo é
+            apagar a conta, no link ali embaixo.
+          </p>
+        </div>
 
         <div className="mt-10 pt-6 border-t border-border">
           <Button variant="ghost" onClick={sair} className="gap-2 text-destructive hover:text-destructive">

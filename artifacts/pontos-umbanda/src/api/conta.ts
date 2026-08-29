@@ -157,6 +157,25 @@ export function redefinirSenha(token: string, senha: string): Promise<Usuario | 
   });
 }
 
+/**
+ * Liga e desliga o consentimento OPCIONAL, a qualquer hora.
+ *
+ * Ele era coletado no cadastro e não tinha volta — nem rota, nem tela. A LGPD
+ * (art. 8º, §5º) diz que consentimento se revoga a qualquer momento, por
+ * procedimento gratuito e facilitado; "opcional" que não se desmarca é um
+ * checkbox de fachada.
+ *
+ * O outro consentimento, o de dado religioso, **não tem função aqui** de
+ * propósito: sem ele não há base para a conta existir, então revogá-lo é
+ * apagar a conta. Ver `ApagarConta`.
+ */
+export function mudarConsentimentoDeComunicacao(consinto: boolean): Promise<Usuario | null> {
+  return chamar<Usuario>("/consentimento/comunicacao", {
+    method: "PATCH",
+    body: JSON.stringify({ consinto }),
+  });
+}
+
 export function pedirVerificacao(): Promise<null> {
   return chamar<null>("/verificar/enviar", { method: "POST" }) as Promise<null>;
 }
