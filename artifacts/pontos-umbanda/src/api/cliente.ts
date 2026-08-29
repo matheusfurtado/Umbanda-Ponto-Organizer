@@ -6,7 +6,7 @@
  * cookie httpOnly de sessão funcionar na fase 2 sem CORS nem `SameSite=None`.
  */
 
-import type { AppData, Orixa, Ponto, Subcategoria } from "../types";
+import type { AcessoDoAcervo, AppData, Orixa, Ponto, Subcategoria } from "../types";
 
 /** Erro de API com o status junto — quem chama precisa distinguir 422 de 503. */
 export class ErroApi extends Error {
@@ -89,8 +89,15 @@ async function requisitar<T>(caminho: string, init?: RequestInit): Promise<T> {
 }
 
 /** O acervo inteiro, do jeito que o app já usa. */
-export function baixarAcervo(): Promise<AppData> {
-  return requisitar<AppData>("/acervo");
+/**
+ * O acervo **e** o que o servidor diz sobre o acesso.
+ *
+ * O `acesso` já vinha no JSON e era descartado pelo tipo. Ele é o que
+ * distingue "este é o acervo dela" de "esta é a visão reduzida do portão" —
+ * sem ele, o cliente tratava as duas como a mesma coisa.
+ */
+export function baixarAcervo(): Promise<AppData & { acesso?: AcessoDoAcervo }> {
+  return requisitar<AppData & { acesso?: AcessoDoAcervo }>("/acervo");
 }
 
 /**

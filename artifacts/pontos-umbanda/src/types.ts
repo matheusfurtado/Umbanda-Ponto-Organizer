@@ -112,6 +112,32 @@ export interface AppData {
    * gravou, sem ninguém perceber.
    */
   versao?: string | null;
+  /**
+   * Esta cópia veio **reduzida pelo portão** (ADR 0002).
+   *
+   * O servidor não manda hierarquia para quem não paga: os pontos chegam com
+   * `subcategoriaId` vazio, `ordem` zero e a lista de subcategorias vazia.
+   * Medido numa conta que perdeu o plano: 520 pontos, 55 subcategorias viram
+   * 0, e toda `ordem` vira 0.
+   *
+   * Isso é a resposta CERTA do servidor — e é uma visão, não a verdade. Sem
+   * marcar a diferença, o cliente gravava a visão por cima do cache e depois a
+   * mandava de volta como se fosse edição da pessoa, apagando no servidor a
+   * organização que ela montou enquanto pagava.
+   *
+   * Quem lê esta marca: `persistir`, que não enfileira envio de cópia
+   * reduzida, e `carregar`, que descarta pendente marcado assim.
+   */
+  parcial?: boolean;
+}
+
+/** O que o servidor diz sobre o acesso desta pessoa, junto com o acervo. */
+export interface AcessoDoAcervo {
+  plano?: string;
+  acervoOrganizado?: boolean;
+  linksDeVideo?: boolean;
+  podeSincronizar?: boolean;
+  podeUsarOffline?: boolean;
 }
 
 /** Em que pé está a carga do acervo. Antes disto o app só tinha "pronto". */

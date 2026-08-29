@@ -59,7 +59,17 @@ export async function carregar(): Promise<ResultadoCarga> {
     // Devolver o pendente mantém a promessa da faixa de conflito ("nada foi
     // perdido") verdadeira no caminho mais comum do app: gira sem sinal.
     const pendente = pendenteGuardado();
-    if (pendente) {
+    if (pendente?.parcial) {
+      // Pendente que nasceu de uma cópia REDUZIDA não pode vencer o servidor.
+      //
+      // Era o caminho da perda: a pessoa deixa de pagar, o portão manda o
+      // acervo achatado, o cliente grava por cima do cache e — na primeira
+      // edição — enfileira aquilo como se fosse trabalho dela. Voltando a
+      // pagar, esse pendente ganhava do servidor e apagava a organização
+      // inteira. Hoje o `persistir` nem chega a enfileirar; isto aqui limpa o
+      // que ficou guardado antes desta correção.
+      descartarPendente();
+    } else if (pendente) {
       aguardando = pendente;
       anunciar({ pendente: true });
       agendar();
@@ -68,7 +78,13 @@ export async function carregar(): Promise<ResultadoCarga> {
       return { dados, fonte: "cache", motivo: "há mudanças suas ainda não enviadas" };
     }
 
-    const dados: AppData = { ...doServidor, ultimoOrixaId: local.ultimoOrixaId };
+    // `parcial` é a diferença entre "o acervo dela" e "a visão do portão".
+    // Guardar sem a marca é o que fazia a visão virar verdade no aparelho.
+    const dados: AppData = {
+      ...doServidor,
+      ultimoOrixaId: local.ultimoOrixaId,
+      parcial: doServidor.acesso?.acervoOrganizado === false,
+    };
     salvarDados(dados);
     return { dados, fonte: "servidor" };
   } catch (erro) {
@@ -354,6 +370,23 @@ export function descartarPendente(): void {
  */
 export function persistir(dados: AppData): void {
   salvarDados(dados);
+  if (dados.parcial) {
+    // Cópia reduzida pelo portão NÃO vira envio.
+    //
+    // Ela não é o acervo da pessoa: é a visão que o servidor manda para quem
+    // não paga, com a hierarquia zerada. Mandá-la de volta apagaria no
+    // servidor a organização que ela montou enquanto pagava — e o pior é que
+    // a conta dela continua com tudo lá, intacto, até o cliente sobrescrever.
+    //
+    // Quem não paga também não pode sincronizar (o `PUT` responde 402), então
+    // não se está tirando nada de ninguém: o que se evita é a fila guardar uma
+    // bomba para o dia em que a pessoa voltar a pagar.
+    //
+    // O cache é gravado assim mesmo — a tela precisa refletir o que ela
+    // acabou de fazer, e o aparelho é dela.
+    anunciar({ pendente: aguardando !== null });
+    return;
+  }
   aguardando = dados;
   // Persistido, e não só em memória: sem isto, recarregar ou o sistema matar o
   // PWA em segundo plano apagava o pendente, e o `carregar()` seguinte

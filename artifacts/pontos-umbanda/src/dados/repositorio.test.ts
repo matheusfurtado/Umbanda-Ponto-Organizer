@@ -72,6 +72,8 @@ interface Servidor {
   fora: boolean;
   /** Faz todo PUT ser recusado com este status. 402 = sem plano, 401 = sem sessão. */
   recusaPutCom: number | null;
+  /** Liga o portão do ADR 0002: o GET devolve o acervo achatado. */
+  portaoFechado: boolean;
 }
 
 /**
@@ -100,6 +102,7 @@ async function montar(cenario: string, inicial: {
     duranteOProximoPut: null,
     fora: false,
     recusaPutCom: null,
+    portaoFechado: false,
   };
 
   Object.assign(globalThis, {
@@ -123,7 +126,22 @@ async function montar(cenario: string, inicial: {
         headers: { "Content-Type": "application/json" },
       });
 
-    if (!init?.method || init.method === "GET") return resposta(200, servidor.acervo);
+    if (!init?.method || init.method === "GET") {
+      if (!servidor.portaoFechado) return resposta(200, servidor.acervo);
+      // O que o portão faz de verdade, medido numa conta que perdeu o plano:
+      // 520 pontos ficam, 55 subcategorias viram 0, toda `ordem` vira 0 e
+      // `subcategoriaId` vira "".
+      return resposta(200, {
+        ...servidor.acervo,
+        subcategorias: [],
+        pontos: servidor.acervo.pontos.map((p) => ({
+          ...p,
+          subcategoriaId: "",
+          ordem: 0,
+        })),
+        acesso: { plano: "gratis", acervoOrganizado: false, podeSincronizar: false },
+      });
+    }
 
     const corpo = JSON.parse(String(init.body));
     servidor.puts.push({ versao: corpo.versao, pontos: corpo.pontos });
@@ -608,6 +626,86 @@ test("a tela mostra o motivo do servidor, não o número do status", async () =>
 
     assert.match(visto, /plano pago/);
     assert.doesNotMatch(visto, /402/);
+  } finally {
+    c.encerrar();
+  }
+});
+
+
+const ORGANIZADO = [
+  { id: "p1", subcategoriaId: "s1", titulo: "Um", ordem: 0 },
+  { id: "p2", subcategoriaId: "s1", titulo: "Dois", ordem: 1 },
+];
+
+test("o acervo achatado do portão não vira envio", async () => {
+  // O caminho da perda, inteiro: a pessoa deixa de pagar, o portão manda o
+  // acervo sem hierarquia, o cliente grava por cima do cache e — na primeira
+  // edição — enfileira aquilo como se fosse trabalho dela. Voltando a pagar,
+  // esse pendente ganhava do servidor e apagava a organização que ela montou.
+  const c = await montar("portao-nao-envia", { servidor: acervo(ORGANIZADO) });
+  try {
+    c.mod.definirDono("u1");
+    c.servidor.portaoFechado = true;
+
+    const carga = await c.mod.carregar();
+    assert.equal(carga.dados.parcial, true, "a cópia reduzida não foi marcada");
+    assert.equal(carga.dados.subcategorias.length, 0);
+
+    // Ela mexe em algo — favoritar, por exemplo. Nada disso pode virar fila.
+    c.mod.persistir({ ...carga.dados, pontos: carga.dados.pontos.slice(0, 1) });
+    await esperar(1800);
+
+    assert.equal(c.servidor.puts.length, 0, "mandou a cópia reduzida para o servidor");
+    assert.equal(c.pendenteNoDisco(), null, "guardou a cópia reduzida como pendente");
+  } finally {
+    c.encerrar();
+  }
+});
+
+test("pendente reduzido guardado de antes é descartado, não enviado", async () => {
+  // Quem já tem no disco um pendente marcado — de uma versão anterior deste
+  // código, ou de uma sessão que ficou aberta — não pode vê-lo subir na
+  // primeira abertura depois de voltar a pagar.
+  const c = await montar("portao-pendente-velho", {
+    servidor: acervo(ORGANIZADO),
+    pendente: {
+      dono: "u1",
+      dados: { ...acervo([{ id: "p1", titulo: "Um" }]), subcategorias: [], parcial: true },
+    },
+  });
+  try {
+    c.mod.definirDono("u1");
+    const carga = await c.mod.carregar();
+
+    // Veio do servidor, com a hierarquia de volta — e não do pendente achatado.
+    assert.equal(carga.fonte, "servidor");
+    assert.equal(carga.dados.subcategorias.length, 1);
+    assert.equal(c.pendenteNoDisco(), null);
+
+    await esperar(1800);
+    assert.equal(c.servidor.puts.length, 0, "o pendente achatado subiu assim mesmo");
+  } finally {
+    c.encerrar();
+  }
+});
+
+test("acervo completo continua sendo enviado — o guarda não pode pegar quem paga", async () => {
+  // O contrapeso. Marcar demais quebraria o sync de quem paga, que é o
+  // produto inteiro.
+  const c = await montar("portao-quem-paga", { servidor: acervo(ORGANIZADO) });
+  try {
+    c.mod.definirDono("u1");
+    const carga = await c.mod.carregar();
+    assert.notEqual(carga.dados.parcial, true);
+
+    c.mod.persistir({
+      ...carga.dados,
+      pontos: [...ORGANIZADO, { id: "p3", subcategoriaId: "s1", titulo: "Três", ordem: 2 }],
+    });
+    await esperar(1800);
+
+    assert.equal(c.servidor.puts.length, 1);
+    assert.equal(c.noServidor(), "p1,p2,p3");
   } finally {
     c.encerrar();
   }
