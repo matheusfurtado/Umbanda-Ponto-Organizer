@@ -10,6 +10,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { definirDono } from "@/dados/repositorio";
 import { esquecerDoAparelho } from "@/dados/esquecer";
+import { sairDoAparelho } from "@/auth/sairDoAparelho";
 import {
   cadastrar as cadastrarNaApi,
   entrar as entrarNaApi,
@@ -127,16 +128,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return recado?.mensagem ?? "";
   }, []);
 
-  const sair = useCallback(async () => {
-    await sairDaApi();
-    setUser(null);
-    // Esquece na hora: sair tem que valer mesmo se a rede cair no meio.
-    lembrar(null);
-    // E o resto do aparelho junto — acervo, giras, fila. Sem isto o logout
-    // limpava só o cookie, e no tablet do terreiro a próxima pessoa abria o
-    // app vendo o acervo de quem saiu. Ver `dados/esquecer.ts`.
-    esquecerDoAparelho();
-  }, []);
+  // A garantia de que a limpeza local acontece mora em `sairDoAparelho`, com
+  // teste. Aqui era um `await sairDaApi()` fora do try: sem rede a função
+  // morria antes de apagar acervo, giras e fila, e no tablet do terreiro a
+  // próxima pessoa abria o app vendo o acervo de quem saiu.
+  const sair = useCallback(
+    () =>
+      sairDoAparelho(sairDaApi, () => {
+        setUser(null);
+        lembrar(null);
+        // O resto do aparelho junto — acervo, giras, fila. Ver `dados/esquecer.ts`.
+        esquecerDoAparelho();
+      }),
+    [],
+  )
 
   return (
     <AuthContext.Provider
