@@ -4,6 +4,7 @@ import path from "path";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { tagsComEndereco } from "./scripts/opengraph";
+import { relacionados } from "./scripts/lojaAndroid";
 
 const port = Number(process.env.PORT) || 3000;
 const basePath = process.env.BASE_PATH || "/";
@@ -68,6 +69,14 @@ export default defineConfig({
           { name: "Meus favoritos", short_name: "Favoritos", url: "/favoritos" },
           { name: "Repertórios", short_name: "Repertórios", url: "/repertorios" },
         ],
+        // O app da Play, QUANDO existir — ver `scripts/lojaAndroid.ts`.
+        //
+        // Sem isto, publicado o TWA o Chrome continua oferecendo instalar o
+        // PWA e a pessoa fica com dois ícones da mesma coisa. Com isto antes
+        // da hora, `prefer_related_applications` cala o convite de instalar e
+        // não oferece nada no lugar — por isso os campos só nascem quando os
+        // dois fatos da Play existem.
+        ...relacionados(),
         // `screenshots` fica de FORA de propósito, e é a única coisa que falta
         // para o diálogo de instalação rico do Chrome. Declarar caminho para
         // arquivo que não existe é pior que não declarar: o Chrome descarta o
