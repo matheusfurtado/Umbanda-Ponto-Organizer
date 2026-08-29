@@ -155,6 +155,12 @@ test("a tela NÃO reordena o que o servidor mandou", async () => {
   // A ordem da gira é do servidor — é ela o produto pago, e é conteúdo
   // litúrgico. Uma ordenação de conveniência no cliente a desfaria em
   // silêncio, e ninguém notaria olhando esta tela isolada.
+  //
+  // Isto continua valendo depois de a tela passar a ordenar por `ordem`, e
+  // não é contradição: a chave é a MESMA que o servidor usou, e o `sort` do
+  // JS é estável — com `ordem` empatada, como aqui, o que fica é a ordem que
+  // ele mandou. É assim que o plano grátis, onde o servidor zera todo `ordem`
+  // e manda em ordem alfabética, continua alfabético.
   const foraDeAlfabetica: AppData = {
     ...PAGO,
     pontos: [
@@ -247,6 +253,70 @@ test("a lista vazia SEM busca não é dita como resultado de busca", async () =>
     ok(
       !tela.texto().includes("esse trecho"),
       "culpou a busca por uma lista vazia que a pessoa não buscou",
+    );
+  } finally {
+    await limpar();
+  }
+});
+
+
+test("arrastar aparece AQUI, que é onde se canta", async () => {
+  // O defeito. `context.reordenarPontos` grava `ordem` e NÃO mexe no vetor; a
+  // tela de organizar já ordenava por `ordem`, esta não. A pessoa reorganizava
+  // a gira, vinha cantar, e encontrava a ordem antiga — o novo só aparecia
+  // depois de fechar e reabrir o app, quando o servidor devolve o acervo já
+  // ordenado.
+  //
+  // Num app cujo produto pago É a ordem da gira, isso é o produto não
+  // acontecendo, e no pior momento.
+  const depoisDeArrastar: AppData = {
+    ...PAGO,
+    // O VETOR numa ordem, o campo `ordem` em outra: é exatamente o que sobra
+    // depois de um arraste, antes de qualquer ida ao servidor.
+    pontos: [
+      { ...ponto("p1", "Era o primeiro", "ogum-0"), ordem: 2 },
+      { ...ponto("p2", "Era o segundo", "ogum-0"), ordem: 0 },
+      { ...ponto("p3", "Era o terceiro", "ogum-0"), ordem: 1 },
+    ],
+  };
+  const { tela, limpar } = await abrir(depoisDeArrastar, {
+    plano: "mensal", acervoOrganizado: true,
+  });
+  try {
+    const titulos = tela
+      .todos("button[aria-expanded]")
+      .map((b) => b.textContent?.trim() ?? "")
+      .filter(Boolean)
+      .map((s) => s.replace(/^\d+/, ""));
+    deepEqual(
+      titulos,
+      ["Era o segundo", "Era o terceiro", "Era o primeiro"],
+      "a tela de cantar ignorou a ordem que a pessoa acabou de arrastar",
+    );
+  } finally {
+    await limpar();
+  }
+});
+
+test("as seções da gira também seguem a ordem arrastada", async () => {
+  // `reordenarSubcategorias` tem o mesmo desenho: grava `ordem`, não mexe no
+  // vetor. Sem ordenar, arrastar "Louvação" para antes de "Chegada" não
+  // aparecia aqui.
+  const seccoesTrocadas: AppData = {
+    ...PAGO,
+    subcategorias: [
+      { id: "ogum-0", orixaId: "ogum", nome: "Chegada", ordem: 1, criadoEm: 0 },
+      { id: "ogum-1", orixaId: "ogum", nome: "Louvação", ordem: 0, criadoEm: 0 },
+    ],
+  };
+  const { tela, limpar } = await abrir(seccoesTrocadas, {
+    plano: "mensal", acervoOrganizado: true,
+  });
+  try {
+    deepEqual(
+      tela.todos("h2").map((h) => h.textContent?.trim()),
+      ["Louvação", "Chegada"],
+      "a seção arrastada não mudou de lugar na tela de cantar",
     );
   } finally {
     await limpar();

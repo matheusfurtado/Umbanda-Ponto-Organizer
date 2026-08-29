@@ -37,14 +37,34 @@ export function TelaOrixa({
   const { ent } = useEntitlements();
   const [busca, setBusca] = useState("");
 
+  // ORDENADO por `ordem`, e não pela ordem do vetor.
+  //
+  // Arrastar grava `ordem` e NÃO mexe no vetor (`context.reordenarPontos` e
+  // `reordenarSubcategorias`). A tela de organizar já ordenava; esta não — e
+  // esta é a tela onde se canta. A pessoa reorganizava a gira, vinha cantar, e
+  // encontrava a ordem antiga; o novo só aparecia depois de o app fechar e
+  // reabrir, quando o servidor devolve o acervo já ordenado.
+  //
+  // Num app cujo produto pago É a ordem da gira, isso é o produto não
+  // acontecendo — no pior momento, que é com o terreiro esperando.
+  //
+  // `sort` do JS é ESTÁVEL, e isso é o que preserva o plano grátis: lá o
+  // servidor zera todo `ordem` e manda em ordem alfabética, então empate
+  // mantém o que ele mandou. Ordenar aqui não desfaz a ordem do servidor —
+  // aplica a mesma chave que ele usou.
   const subs = useMemo(
-    () => dados.subcategorias.filter((s) => s.orixaId === orixa.id),
+    () =>
+      dados.subcategorias
+        .filter((s) => s.orixaId === orixa.id)
+        .sort((a, b) => a.ordem - b.ordem),
     [dados.subcategorias, orixa.id],
   );
 
   const meus = useMemo(() => {
     const ids = new Set(subs.map((s) => s.id));
-    return dados.pontos.filter((p) => p.orixaId === orixa.id || ids.has(p.subcategoriaId));
+    return dados.pontos
+      .filter((p) => p.orixaId === orixa.id || ids.has(p.subcategoriaId))
+      .sort((a, b) => a.ordem - b.ordem);
   }, [dados.pontos, subs, orixa.id]);
 
   // Os que a comunidade acrescentou há pouco.
