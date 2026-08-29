@@ -49,6 +49,14 @@ export function fingirRede(rota: Rota): Rede {
     const url = typeof entrada === "string" ? entrada : String((entrada as URL).toString());
     chamadas.push({ url, metodo: init?.method ?? "GET" });
     const { status = 200, corpo = {} } = await rota(url, init);
+    // 204/205/304 NÃO podem ter corpo: o `Response` estoura com
+    // "Response with null body status cannot have body", e o `catch` de quem
+    // chamou lê isso como falha de REDE. Um `DELETE` que respondia 204 chegava
+    // à tela como "sem conexão" — o dublê inventando um erro que o servidor
+    // nunca mandaria, e o teste medindo a mentira.
+    if (status === 204 || status === 205 || status === 304) {
+      return new Response(null, { status });
+    }
     return new Response(JSON.stringify(corpo), {
       status,
       headers: { "content-type": "application/json" },

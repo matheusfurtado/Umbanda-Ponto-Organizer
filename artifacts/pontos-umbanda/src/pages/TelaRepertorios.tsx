@@ -41,6 +41,7 @@ import {
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
+import { ModalConfirmar } from "@/components/ModalConfirmar";
 import { useApp } from "@/context";
 import { ehErroDeRede } from "@/api/cliente";
 import { destacar, semAcento } from "@/lib/destacar";
@@ -378,6 +379,21 @@ export function TelaRepertorios() {
   const [sincronia, setSincronia] = useState<EstadoSincronia>({ enviando: false, pendentes: 0, conflitos: [] });
   const [editandoSecao, setEditandoSecao] = useState<number | null>(null);
   const [publicando, setPublicando] = useState<Repertorio | null>(null);
+  /**
+   * A gira que a pessoa mandou apagar, esperando confirmação.
+   *
+   * Apagar era DIRETO: um toque na lixeira e o `DELETE` saía, sem pergunta e
+   * sem volta — o servidor apaga a linha de verdade, não marca. E a lixeira
+   * fica a 16px do canto do cartão, colada no alvo principal, VISÍVEL no
+   * toque (`[@media(hover:hover)]:opacity-0` só a esconde onde há mouse).
+   *
+   * O uso real desta tela, segundo o docstring dela mesma, é "celular na mão,
+   * luz baixa, gente esperando". Era a única exclusão do app sem confirmação:
+   * apagar um PONTO pergunta, apagar uma subcategoria pergunta, apagar um
+   * orixá pergunta. A gira inteira — que é a funcionalidade paga, e que a
+   * pessoa monta ao longo de semanas — não perguntava nada.
+   */
+  const [paraApagar, setParaApagar] = useState<Repertorio | null>(null);
   const [textoSecao, setTextoSecao] = useState("");
 
   const carregar = useCallback(async () => {
@@ -722,23 +738,8 @@ export function TelaRepertorios() {
                   </span>
                 </button>
                 <button
-                  onClick={async () => {
-                    try {
-                      await apagar(r.id);
-                      const restantes = (lista ?? []).filter((x) => x.id !== r.id);
-                      setLista(restantes);
-                      guardar(restantes);
-                      setErro(null);
-                    } catch (problema) {
-                      setErro(
-                        ehErroDeRede(problema)
-                          ? "Sem conexão. Apagar um repertório precisa de internet."
-                          : problema instanceof Error
-                            ? problema.message
-                            : "Falha ao apagar.",
-                      );
-                    }
-                  }}
+                  type="button"
+                  onClick={() => setParaApagar(r)}
                   aria-label={`Apagar ${r.nome}`}
                   className="absolute right-4 top-4 rounded-md bg-background/80 p-2 text-muted-foreground [@media(hover:hover)]:opacity-0 transition hover:text-destructive focus:opacity-100 group-hover:opacity-100"
                 >
@@ -749,6 +750,41 @@ export function TelaRepertorios() {
           </div>
         )}
       </div>
+
+      <ModalConfirmar
+        aberto={paraApagar !== null}
+        titulo={paraApagar ? `Apagar “${paraApagar.nome}”?` : ""}
+        descricao={
+          paraApagar
+            ? `A gira tem ${paraApagar.itens.length} ponto${
+                paraApagar.itens.length === 1 ? "" : "s"
+              }. Isto não pode ser desfeito — os pontos continuam no acervo, a sequência é que se perde.`
+            : ""
+        }
+        onConfirmar={() => {
+          const alvo = paraApagar;
+          setParaApagar(null);
+          if (!alvo) return;
+          void (async () => {
+            try {
+              await apagar(alvo.id);
+              const restantes = (lista ?? []).filter((x) => x.id !== alvo.id);
+              setLista(restantes);
+              guardar(restantes);
+              setErro(null);
+            } catch (problema) {
+              setErro(
+                ehErroDeRede(problema)
+                  ? "Sem conexão. Apagar um repertório precisa de internet."
+                  : problema instanceof Error
+                    ? problema.message
+                    : "Falha ao apagar.",
+              );
+            }
+          })();
+        }}
+        onCancelar={() => setParaApagar(null)}
+      />
     </div>
   );
 }
