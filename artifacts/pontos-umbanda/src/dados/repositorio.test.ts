@@ -710,3 +710,56 @@ test("acervo completo continua sendo enviado — o guarda não pode pegar quem p
     c.encerrar();
   }
 });
+
+
+test("dois salvamentos a partir do MESMO objeto da tela não inventam conflito", async () => {
+  // O laço real do `AppProvider`, que os outros testes deste arquivo não
+  // imitam: a tela guarda `dados` num `useState`, monta o próximo payload com
+  // `{...dados, pontos}` e **nunca relê o cache**. A versão nova que o envio
+  // devolve volta para o localStorage e para `aguardando` — e não para o React.
+  //
+  // Resultado: o segundo salvamento manda a versão que o primeiro já
+  // invalidou, leva 409, e o app diz "seus pontos mudaram em outro aparelho".
+  // Nada mudou em lugar nenhum: o aparelho conflitou consigo mesmo. E a saída
+  // oferecida na faixa ("ficar com o do outro") descarta a segunda edição.
+  //
+  // O teste vizinho `dois salvamentos seguidos não inventam conflito` passa
+  // porque ele relê `c.cache().versao` entre um e outro — coisa que a tela não
+  // faz. Era essa releitura que escondia o defeito.
+  const c = await montar("tela-reusa-o-mesmo-objeto", {
+    cache: acervo([{ id: "p1", titulo: "Um" }], "vp1"),
+    servidor: acervo([{ id: "p1", titulo: "Um" }], "vp1"),
+  });
+  try {
+    c.mod.definirDono("u1");
+    const carga = await c.mod.carregar();
+
+    // A tela guarda ISTO e vai derivar tudo daqui, sem reler.
+    let daTela = carga.dados;
+
+    daTela = { ...daTela, pontos: [...daTela.pontos, { id: "p2", titulo: "Dois" }] };
+    c.mod.persistir(daTela);
+    await esperar(1800);
+
+    daTela = { ...daTela, pontos: [...daTela.pontos, { id: "p3", titulo: "Três" }] };
+    c.mod.persistir(daTela);
+    await esperar(1800);
+
+    assert.equal(
+      c.noServidor(),
+      "p1,p2,p3",
+      "a segunda edição não chegou ao servidor",
+    );
+    // `observarEnvio` chama o ouvinte na hora da inscrição, então o estado
+    // chega antes de a inscrição retornar — daí a variável, e não uma Promise.
+    let visto: { conflito: boolean; pendente: boolean } | null = null;
+    const parar = c.mod.observarEnvio((e: { conflito: boolean; pendente: boolean }) => {
+      visto = e;
+    });
+    parar();
+    assert.equal(visto!.conflito, false, "conflito falso contra o próprio aparelho");
+    assert.equal(visto!.pendente, false, "ficou pendente sem ter o que enviar");
+  } finally {
+    c.encerrar();
+  }
+});

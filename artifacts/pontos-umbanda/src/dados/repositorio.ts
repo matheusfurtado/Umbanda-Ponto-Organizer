@@ -369,7 +369,27 @@ export function descartarPendente(): void {
  * a UI instantânea e o app utilizável sem rede. O servidor recebe depois.
  */
 export function persistir(dados: AppData): void {
-  salvarDados(dados);
+  // A VERSÃO NÃO VEM DE QUEM CHAMA. Vem do cache, sempre.
+  //
+  // Ela é estado do TRANSPORTE — a marca de "até onde este aparelho viu o
+  // servidor" — e estava viajando dentro do `AppData` que a tela monta,
+  // guarda num `useState` e reusa. A tela nunca relê, então o segundo
+  // salvamento mandava a versão que o primeiro já tinha invalidado: 409, o
+  // app parava de sincronizar, e a faixa dizia "seus pontos mudaram em outro
+  // aparelho". Nada tinha mudado — o aparelho conflitava consigo mesmo, e a
+  // saída oferecida ("ficar com o do outro") jogava fora a segunda edição.
+  //
+  // Acontecia a cada dois salvamentos separados por mais de 1,5 s, ou seja,
+  // em uso normal, e todo assinante caía nisso no primeiro minuto.
+  //
+  // Consertar só o `empurrar` (fazer a versão nova voltar para o React) não
+  // bastaria: este `salvarDados` grava o objeto da tela por cima do cache e
+  // REGRIDE a versão que o `empurrar` acabou de gravar. Ignorar o que veio de
+  // fora resolve os dois lados de uma vez, e tira da UI uma responsabilidade
+  // que nunca foi dela.
+  const daTela = { ...dados, versao: carregarDados().versao };
+  salvarDados(daTela);
+  dados = daTela;
   if (dados.parcial) {
     // Cópia reduzida pelo portão NÃO vira envio.
     //
