@@ -34,7 +34,22 @@ test("nenhum `opacity-0` fica escondido atrás de hover no celular", () => {
   const culpados: string[] = [];
   for (const caminho of fontes) {
     const texto = readFileSync(caminho, "utf8");
-    for (const [, classes] of texto.matchAll(/className=[{"`]([^"`]*)["`]/g)) {
+    // O regex antigo era `/className=[{"`]([^"`]*)["`]/g`, e ele era CEGO à
+    // forma que mais importa. Com `className={`…`}`, o `[{"`]` casa a chave,
+    // o próximo caractere é a crase, `[^"`]*` casa VAZIO e o `["`]` fecha nela
+    // mesma: captura string vazia.
+    //
+    // Medido em `LinhaPonto.tsx`: 31 capturas e só duas continham o conserto —
+    // as dos botões escritos com aspas. A do FAVORITAR, que é template literal
+    // porque alterna cor por estado, nunca era lida. Desfazer o conserto só
+    // nela deixava a suíte inteira verde e o botão sumia no celular de novo.
+    //
+    // Agora a crase é um delimitador de primeira classe, e o conteúdo pode
+    // conter aspas (que aparecem dentro de `${cond ? "a" : "b"}`).
+    for (const [, comCrase, comAspas] of texto.matchAll(
+      /className=\{`([^`]*)`\}|className="([^"]*)"/g,
+    )) {
+      const classes = comCrase ?? comAspas ?? "";
       const revelaNoHover = /group-hover:opacity-100|hover:opacity-100/.test(classes);
       // `opacity-0` cru, sem o `[@media(hover:hover)]:` na frente.
       const escondeSempre = /(?<![\w:\]])opacity-0(?![\w-])/.test(classes);
@@ -62,6 +77,18 @@ test("a varredura enxerga o padrão que ela cobra", () => {
     /\[@media\(hover:hover\)\]:opacity-0/,
     "LinhaPonto não tem mais o padrão consertado — ou mudou de forma, e este teste ficou cego",
   );
-  const achados = [...linha.matchAll(/className=[{"`]([^"`]*)["`]/g)];
-  assert.ok(achados.length > 5, `o regex de className achou só ${achados.length} em LinhaPonto`);
+  // A guarda de completude que faltava: não basta achar `className`, é preciso
+  // achar o TEMPLATE LITERAL. Era exatamente essa forma que escapava, e uma
+  // guarda que só conta capturas aprovava o regex cego (ele achava 31).
+  const comCrase = [...linha.matchAll(/className=\{`([^`]*)`\}/g)];
+  assert.ok(
+    comCrase.length > 0,
+    "a varredura não achou nenhum `className={`…`}` em LinhaPonto — era essa " +
+      "forma que ela era cega, e sem ela a cerca volta a aprovar o defeito",
+  );
+  assert.ok(
+    comCrase.some((m) => m[1].includes("opacity-0")),
+    "nenhum template literal de LinhaPonto tem `opacity-0` — o botão de " +
+      "favoritar mudou de forma e esta cerca ficou sem alvo",
+  );
 });

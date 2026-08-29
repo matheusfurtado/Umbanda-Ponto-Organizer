@@ -74,6 +74,10 @@ test("toda chave de localStorage do app está decidida", () => {
   const fontes = arquivos(RAIZ);
   assert.ok(fontes.length > 30, `só ${fontes.length} arquivos varridos — o caminho mudou`);
 
+  const decididasBrutas = new Set<string>([
+    ...CHAVES_PESSOAIS,
+    ...Object.keys(CHAVES_QUE_FICAM),
+  ]);
   const achadas = new Set<string>();
   for (const caminho of fontes) {
     const texto = readFileSync(caminho, "utf8");
@@ -92,10 +96,26 @@ test("toda chave de localStorage do app está decidida", () => {
     //
     // Tirar aquela chave de `CHAVES_PESSOAIS` deixava tudo verde. Uma cerca
     // com furo é pior que nenhuma: ela dá a garantia sem cumprir.
-    for (const [, chave] of texto.matchAll(
-      /^(?:export )?const [A-Z_]*(?:CHAVE|STORAGE_KEY)[A-Z_]* = "([^"]+)";/gm,
+    // QUALQUER constante de módulo com string, e não só as que se chamam
+    // CHAVE/STORAGE_KEY.
+    //
+    // O regex antigo exigia o nome no padrão, e `const FLAG_MIGRACAO =
+    // "migracao-oferecida"` (App.tsx) não casava — o uso é pela constante,
+    // então o scan literal também não a via. A chave era invisível: tirá-la de
+    // `CHAVES_PESSOAIS` deixava a suíte verde e o logout parava de apagá-la.
+    //
+    // Cobrar o NOME é cobrar convenção; o que interessa é o VALOR. Casar toda
+    // constante de string traz ruído (rota, rótulo), e é por isso que o filtro
+    // logo abaixo é pelo formato da chave, não pelo nome da constante.
+    for (const [, valor] of texto.matchAll(
+      /^(?:export )?const [A-Z_][A-Z0-9_]* = "([^"]+)";/gm,
     )) {
-      achadas.add(chave);
+      // Só o que PARECE chave de armazenamento: ou o prefixo do app, ou um
+      // nome sem barra nem espaço que já esteja declarado. Sem isto, toda
+      // constante de texto do app entraria na conta.
+      if (valor.startsWith("pontos-umbanda") || decididasBrutas.has(valor)) {
+        achadas.add(valor);
+      }
     }
   }
 
@@ -105,14 +125,23 @@ test("toda chave de localStorage do app está decidida", () => {
   // solto no `localStorage.getItem` (paleta), `const` de módulo
   // (pontos-umbanda-data) e `export const` (pontos-umbanda-plano) — que foi
   // justamente a forma que escapou.
-  for (const obrigatoria of ["pontos-umbanda-data", "paleta", "pontos-umbanda-plano"]) {
+  // Uma de cada FORMA de declarar: literal solto (`paleta`), `const` de módulo
+  // (`pontos-umbanda-data`), `export const` (`pontos-umbanda-plano`) e
+  // constante com nome FORA da convenção CHAVE/STORAGE_KEY
+  // (`migracao-oferecida`, em `FLAG_MIGRACAO`) — que foi a que escapou.
+  for (const obrigatoria of [
+    "pontos-umbanda-data",
+    "paleta",
+    "pontos-umbanda-plano",
+    "migracao-oferecida",
+  ]) {
     assert.ok(
       achadas.has(obrigatoria),
       `a varredura não achou ${obrigatoria} — o formato mudou e este teste parou de ler`,
     );
   }
 
-  const decididas = new Set<string>([...CHAVES_PESSOAIS, ...Object.keys(CHAVES_QUE_FICAM)]);
+  const decididas = decididasBrutas;
   const orfas = [...achadas].filter((c) => !decididas.has(c));
   assert.deepEqual(
     orfas,
