@@ -203,10 +203,26 @@ export function TelaLogin() {
                     onChange={(e) => setConsentiu(e.target.checked)}
                     className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
                   />
+                  {/* O TEXTO NOMEIA AS DUAS FINALIDADES, e antes nomeava uma.
+                      
+                      Ele dizia só "autorizo guardar isso para sincronizar meus
+                      pontos" — e o app faz mais que sincronizar: quando a
+                      pessoa manda um ponto, publica uma gira ou abre o perfil,
+                      o apelido dela aparece para qualquer um, ligado a
+                      conteúdo de Umbanda. Publicar é sempre escolha dela, mas
+                      a autorização precisa dizer que existe essa
+                      possibilidade; a LGPD (art. 9º) pede finalidade
+                      específica, e "sincronizar" não cobre "publicar".
+                      
+                      O que não cabe aqui está na Política, cujo link fica logo
+                      abaixo — no lugar onde a decisão é tomada. */}
                   <span className="text-foreground">
                     Entendo que ter uma conta aqui registra que eu uso um app de Umbanda, e
                     que isso é um dado sensível sobre minha religião. Autorizo guardar isso
-                    para sincronizar meus pontos.{" "}
+                    para <strong className="font-medium">sincronizar meus pontos</strong> e,
+                    quando eu escolher publicar alguma coisa — mandar um ponto, publicar
+                    uma gira, abrir meu perfil —, para{" "}
+                    <strong className="font-medium">mostrar meu apelido junto</strong>.{" "}
                     <strong className="font-medium">Obrigatório para criar conta.</strong>
                   </span>
                 </label>
