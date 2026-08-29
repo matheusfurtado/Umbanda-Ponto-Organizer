@@ -31,9 +31,13 @@ export function TelaEnviarPonto() {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [pronto, setPronto] = useState(false);
+  // A declaração de direito. Começa desmarcada de propósito: consentimento
+  // pré-marcado não é consentimento, é um obstáculo que a pessoa atravessa
+  // sem ler.
+  const [declaro, setDeclaro] = useState(false);
 
   const enviar = async () => {
-    if (!titulo.trim() || !orixaId) return;
+    if (!titulo.trim() || !orixaId || !declaro) return;
     setEnviando(true);
     setErro(null);
     try {
@@ -43,6 +47,7 @@ export function TelaEnviarPonto() {
         orixaId,
         autor: autor.trim() || null,
         videoUrl: videoUrl.trim() || null,
+        declaroDireito: declaro,
       });
       setPronto(true);
     } catch (problema) {
@@ -162,10 +167,39 @@ export function TelaEnviarPonto() {
           </p>
         </div>
 
+        {/* A declaração de direito, logo antes do botão.
+            
+            Não se coletava licença nenhuma: qualquer pessoa com conta mandava
+            uma letra e, aprovada, ela entrava no acervo de todo mundo. Isto
+            não torna a letra livre — registra quem afirmou o quê, que é o que
+            falta no dia em que alguém reclama.
+            
+            Desmarcada por padrão: consentimento pré-marcado não é
+            consentimento, é um obstáculo que a pessoa atravessa sem ler. */}
+        <label className="flex items-start gap-3 rounded-lg border bg-card/40 p-3 text-sm">
+          <input
+            type="checkbox"
+            className="mt-1"
+            checked={declaro}
+            onChange={(e) => setDeclaro(e.target.checked)}
+          />
+          <span className="text-muted-foreground">
+            Declaro que este ponto é de tradição oral ou domínio público, ou que
+            tenho direito de compartilhá-lo.{" "}
+            <span className="text-foreground">
+              A maioria dos pontos é de domínio público — na dúvida, escreva no
+              campo do autor quem você sabe que compôs.
+            </span>
+          </span>
+        </label>
+
         {erro && <p role="alert" className="text-sm text-destructive">{erro}</p>}
 
         <div className="flex gap-2">
-          <Button onClick={enviar} disabled={enviando || !titulo.trim() || !orixaId}>
+          <Button
+            onClick={enviar}
+            disabled={enviando || !titulo.trim() || !orixaId || !declaro}
+          >
             {enviando ? (
               <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...</>
             ) : (

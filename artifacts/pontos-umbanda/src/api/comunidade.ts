@@ -58,6 +58,14 @@ export function enviarPonto(dados: {
   autor?: string | null;
   /** Link do YouTube, se quem manda souber qual é a gravação. */
   videoUrl?: string | null;
+  /**
+   * "Posso mandar esta letra." Obrigatório no servidor.
+   *
+   * Não é promessa de que a letra é livre — é o registro de quem afirmou o
+   * quê, que é o que falta no dia em que alguém reclama. Vai sem default de
+   * propósito: um `false` implícito aqui deixaria a tela mandar sem declarar.
+   */
+  declaroDireito: boolean;
 }): Promise<Submissao> {
   return chamar<Submissao>("/submissoes/ponto", {
     method: "POST",
