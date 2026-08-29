@@ -23,6 +23,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { Link, useRoute } from "wouter";
 import { AlertTriangle, ExternalLink, Music2, Users } from "lucide-react";
 import {
@@ -71,7 +72,7 @@ export function TelaArtista() {
         if (atual) setArtista(a);
       })
       .catch((e) => {
-        if (atual) setErro(e instanceof Error ? e.message : "Falha ao carregar.");
+        if (atual) setErro(mensagemDeErro(e, "Falha ao carregar."));
       });
     return () => {
       atual = false;

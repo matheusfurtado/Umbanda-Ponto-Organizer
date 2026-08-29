@@ -21,6 +21,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { EyeOff, Loader2, RotateCcw, ShieldCheck } from "lucide-react";
 import {
   filaDeRemocoes,
@@ -37,7 +38,7 @@ export function TelaRemocoesDeArtista() {
   function carregar() {
     filaDeRemocoes()
       .then((f) => setFila(f ?? []))
-      .catch((e) => setErro(e instanceof Error ? e.message : "Falha ao carregar."));
+      .catch((e) => setErro(mensagemDeErro(e, "Falha ao carregar.")));
   }
 
   useEffect(carregar, []);
@@ -53,7 +54,7 @@ export function TelaRemocoesDeArtista() {
       }
       carregar();
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Não consegui agora.");
+      setErro(mensagemDeErro(problema, "Não consegui agora."));
     } finally {
       setOcupado(null);
     }

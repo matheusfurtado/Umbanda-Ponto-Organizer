@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { CloudUpload, Check } from "lucide-react";
 import { carregarDados } from "@/storage";
 import { importarLocalDataNaConta, type ResumoImport } from "@/lib/apiConta";
+import { mensagemDeErro } from "@/api/cliente";
 
 interface Props {
   aberto: boolean;
@@ -34,7 +35,7 @@ export function ModalMigracao({ aberto, onFechar }: Props) {
       setResumo(r);
       setEstado("ok");
     } catch (e) {
-      setErro(e instanceof Error ? e.message : "Erro desconhecido.");
+      setErro(mensagemDeErro(e, "Não consegui migrar agora."));
       setEstado("erro");
     }
   };

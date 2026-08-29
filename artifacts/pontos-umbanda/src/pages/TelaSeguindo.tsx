@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { Link } from "wouter";
 import { Library, Mic2, Music2, Users } from "lucide-react";
 import { Avatar } from "@/componentes/Avatar";
@@ -25,10 +26,10 @@ export function TelaSeguindo() {
   useEffect(() => {
     quemEuSigo()
       .then(setGente)
-      .catch((e) => setErro(e instanceof Error ? e.message : "Falha ao carregar."));
+      .catch((e) => setErro(mensagemDeErro(e, "Falha ao carregar.")));
     minhaBiblioteca()
       .then(setArtistas)
-      .catch((e) => setErro(e instanceof Error ? e.message : "Falha ao carregar."));
+      .catch((e) => setErro(mensagemDeErro(e, "Falha ao carregar.")));
   }, []);
 
   return (

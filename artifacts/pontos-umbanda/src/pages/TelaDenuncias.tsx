@@ -19,6 +19,7 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { AlertCircle, Flag, Loader2, RefreshCw, ShieldCheck, Undo2 } from "lucide-react";
 import {
   acolher,
@@ -52,7 +53,7 @@ export function TelaDenuncias() {
   const carregar = useCallback(() => {
     filaDeDenuncias()
       .then(setFila)
-      .catch((p) => setErro(p instanceof Error ? p.message : "Não consegui carregar."));
+      .catch((p) => setErro(mensagemDeErro(p, "Não consegui carregar.")));
   }, []);
 
   useEffect(carregar, [carregar]);
@@ -65,7 +66,7 @@ export function TelaDenuncias() {
       setDecidindo(null);
       carregar();
     } catch (p) {
-      setErro(p instanceof Error ? p.message : "Não consegui.");
+      setErro(mensagemDeErro(p, "Não consegui."));
     } finally {
       setOcupado(null);
     }

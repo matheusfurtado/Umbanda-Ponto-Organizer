@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { BadgeCheck, Clock, Copy, Mic2, XCircle } from "lucide-react";
 import { listarArtistas, type ArtistaResumo } from "@/api/artista";
+import { mensagemDeErro } from "@/api/cliente";
 import {
   meusPedidosDeArtista,
   pedirPerfilDeArtista,
@@ -47,7 +48,7 @@ export function TelaPedirArtista() {
   function recarregar() {
     meusPedidosDeArtista()
       .then(setMeus)
-      .catch((e) => setErro(e instanceof Error ? e.message : "Falha ao carregar."));
+      .catch((e) => setErro(mensagemDeErro(e, "Falha ao carregar.")));
   }
 
   useEffect(() => {
@@ -76,7 +77,7 @@ export function TelaPedirArtista() {
       recarregar();
     } catch (problema) {
       setErro(
-        problema instanceof Error ? problema.message : "Não consegui enviar agora.",
+        mensagemDeErro(problema, "Não consegui enviar agora."),
       );
     } finally {
       setEnviando(false);

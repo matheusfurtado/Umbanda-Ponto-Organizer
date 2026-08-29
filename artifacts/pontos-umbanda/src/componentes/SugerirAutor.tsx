@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { sugerirAutor } from "@/api/comunidade";
 import type { Ponto } from "@/types";
+import { mensagemDeErro } from "@/api/cliente";
 
 /**
  * Dizer quem compôs um ponto do acervo.
@@ -39,7 +40,7 @@ export function SugerirAutor({ ponto, onFechar }: { ponto: Ponto | null; onFecha
       setPronto(true);
       setTimeout(onFechar, 1200);
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Não consegui enviar.");
+      setErro(mensagemDeErro(problema, "Não consegui enviar."));
     } finally {
       setEnviando(false);
     }

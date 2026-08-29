@@ -22,6 +22,7 @@
  */
 
 import { useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { Flag, Loader2 } from "lucide-react";
 import {
   denunciar,
@@ -63,7 +64,7 @@ export function Denunciar({
       setFase("enviado");
     } catch (problema) {
       setErro(
-        problema instanceof Error ? problema.message : "Não consegui enviar agora.",
+        mensagemDeErro(problema, "Não consegui enviar agora."),
       );
     } finally {
       setEnviando(false);

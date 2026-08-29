@@ -23,6 +23,7 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { AlertCircle, BarChart3, Loader2, RefreshCw } from "lucide-react";
 import { verMetricas, type GrupoDoPainel } from "@/api/painel";
 import { pontosEmMaisGiras, pontosMaisClicados, type PontoNoRanking } from "@/api/painel";
@@ -78,7 +79,7 @@ export function TelaPainel() {
     verMetricas()
       .then(setGrupos)
       .catch((problema) =>
-        setErro(problema instanceof Error ? problema.message : "Não consegui carregar."),
+        setErro(mensagemDeErro(problema, "Não consegui carregar.")),
       )
       .finally(() => setBuscando(false));
   }, []);
@@ -94,10 +95,10 @@ export function TelaPainel() {
   // números do negócio antes de qualquer lista.
   useEffect(() => {
     pontosMaisClicados().then(setClicados).catch((e) =>
-      setErroRanking(e instanceof Error ? e.message : "Falha ao carregar."),
+      setErroRanking(mensagemDeErro(e, "Falha ao carregar.")),
     );
     pontosEmMaisGiras().then(setEmGiras).catch((e) =>
-      setErroRanking(e instanceof Error ? e.message : "Falha ao carregar."),
+      setErroRanking(mensagemDeErro(e, "Falha ao carregar.")),
     );
   }, []);
 

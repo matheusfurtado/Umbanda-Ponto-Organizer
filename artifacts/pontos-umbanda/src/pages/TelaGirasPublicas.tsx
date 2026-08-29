@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { useAuth } from "@/auth/AuthContext";
 import { girasDeQuemSigo, type GiraDeQuemSigo } from "@/api/perfil";
 import { Globe, Users } from "lucide-react";
@@ -23,7 +24,7 @@ export function TelaGirasPublicas() {
   useEffect(() => {
     publicas()
       .then(setGiras)
-      .catch((e) => setErro(e instanceof Error ? e.message : "Falha ao carregar."));
+      .catch((e) => setErro(mensagemDeErro(e, "Falha ao carregar.")));
   }, []);
 
   // O que dá sentido ao seguir. Sem isto, seguir alguém só mexia num número no

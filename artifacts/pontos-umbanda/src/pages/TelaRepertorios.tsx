@@ -43,7 +43,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
 import { ModalConfirmar } from "@/components/ModalConfirmar";
 import { useApp } from "@/context";
-import { ehErroDeRede } from "@/api/cliente";
+import { ehErroDeRede, mensagemDeErro } from "@/api/cliente";
 import { destacar, semAcento } from "@/lib/destacar";
 import { apagar, criar, type ItemRepertorio, type Repertorio } from "@/api/repertorio";
 import { registrarCliqueNoPonto } from "@/api/metricas";
@@ -681,11 +681,7 @@ export function TelaRepertorios() {
               // reconciliação para resolver um caso raro — ninguém batiza uma
               // gira nova no meio dela. A mensagem diz o que dá para fazer.
               setErro(
-                ehErroDeRede(problema)
-                  ? "Sem conexão. Para criar um repertório novo é preciso estar online — as giras que você já tem continuam funcionando."
-                  : problema instanceof Error
-                    ? problema.message
-                    : "Falha ao criar.",
+                mensagemDeErro(problema, "Falha ao criar.", "Sem conexão. Para criar um repertório novo é preciso estar online — as giras que você já tem continuam funcionando."),
               );
             }
           }}
@@ -774,11 +770,7 @@ export function TelaRepertorios() {
               setErro(null);
             } catch (problema) {
               setErro(
-                ehErroDeRede(problema)
-                  ? "Sem conexão. Apagar um repertório precisa de internet."
-                  : problema instanceof Error
-                    ? problema.message
-                    : "Falha ao apagar.",
+                mensagemDeErro(problema, "Falha ao apagar.", "Sem conexão. Apagar um repertório precisa de internet."),
               );
             }
           })();

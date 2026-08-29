@@ -9,6 +9,7 @@ import { Denunciar } from "@/componentes/Denunciar";
 import { TrocarApelido } from "@/componentes/TrocarApelido";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
+import { mensagemDeErro } from "@/api/cliente";
 import {
   definirFavoritosPublicos,
   deixarDeSeguir,
@@ -50,7 +51,7 @@ function TrocarFoto({
       await enviarFoto(arquivo);
       aoTrocar();
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Não consegui enviar a imagem.");
+      setErro(mensagemDeErro(problema, "Não consegui enviar a imagem."));
     } finally {
       setEnviando(false);
     }
@@ -63,7 +64,7 @@ function TrocarFoto({
       await tirarFoto();
       aoTrocar();
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Não consegui tirar a foto.");
+      setErro(mensagemDeErro(problema, "Não consegui tirar a foto."));
     } finally {
       setEnviando(false);
     }
@@ -142,7 +143,7 @@ export function TelaPerfil() {
     setErro(null);
     verPerfil(apelido)
       .then(setPerfil)
-      .catch((e) => setErro(e instanceof Error ? e.message : "Não achei esse perfil."));
+      .catch((e) => setErro(mensagemDeErro(e, "Não achei esse perfil.")));
   }, [apelido]);
 
   useEffect(carregar, [carregar]);
@@ -161,7 +162,7 @@ export function TelaPerfil() {
     try {
       await (seguindoAgora ? deixarDeSeguir(perfil.apelido) : seguir(perfil.apelido));
     } catch (e) {
-      setErro(e instanceof Error ? e.message : "Não consegui.");
+      setErro(mensagemDeErro(e, "Não consegui."));
     } finally {
       setOcupado(false);
       carregar();
@@ -175,7 +176,7 @@ export function TelaPerfil() {
       await definirFavoritosPublicos(perfil.favoritos === null);
       carregar();
     } catch (e) {
-      setErro(e instanceof Error ? e.message : "Não consegui.");
+      setErro(mensagemDeErro(e, "Não consegui."));
     } finally {
       setOcupado(false);
     }

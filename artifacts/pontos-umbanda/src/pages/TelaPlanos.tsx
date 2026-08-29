@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { Link, useLocation } from "wouter";
 import { ArrowLeft, Check, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -63,7 +64,7 @@ export function TelaPlanos() {
   useEffect(() => {
     listarPlanos()
       .then(setPlanos)
-      .catch((e) => setErroCarga(e instanceof Error ? e.message : "Falha ao carregar os planos."));
+      .catch((e) => setErroCarga(mensagemDeErro(e, "Falha ao carregar os planos.")));
   }, []);
 
   const assinar = async (plano: Plano) => {
@@ -82,7 +83,7 @@ export function TelaPlanos() {
       // que faz a tela contar a verdade em vez de comemorar cedo demais.
       refetch();
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Falha ao iniciar o pagamento.");
+      setErro(mensagemDeErro(problema, "Falha ao iniciar o pagamento."));
     } finally {
       setProcessando(null);
     }

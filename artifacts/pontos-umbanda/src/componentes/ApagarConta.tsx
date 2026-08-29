@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/auth/AuthContext";
 import { apagarConta } from "@/api/conta";
+import { mensagemDeErro } from "@/api/cliente";
 
 /**
  * Apagar a conta.
@@ -43,7 +44,7 @@ export function ApagarConta({ aberto, onFechar }: { aberto: boolean; onFechar: (
       await sair().catch(() => undefined);
       navegar("/");
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Não consegui apagar.");
+      setErro(mensagemDeErro(problema, "Não consegui apagar."));
       setApagando(false);
     }
   };

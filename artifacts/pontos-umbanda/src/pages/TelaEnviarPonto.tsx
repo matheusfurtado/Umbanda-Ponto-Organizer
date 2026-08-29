@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { Link, useLocation } from "wouter";
 import { Check, Loader2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -51,7 +52,7 @@ export function TelaEnviarPonto() {
       });
       setPronto(true);
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Não consegui enviar.");
+      setErro(mensagemDeErro(problema, "Não consegui enviar."));
     } finally {
       setEnviando(false);
     }

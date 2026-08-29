@@ -22,6 +22,7 @@
 
 import { useRef, useState } from "react";
 import { ImageOff, Loader2, Pencil, Upload } from "lucide-react";
+import { mensagemDeErro } from "@/api/cliente";
 import {
   editarArtista,
   tirarFotoDoArtista,
@@ -58,7 +59,7 @@ export function EditarArtista({
       onMudou(await editarArtista(artista.id, corpo));
       setAberto(false);
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Não consegui salvar.");
+      setErro(mensagemDeErro(problema, "Não consegui salvar."));
     } finally {
       setSalvando(false);
     }
@@ -72,7 +73,7 @@ export function EditarArtista({
       const { foto } = await trocarFotoDoArtista(artista.id, arquivo);
       onMudou({ ...artista, foto });
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Não consegui enviar.");
+      setErro(mensagemDeErro(problema, "Não consegui enviar."));
     } finally {
       setSalvando(false);
       // Sem isto, escolher o MESMO arquivo de novo não dispara `change` — e
@@ -88,7 +89,7 @@ export function EditarArtista({
       await tirarFotoDoArtista(artista.id);
       onMudou({ ...artista, foto: null });
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Não consegui tirar.");
+      setErro(mensagemDeErro(problema, "Não consegui tirar."));
     } finally {
       setSalvando(false);
     }

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { Check, Loader2, ShieldCheck, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,7 +35,7 @@ export function TelaModeracao() {
   const carregar = useCallback(() => {
     filaDeModeracao()
       .then(setFila)
-      .catch((e) => setErro(e instanceof Error ? e.message : "Não consegui carregar."));
+      .catch((e) => setErro(mensagemDeErro(e, "Não consegui carregar.")));
   }, []);
 
   useEffect(carregar, [carregar]);
@@ -56,7 +57,7 @@ export function TelaModeracao() {
       // aprovação não funcionou", que é o pior lugar para deixar alguém.
       recarregar();
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Falhou.");
+      setErro(mensagemDeErro(problema, "Falhou."));
     } finally {
       setOcupado(null);
     }

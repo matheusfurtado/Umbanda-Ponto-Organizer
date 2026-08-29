@@ -19,6 +19,7 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { cancelarAssinatura, type Assinatura } from "@/lib/apiBilling";
+import { mensagemDeErro } from "@/api/cliente";
 
 export function CancelarAssinatura({
   assinatura,
@@ -48,7 +49,7 @@ export function CancelarAssinatura({
       setConfirmando(false);
     } catch (problema) {
       setErro(
-        problema instanceof Error ? problema.message : "Não consegui cancelar agora.",
+        mensagemDeErro(problema, "Não consegui cancelar agora."),
       );
     } finally {
       setEnviando(false);

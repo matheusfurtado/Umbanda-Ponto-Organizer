@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/auth/AuthContext";
 import { escolherApelido } from "@/api/conta";
+import { mensagemDeErro } from "@/api/cliente";
 
 const MINIMO = 2;
 const MAXIMO = 40;
@@ -53,7 +54,7 @@ export function TrocarApelido({
       await recarregar();
       onFechar(limpo);
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Não consegui salvar.");
+      setErro(mensagemDeErro(problema, "Não consegui salvar."));
     } finally {
       setSalvando(false);
     }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { Sparkles } from "lucide-react";
 import { Capa } from "@/componentes/Capa";
 import { LinhaPonto } from "@/componentes/LinhaPonto";
@@ -98,7 +99,7 @@ export function TelaNovidades() {
           }),
         ),
       )
-      .catch((e) => setErro(e instanceof Error ? e.message : "Falha."));
+      .catch((e) => setErro(mensagemDeErro(e, "Falha.")));
   }, []);
 
   // Agrupa preservando a ordem em que os orixás apareceram — que é a ordem de

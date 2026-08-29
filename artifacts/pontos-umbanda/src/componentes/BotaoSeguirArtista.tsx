@@ -18,6 +18,7 @@
 import { useState } from "react";
 import { Check, Loader2, Plus } from "lucide-react";
 import { deixarDeSeguirArtista, seguirArtista } from "@/api/artista";
+import { mensagemDeErro } from "@/api/cliente";
 
 export function BotaoSeguirArtista({
   artistaId,
@@ -53,7 +54,7 @@ export function BotaoSeguirArtista({
     } catch (problema) {
       onMudou(antes);
       setErro(
-        problema instanceof Error ? problema.message : "Não consegui agora.",
+        mensagemDeErro(problema, "Não consegui agora."),
       );
     } finally {
       setEnviando(false);

@@ -16,6 +16,7 @@
 
 import { useEffect, useState } from "react";
 import { BadgeCheck, ExternalLink, Loader2, ShieldCheck, XCircle } from "lucide-react";
+import { mensagemDeErro } from "@/api/cliente";
 import {
   aprovarPedidoDeArtista,
   filaDePedidosDeArtista,
@@ -32,7 +33,7 @@ export function TelaModerarArtistas() {
   function carregar() {
     filaDePedidosDeArtista()
       .then(setFila)
-      .catch((e) => setErro(e instanceof Error ? e.message : "Falha ao carregar."));
+      .catch((e) => setErro(mensagemDeErro(e, "Falha ao carregar.")));
   }
 
   useEffect(carregar, []);
@@ -49,7 +50,7 @@ export function TelaModerarArtistas() {
       carregar();
     } catch (problema) {
       setErro(
-        problema instanceof Error ? problema.message : "Não consegui agora.",
+        mensagemDeErro(problema, "Não consegui agora."),
       );
     } finally {
       setOcupado(null);

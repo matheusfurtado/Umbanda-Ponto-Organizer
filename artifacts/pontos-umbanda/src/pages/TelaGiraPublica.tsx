@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { Link, useRoute } from "wouter";
 import { Compartilhar } from "@/componentes/Compartilhar";
 import { Denunciar } from "@/componentes/Denunciar";
@@ -28,7 +29,7 @@ export function TelaGiraPublica() {
     if (!params?.id) return;
     giraPublica(params.id)
       .then(setGira)
-      .catch((e) => setErro(e instanceof Error ? e.message : "Falha."));
+      .catch((e) => setErro(mensagemDeErro(e, "Falha.")));
   }, [params?.id]);
 
   if (erro) {

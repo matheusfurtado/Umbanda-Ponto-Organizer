@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Mic2, Music2 } from "lucide-react";
 import { listarArtistas, type ArtistaResumo } from "@/api/artista";
+import { mensagemDeErro } from "@/api/cliente";
 
 export function TelaArtistas() {
   const [artistas, setArtistas] = useState<ArtistaResumo[] | null>(null);
@@ -18,7 +19,7 @@ export function TelaArtistas() {
   useEffect(() => {
     listarArtistas()
       .then(setArtistas)
-      .catch((e) => setErro(e instanceof Error ? e.message : "Falha ao carregar."));
+      .catch((e) => setErro(mensagemDeErro(e, "Falha ao carregar.")));
   }, []);
 
   return (

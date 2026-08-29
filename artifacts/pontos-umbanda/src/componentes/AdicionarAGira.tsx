@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { listar, criar, definirItens, type Repertorio } from "@/api/repertorio";
-import { ehErroDeApi, ehErroDeRede } from "@/api/cliente";
+import { ehErroDeApi, ehErroDeRede, mensagemDeErro } from "@/api/cliente";
 import type { Ponto } from "@/types";
 
 /**
@@ -122,11 +122,7 @@ export function AdicionarAGira({
         return;
       }
       setErro(
-        ehErroDeRede(problema)
-          ? "Sem conexão. Para mexer nas giras é preciso estar online."
-          : problema instanceof Error
-            ? problema.message
-            : "Não consegui adicionar.",
+        mensagemDeErro(problema, "Não consegui adicionar.", "Sem conexão. Para mexer nas giras é preciso estar online."),
       );
     } finally {
       setSalvando(false);

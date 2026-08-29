@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { Link, useLocation } from "wouter";
 import {
   AlertCircle,
@@ -109,7 +110,7 @@ export function TelaConta() {
       setConfirmandoBaixar(false);
       setMsg("Pronto! Este aparelho agora mostra os pontos da sua conta.");
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : "Erro ao baixar da conta.");
+      setMsg(mensagemDeErro(e, "Erro ao baixar da conta."));
     } finally {
       setBaixandoConta(false);
     }

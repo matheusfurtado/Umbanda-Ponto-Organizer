@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { mensagemDeErro } from "@/api/cliente";
 import { Link } from "wouter";
 import { Clock, Check, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ export function TelaMeusEnvios() {
   useEffect(() => {
     meusEnvios()
       .then(setEnvios)
-      .catch((e) => setErro(e instanceof Error ? e.message : "Não consegui carregar."));
+      .catch((e) => setErro(mensagemDeErro(e, "Não consegui carregar.")));
   }, []);
 
   return (

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/auth/AuthContext";
 import { escolherApelido } from "@/api/conta";
 import { definirVisibilidade, type Repertorio } from "@/api/repertorio";
+import { mensagemDeErro } from "@/api/cliente";
 
 /**
  * Tornar uma gira pública — ou voltar a fechá-la.
@@ -55,7 +56,7 @@ export function PublicarGira({
       onMudou(await definirVisibilidade(gira, !jaPublica));
       onFechar();
     } catch (problema) {
-      setErro(problema instanceof Error ? problema.message : "Não consegui salvar.");
+      setErro(mensagemDeErro(problema, "Não consegui salvar."));
     } finally {
       setSalvando(false);
     }

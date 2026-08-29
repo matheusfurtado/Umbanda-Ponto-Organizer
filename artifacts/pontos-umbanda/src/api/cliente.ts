@@ -47,6 +47,42 @@ export function ehErroDeApi(erro: unknown): erro is ErroApi {
   return erro instanceof ErroApi || (erro instanceof Error && erro.name === "ErroApi");
 }
 
+/**
+ * O que MOSTRAR à pessoa quando uma chamada falha.
+ *
+ * `ErroApi.message` é `"API 409: Você já sugeriu um autor para este ponto."` —
+ * o prefixo existe para o log, e vinte telas o estavam jogando na cara de quem
+ * usa o app. Quem lê isso no terreiro não sabe o que é 409, e o número faz a
+ * frase inteira parecer defeito em vez de resposta.
+ *
+ * O `detalhe` é o texto que o servidor escreveu PARA a pessoa; é ele que sai.
+ *
+ * ## Erro que não é nosso vocabulário vira o texto padrão
+ *
+ * `chamar` embrulha falha de rede em `ErroRede` e resposta ruim em `ErroApi`.
+ * Qualquer outro `Error` que chegue aqui é defeito NOSSO — um `undefined is
+ * not a function` —, e a mensagem dele não ajuda ninguém: diz o nome de uma
+ * variável para quem está com o celular na mão esperando cantar. Sai o texto
+ * padrão, que ao menos diz o que não deu certo.
+ *
+ * ## Uma função, e não vinte ternários
+ *
+ * Estava reimplementado em cada tela, e por isso divergiu: umas mostravam
+ * `detalhe`, outras `message` com o prefixo, e as de rede mudavam de texto
+ * conforme quem escreveu. É a mesma lição de `servicos/video_do_ponto.py` no
+ * servidor — regra que vale em vários lugares, reimplementada em cada um,
+ * diverge.
+ */
+export function mensagemDeErro(
+  problema: unknown,
+  padrao: string,
+  semRede = "Sem conexão. Verifique a internet e tente de novo.",
+): string {
+  if (ehErroDeRede(problema)) return semRede;
+  if (ehErroDeApi(problema)) return problema.detalhe || padrao;
+  return padrao;
+}
+
 const BASE = "/api/v1";
 
 // Na gira o celular costuma estar em rede ruim. Esperar 30s parado é pior que
