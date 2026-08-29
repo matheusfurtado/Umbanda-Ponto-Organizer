@@ -11,12 +11,24 @@
  */
 
 import { equal, match } from "node:assert/strict";
-import { test } from "node:test";
+import { beforeEach, test } from "node:test";
 import { assentar, renderizar } from "../../testes/renderizar.ts";
 import { fingirRede } from "../../testes/rede.ts";
 import { Gate } from "@/components/Gate";
 import { EntitlementsProvider } from "@/billing/EntitlementsContext";
 import { AuthProvider } from "@/auth/AuthContext";
+
+/**
+ * O `AuthProvider` hidrata `user` de forma SÍNCRONA do `localStorage`
+ * (`useState(() => lembrado())`) — é o que faz o app abrir sem piscar "Entrar"
+ * para quem já estava logada. Num processo de teste, isso significa que a
+ * pessoa do teste anterior continua logada no seguinte.
+ *
+ * Custou uma mutação sobrevivente no `MenuUsuario`: o cenário "ainda não sei
+ * quem é" nunca acontecia, porque o usuário do teste de cima já estava lá.
+ */
+beforeEach(() => localStorage.clear());
+
 
 const EU = {
   id: "u1", email: "maria@exemplo.com", email_verificado: true,

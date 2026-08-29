@@ -8,7 +8,7 @@
  */
 
 import { equal, match, ok } from "node:assert/strict";
-import { test } from "node:test";
+import { beforeEach, test } from "node:test";
 import { act } from "react";
 import { Router } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
@@ -16,6 +16,18 @@ import { assentar, renderizar, type Tela } from "../../testes/renderizar.ts";
 import { fingirRede } from "../../testes/rede.ts";
 import { ApagarConta } from "@/componentes/ApagarConta";
 import { AuthProvider } from "@/auth/AuthContext";
+
+/**
+ * O `AuthProvider` hidrata `user` de forma SÍNCRONA do `localStorage`
+ * (`useState(() => lembrado())`) — é o que faz o app abrir sem piscar "Entrar"
+ * para quem já estava logada. Num processo de teste, isso significa que a
+ * pessoa do teste anterior continua logada no seguinte.
+ *
+ * Custou uma mutação sobrevivente no `MenuUsuario`: o cenário "ainda não sei
+ * quem é" nunca acontecia, porque o usuário do teste de cima já estava lá.
+ */
+beforeEach(() => localStorage.clear());
+
 
 const EU = {
   id: "u1", email: "m@e.com", email_verificado: true,

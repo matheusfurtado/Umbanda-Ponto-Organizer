@@ -7,7 +7,10 @@
  */
 
 import { equal, match, ok } from "node:assert/strict";
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { test } from "node:test";
+import { fileURLToPath } from "node:url";
 import { useEffect, useState } from "react";
 import { renderizar } from "../testes/renderizar.ts";
 
@@ -79,5 +82,50 @@ test("rede de verdade é barrada por padrão", async () => {
       throw new Error("o teste alcançou a rede");
     },
     (e: Error) => match(e.message, /rede de verdade/),
+  );
+});
+
+
+/**
+ * Quem monta `AuthProvider` precisa limpar o aparelho entre os testes.
+ *
+ * `AuthProvider` hidrata `user` de forma SÍNCRONA do `localStorage`
+ * (`useState(() => lembrado())`) — é o que faz o app abrir sem piscar "Entrar"
+ * para quem já estava logada, e é a decisão certa no produto. No teste, o
+ * efeito é que **a pessoa do teste anterior continua logada no seguinte**.
+ *
+ * Não é hipótese: custou uma mutação sobrevivente no `MenuUsuario`. Apagar o
+ * guarda de `isPending` não quebrava nada, porque o cenário "ainda não sei
+ * quem é" nunca chegava a acontecer.
+ *
+ * O pior desse vazamento é a direção: ele faz teste de "sem conta" passar com
+ * uma conta — verde sobre o cenário oposto ao que o nome do teste diz.
+ */
+const AQUI = dirname(fileURLToPath(import.meta.url));
+
+function testes(dir: string): string[] {
+  return readdirSync(dir).flatMap((nome) => {
+    const caminho = join(dir, nome);
+    if (statSync(caminho).isDirectory()) return nome === "ui" ? [] : testes(caminho);
+    return /\.test\.tsx?$/.test(nome) ? [caminho] : [];
+  });
+}
+
+test("todo teste que monta AuthProvider limpa o localStorage", () => {
+  const arquivos = testes(AQUI);
+  ok(arquivos.length > 15, `só ${arquivos.length} arquivos de teste varridos`);
+
+  const comAuth = arquivos.filter((c) => readFileSync(c, "utf8").includes("AuthProvider"));
+  // GUARDA DE COMPLETUDE: se a varredura parar de achar os arquivos que
+  // sabidamente montam o provedor, ela acusa em vez de passar vazia.
+  ok(comAuth.length >= 10, `só ${comAuth.length} arquivos montam AuthProvider`);
+
+  const semLimpeza = comAuth.filter((c) => !readFileSync(c, "utf8").includes("localStorage.clear()"));
+  equal(
+    semLimpeza.length,
+    0,
+    "estes testes montam `AuthProvider` sem limpar o aparelho — a pessoa do " +
+      "teste anterior segue logada neles:\n" +
+      semLimpeza.map((c) => "  " + c.slice(AQUI.length + 1)).join("\n"),
   );
 });
