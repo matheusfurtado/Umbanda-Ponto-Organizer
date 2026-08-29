@@ -7,6 +7,13 @@
  *
  * A única exceção é a primeira abertura sem rede e sem cache — aí não há o que
  * mostrar, e aí sim a tela precisa dizer isso.
+ *
+ * ## A ordem dos avisos é a ordem da urgência
+ *
+ * `erro` (não há acervo nenhum) → `cache` (é cópia local) → `conflito` (a
+ * pessoa precisa decidir) → `pendente` (só informação). Um só aparece por vez:
+ * empilhar faixas empurra a letra do ponto para fora da tela, que é o que esta
+ * faixa existe para não fazer.
  */
 
 import { useEffect, useState } from "react";
@@ -171,6 +178,31 @@ export function AvisoAcervo() {
 
   // Há mudança local que o servidor ainda não recebeu.
   if (envio.pendente) {
+    // `bloqueado` quer dizer que o app PAROU de tentar sozinho: o servidor
+    // recusou de um jeito que insistir não resolve — falta plano (402), a
+    // sessão caiu (401), o corpo não serve (422). É o `insistirAdianta` do
+    // `dados/repositorio.ts` dizendo, pelo nome, que não adianta.
+    //
+    // Ninguém lia esse estado. A faixa dizia "ainda não subiram", que se lê
+    // como "estão subindo", e oferecia "Enviar agora" — a pessoa toca, falha
+    // igual, toca de novo. O app sabia que não ia adiantar e não contou.
+    //
+    // O botão FICA, porque a causa é de fora e pode ter sido resolvida (ela
+    // assinou, entrou de novo). Mas com outro nome: "Tentar de novo" promete
+    // que agora vai; "Tentar assim mesmo" diz o que é.
+    if (envio.bloqueado) {
+      return (
+        <Faixa
+          icone={<AlertCircle className="h-4 w-4 text-destructive" aria-hidden />}
+          acao={{ rotulo: "Tentar assim mesmo", aoClicar: sincronizarAgora }}
+        >
+          Suas mudanças estão salvas neste aparelho e <strong>não vão subir
+          sozinhas</strong>
+          {envio.ultimoErro ? ` — ${envio.ultimoErro}` : ""}. Resolva isso e
+          tente de novo; nada aqui se perde enquanto isso.
+        </Faixa>
+      );
+    }
     return (
       <Faixa
         icone={<UploadCloud className="h-4 w-4" aria-hidden />}
