@@ -229,9 +229,19 @@ function App() {
                     </RotaProtegida>
                   </Route>
                   {/* Mesma proteção da moderação: só login aqui, e a API
-                      responde 404 a quem não é admin. */}
+                      responde 404 a quem não é admin.
+                      
+                      O `RotaProtegida` FALTAVA aqui — era a única das seis
+                      telas de admin sem ele, logo abaixo do comentário que
+                      jurava o contrário. Quem abrisse a URL sem sessão (link
+                      colado, histórico, o tablet do terreiro) via a tela
+                      montar e falhar no fetch, em vez de ser mandado para o
+                      login. A defesa de verdade está na API, que responde 404;
+                      isto é o que faz a tela se comportar. */}
                   <Route path="/moderacao/remocoes">
-                    <TelaRemocoesDeArtista />
+                    <RotaProtegida>
+                      <TelaRemocoesDeArtista />
+                    </RotaProtegida>
                   </Route>
                   <Route path="/moderacao/artistas">
                     <RotaProtegida>

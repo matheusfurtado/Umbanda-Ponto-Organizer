@@ -217,9 +217,15 @@ export function TelaArtista() {
             </section>
           )}
 
-          {/* AS ENTIDADES COMO ÁLBUM. Chips e não abas de verdade: são até 8
-              por artista, e um componente de aba com rolagem horizontal seria
-              peso para uma escolha que cabe em duas linhas de texto. */}
+          {/* AS ENTIDADES COMO ÁLBUM. Chips e não abas de verdade: **9 no
+              maior artista do acervo hoje** (medido: `pontos-de-umbanda`),
+              mais o chip "Todos" — dez, que o `flex-wrap` acomoda em duas
+              linhas. Um componente de aba com rolagem horizontal seria peso
+              para uma escolha desse tamanho.
+              
+              O comentário dizia "até 8", e a decisão de desenho é justificada
+              por esse número. Errado por um não muda o `flex-wrap`, mas é a
+              razão escrita da escolha — e quem for reavaliar parte dela. */}
           <div className="mb-3 flex flex-wrap gap-1.5">
             <button
               type="button"
