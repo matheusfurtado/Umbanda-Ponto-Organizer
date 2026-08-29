@@ -5,11 +5,23 @@
  * título não fazia coisa nenhuma, e quem tentava concluía que o app tinha
  * travado. Agora a letra abre no lugar, com o mesmo desenho da lista do acervo.
  *
- * ## O botão de ouvir fica FORA do que abre
+ * ## O que abre é o título, e o resto é irmão dele
  *
- * A linha inteira é o gatilho da letra, e o "Ouvir" é uma âncora dentro dela.
- * Sem `stopPropagation`, clicar em ouvir também abriria a letra — e a pessoa
- * voltaria do YouTube para uma tela mexida sem ter pedido.
+ * A linha NÃO é o gatilho: o `<button>` que alterna a letra envolve o número,
+ * o título e a seta, e o "Ouvir" é IRMÃO dele — não filho. Clicar em ouvir
+ * nunca chega ao `onClick` do botão, e por isso não existe `stopPropagation`
+ * aqui.
+ *
+ * O docstring afirmava o contrário ("a linha inteira é o gatilho... sem
+ * `stopPropagation`, clicar em ouvir também abriria a letra"), e havia um
+ * `e.stopPropagation()` inerte no link para sustentar a afirmação. Ninguém
+ * mediu: a frase descrevia um desenho que o JSX nunca teve. O risco não era o
+ * `stopPropagation` sobrando — era o próximo a mexer aqui acreditar que a
+ * linha inteira era clicável e desenhar em cima disso.
+ *
+ * A seta fica DENTRO do botão porque é ela que diz "isto abre". Do lado de
+ * fora, o único sinal de que a linha abre alguma coisa ficava a um clique de
+ * distância do que de fato abre.
  */
 
 import { useState } from "react";
@@ -53,6 +65,12 @@ export function PontoDoArtista({
               </span>
             )}
           </span>
+          <ChevronDown
+            aria-hidden
+            className={`ml-auto h-4 w-4 shrink-0 text-muted-foreground transition-transform ${
+              aberto ? "rotate-180" : ""
+            }`}
+          />
         </button>
 
         {ponto.cliques > 0 && (
@@ -67,12 +85,7 @@ export function PontoDoArtista({
         {ponto.videoUrl && (
           <a
             href={ponto.videoUrl}
-            onClick={(e) => {
-              // Sem isto, ouvir também abre a letra — e a pessoa volta do
-              // YouTube para uma tela mexida sem ter pedido.
-              e.stopPropagation();
-              registrarCliqueNoPonto(ponto.id, "artista");
-            }}
+            onClick={() => registrarCliqueNoPonto(ponto.id, "artista")}
             target="_blank"
             rel="noreferrer noopener"
             aria-label={`Ouvir ${ponto.titulo} no YouTube`}
@@ -82,13 +95,6 @@ export function PontoDoArtista({
             Ouvir
           </a>
         )}
-
-        <ChevronDown
-          aria-hidden
-          className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${
-            aberto ? "rotate-180" : ""
-          }`}
-        />
       </div>
 
       {aberto && (

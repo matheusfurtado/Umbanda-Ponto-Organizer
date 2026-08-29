@@ -47,20 +47,41 @@ export function TelaArtista() {
   /** `null` = todos. O id da entidade quando a pessoa escolhe um "álbum". */
   const [filtro, setFiltro] = useState<string | null>(null);
 
+  // O componente NÃO é remontado quando só o `:id` muda — o `Route` é o mesmo.
+  // Então tudo que é sobre o artista anterior precisa ser zerado à mão aqui, e
+  // esquecer um estado não dá erro nenhum: dá a tela do outro artista.
   useEffect(() => {
     if (!id) return;
     setArtista(null);
     setErro(null);
+    // O filtro é do artista que ficou para trás. Sem isto, ir de um artista
+    // para outro (link, deep link, voltar/avançar entre dois `/artista/...`)
+    // carregava o segundo já filtrado por uma entidade do primeiro — e se o
+    // novo não gravou nada daquela entidade, a lista vinha VAZIA, sem estado
+    // de vazio, porque `pontosDoArtista.length` não é zero. Uma página de
+    // artista que parece não ter ponto nenhum.
+    setFiltro(null);
+
+    // E a resposta que chegar atrasada não escreve na tela do artista errado.
+    // Duas trocas rápidas e a primeira requisição podia responder por último,
+    // deixando o nome, a foto e os pontos de A embaixo da URL de B.
+    let atual = true;
     verArtista(id)
-      .then(setArtista)
-      .catch((e) =>
-        setErro(e instanceof Error ? e.message : "Falha ao carregar."),
-      );
+      .then((a) => {
+        if (atual) setArtista(a);
+      })
+      .catch((e) => {
+        if (atual) setErro(e instanceof Error ? e.message : "Falha ao carregar.");
+      });
+    return () => {
+      atual = false;
+    };
   }, [id]);
 
   // Fora de `useMemo` por simplicidade: são até 44 pontos, e a página só
   // re-renderiza ao seguir, editar ou trocar de filtro.
   const grupos = artista ? agruparPorEntidade(artista.pontosDoArtista) : [];
+  const visiveis = grupos.filter((g) => filtro === null || g.id === filtro);
   const populares = artista ? maisOuvidos(artista.pontosDoArtista) : [];
 
   if (erro) {
@@ -259,8 +280,23 @@ export function TelaArtista() {
           </div>
 
           <div className="space-y-6">
-            {grupos
-              .filter((g) => filtro === null || g.id === filtro)
+            {/* Rede de segurança, e não o conserto: o filtro é zerado ao trocar
+                de artista, então esta lista não deveria ficar vazia. Se ficar,
+                a tela DIZ — em branco ela parece app quebrado, e quem vê um app
+                quebrado não tenta de novo. */}
+            {visiveis.length === 0 && (
+              <div className="px-1 text-sm text-muted-foreground">
+                <p>Nenhum ponto neste filtro.</p>
+                <button
+                  type="button"
+                  onClick={() => setFiltro(null)}
+                  className="mt-1 min-h-11 text-primary underline underline-offset-2"
+                >
+                  Ver todos
+                </button>
+              </div>
+            )}
+            {visiveis
               .map((grupo) => (
                 <section key={grupo.id || "sem-orixa"} aria-label={grupo.nome}>
                   {/* O cabeçalho some quando já se filtrou por ele: o chip
