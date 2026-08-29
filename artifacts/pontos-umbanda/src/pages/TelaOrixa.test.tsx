@@ -10,8 +10,9 @@
  * hierarquia vazar, esta tela a exibe sem reclamar, porque ela não confere
  * nada — só desenha o que recebeu. Estes testes prendem os dois lados.
  *
- * (`TelaAcervoSimples`, que o nome sugere ser a tela do plano grátis, NÃO está
- * ligada a nada. Ver o aviso no topo dela.)
+ * Houve uma tela separada para o plano grátis. Ela foi apagada em 29/08: não
+ * era alcançável por rota nenhuma, e o texto dela descrevia em presente um
+ * produto que esta tela já tinha substituído.
  */
 
 import { deepEqual, equal, match, ok } from "node:assert/strict";

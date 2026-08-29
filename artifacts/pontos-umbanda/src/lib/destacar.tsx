@@ -38,7 +38,7 @@ function dobrar(texto: string): string {
     //
     // Não é hipótese: nome de gira e ponto enviado pela comunidade são texto
     // que a pessoa digita, e emoji em título é comum. `TelaRepertorios`,
-    // `LinhaPonto`, `CardPonto` e `TelaAcervoSimples` realçam esses campos.
+    // `LinhaPonto`, `CardPonto` e `TelaRepertorios` realçam esses campos.
     //
     // Quando o dobrado não tem o mesmo tamanho, fica o original: comparar
     // acento vale menos que não deslocar o resto da frase.
