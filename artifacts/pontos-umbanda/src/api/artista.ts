@@ -207,3 +207,47 @@ export function maisOuvidos(pontos: PontoDoArtista[], quantos = 5): PontoDoArtis
     .sort((a, b) => b.cliques - a.cliques || a.titulo.localeCompare(b.titulo, "pt-BR"))
     .slice(0, quantos);
 }
+
+/** O recado que o servidor devolve depois do pedido de remoção. */
+export interface RecadoDeRemocao {
+  mensagem: string;
+}
+
+/**
+ * "Este canal é meu e eu não quero aparecer aqui."
+ *
+ * **Não exige conta**, e isso é a decisão: quem quer sair de um app de Umbanda
+ * é exatamente quem não vai criar uma conta nele para pedir. A página sai do ar
+ * na hora e uma pessoa revisa depois — ver `routers/artista.pedir_remocao`.
+ */
+export const pedirRemocaoDoArtista = (
+  id: string,
+  corpo: { contato?: string; relato?: string },
+) =>
+  chamar<RecadoDeRemocao>(`/artistas/${encodeURIComponent(id)}/remocao`, {
+    method: "POST",
+    body: JSON.stringify(corpo),
+  });
+
+/** Um pedido esperando decisão, para quem modera. */
+export interface RemocaoNaFila {
+  id: string;
+  artistaId: string;
+  artistaNome: string;
+  contato: string | null;
+  relato: string | null;
+  criadoEm: string;
+}
+
+export const filaDeRemocoes = () =>
+  chamar<RemocaoNaFila[]>("/admin/remocoes-de-artista");
+
+export const restaurarArtista = (pedidoId: string) =>
+  chamar<null>(`/admin/remocoes-de-artista/${encodeURIComponent(pedidoId)}/restaurar`, {
+    method: "POST",
+  });
+
+export const manterArtistaOculto = (pedidoId: string) =>
+  chamar<null>(`/admin/remocoes-de-artista/${encodeURIComponent(pedidoId)}/manter`, {
+    method: "POST",
+  });

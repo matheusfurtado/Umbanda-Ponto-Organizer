@@ -35,6 +35,7 @@ import {
 import { PontoDoArtista as PontoDoArtistaLinha } from "@/componentes/PontoDoArtista";
 import { BotaoSeguirArtista } from "@/componentes/BotaoSeguirArtista";
 import { Denunciar } from "@/componentes/Denunciar";
+import { PedirRemocao } from "@/componentes/PedirRemocao";
 import { EditarArtista } from "@/componentes/EditarArtista";
 import { registrarCliqueNoPonto } from "@/api/metricas";
 
@@ -183,8 +184,13 @@ export function TelaArtista() {
           público escrito por quem não modera, e sem este caminho a única
           remediação seria apagar o artista — levando junto os pontos e quem
           seguia. */}
-      <div className="mt-3">
+      <div className="mt-3 flex flex-col items-start gap-2">
         <Denunciar alvoTipo="artista" alvoId={artista.id} oQueE="esta página" />
+        {/* Texto próprio, e não só "denunciar": quem é a pessoa da página não
+            procura "denunciar esta página" — procura alguma coisa que diga
+            "tire isto". Se o único caminho fosse a denúncia, a saída existiria
+            e ninguém acharia. */}
+        <PedirRemocao artistaId={artista.id} />
       </div>
 
       <h2 className="mb-3 mt-8 px-1 text-lg font-bold text-foreground">Pontos</h2>

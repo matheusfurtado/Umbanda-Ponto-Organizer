@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { BadgeCheck, BarChart3, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { BadgeCheck, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { useApp } from "@/context";
 import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -119,6 +119,16 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
                 className={item(local === "/moderacao/artistas")}
               >
                 <BadgeCheck className="h-4 w-4" aria-hidden /> Perfis de artista
+              </Link>
+              {/* Separado de "Denúncias" de propósito: denúncia é alguém
+                  apontando conteúdo de terceiro; isto é a pessoa da página
+                  pedindo para sair dela. Misturar os dois faria o segundo
+                  esperar na fila do primeiro. */}
+              <Link
+                href="/moderacao/remocoes"
+                className={item(local === "/moderacao/remocoes")}
+              >
+                <EyeOff className="h-4 w-4" aria-hidden /> Pedidos para sair
               </Link>
               <Link href="/denuncias" className={item(local === "/denuncias")}>
                 <Flag className="h-4 w-4" aria-hidden /> Denúncias
