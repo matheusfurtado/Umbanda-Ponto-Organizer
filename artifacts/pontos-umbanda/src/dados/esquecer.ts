@@ -47,6 +47,10 @@ export const CHAVES_PESSOAIS = [
 /** Chaves que ficam, e por quê. */
 export const CHAVES_QUE_FICAM: Record<string, string> = {
   paleta: "preferência de tela; não diz nada sobre a pessoa e reconfigurar a cada logout irrita",
+  "instalar-dispensado":
+    "decisão sobre o APARELHO, não sobre a pessoa: quem dispensou a faixa de " +
+    "instalar dispensou naquele aparelho, e trazê-la de volta a cada logout " +
+    "repetiria a insistência que ela veio calar",
 };
 
 /**
