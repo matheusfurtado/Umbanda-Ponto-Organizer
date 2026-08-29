@@ -45,6 +45,25 @@ export function TrocarApelido({
   const mudou = limpo.toLowerCase() !== atual.trim().toLowerCase();
   const podeSalvar = limpo.length >= MINIMO && limpo.length <= MAXIMO && !salvando;
 
+  /**
+   * Fechar por QUALQUER caminho devolve o campo ao nome atual.
+   *
+   * O `onOpenChange` fazia isso (X, Esc, clique fora); o botão "Cancelar" só
+   * chamava `onFechar()`. Quem digitava um nome novo, desistia e reabria
+   * encontrava o campo com o nome abandonado, o aviso amarelo dizendo que a
+   * URL do perfil ia mudar, e o botão "Trocar" ACESO. Um toque e o endereço
+   * público dela virava um nome que ela tinha decidido não usar — e os links
+   * que ela já colou no grupo do terreiro param de abrir.
+   *
+   * É o mesmo defeito do `ApagarConta`, no arquivo ao lado: duas saídas para a
+   * mesma porta, e só uma limpava. Conferi se havia uma terceira — não há.
+   */
+  const fechar = (novo?: string) => {
+    setNome(novo ?? atual);
+    setErro(null);
+    onFechar(novo);
+  };
+
   const salvar = async () => {
     if (!podeSalvar) return;
     setSalvando(true);
@@ -52,7 +71,7 @@ export function TrocarApelido({
     try {
       await escolherApelido(limpo);
       await recarregar();
-      onFechar(limpo);
+      fechar(limpo);
     } catch (problema) {
       setErro(mensagemDeErro(problema, "Não consegui salvar."));
     } finally {
@@ -64,11 +83,7 @@ export function TrocarApelido({
     <Dialog
       open={aberto}
       onOpenChange={(v) => {
-        if (!v) {
-          setNome(atual);
-          setErro(null);
-          onFechar();
-        }
+        if (!v) fechar();
       }}
     >
       <DialogContent className="max-w-md">
@@ -123,7 +138,7 @@ export function TrocarApelido({
         )}
 
         <div className="flex justify-end gap-2 pt-1">
-          <Button variant="ghost" onClick={() => onFechar()} disabled={salvando}>
+          <Button variant="ghost" onClick={() => fechar()} disabled={salvando}>
             Cancelar
           </Button>
           <Button onClick={salvar} disabled={!podeSalvar} className="gap-1.5">
