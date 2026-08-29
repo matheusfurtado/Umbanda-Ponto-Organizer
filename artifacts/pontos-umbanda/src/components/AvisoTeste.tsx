@@ -7,6 +7,19 @@
  *
  * Por isso o aviso aparece o tempo todo, e fica mais firme perto do fim. Não
  * bloqueia nada em momento nenhum.
+ *
+ * ## E não conta o que não sabe
+ *
+ * `diasRestantes` é opcional dos dois lados: o servidor manda `null` quando a
+ * assinatura não tem data de fim. O `?? 0` que estava aqui transformava "não
+ * sei" em **"Seu teste termina hoje"**, com o estilo de urgência junto — o
+ * mesmo defeito do achado #10, numa linha: afirmar sobre o plano o que não se
+ * conferiu.
+ *
+ * Alarme falso custa a credibilidade de todos os avisos seguintes, e esta é
+ * justamente a faixa que precisa ser acreditada no dia em que estiver certa.
+ * Sem o número, ela diz que o teste existe e o que acontece no fim — que é o
+ * que ela sabe.
  */
 
 import { Clock } from "lucide-react";
@@ -17,8 +30,9 @@ export function AvisoTeste() {
   const { ent } = useEntitlements();
   if (ent.plano !== "teste") return null;
 
-  const dias = ent.diasRestantes ?? 0;
-  const urgente = dias <= 3;
+  // `null` é "não sei", e é diferente de zero. Ver o docstring.
+  const dias = ent.diasRestantes ?? null;
+  const urgente = dias !== null && dias <= 3;
 
   return (
     <div
@@ -31,11 +45,13 @@ export function AvisoTeste() {
     >
       <Clock className="h-4 w-4 shrink-0" aria-hidden />
       <span className="flex-1">
-        {dias === 0
-          ? "Seu teste termina hoje."
-          : dias === 1
-            ? "Falta 1 dia do seu teste."
-            : `Faltam ${dias} dias do seu teste.`}{" "}
+        {dias === null
+          ? "Você está no período de teste."
+          : dias === 0
+            ? "Seu teste termina hoje."
+            : dias === 1
+              ? "Falta 1 dia do seu teste."
+              : `Faltam ${dias} dias do seu teste.`}{" "}
         {/* Diz o que continua, não só o que acaba: a letra nunca é tirada. */}
         Depois, suas letras e os pontos que você escreveu continuam aqui — o que
         sai é a organização por orixá, o link do vídeo e o repertório.
