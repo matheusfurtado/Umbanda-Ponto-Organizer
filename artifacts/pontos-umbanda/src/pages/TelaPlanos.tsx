@@ -4,6 +4,7 @@ import { ArrowLeft, Check, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
 import { useEntitlements } from "@/billing/EntitlementsContext";
+import { avisoDoPlano, podeAssinar } from "@/billing/podeAssinar";
 import { registrarPagamentoPendente } from "@/billing/pagamentoPendente";
 import {
   criarCheckout,
@@ -45,6 +46,11 @@ export function TelaPlanos() {
   const [, navegar] = useLocation();
   const { autenticado } = useAuth();
   const { ent, refetch } = useEntitlements();
+  // A regra mora em `podeAssinar` e não aqui: escrita no meio do JSX ela
+  // ficava invisível, e foi assim que "quem está no teste não consegue
+  // pagar" durou até virar achado de auditoria.
+  const dáParaAssinar = podeAssinar(ent.plano);
+  const aviso = avisoDoPlano(ent.plano, ent.diasRestantes);
   const [planos, setPlanos] = useState<Plano[] | null>(null);
   const [erroCarga, setErroCarga] = useState<string | null>(null);
   const [processando, setProcessando] = useState<string | null>(null);
@@ -97,10 +103,10 @@ export function TelaPlanos() {
           </p>
         </div>
 
-        {ent.plano !== "gratis" && (
+        {aviso && (
           <div className="mb-6 flex items-center gap-2 rounded-lg border border-primary/40 bg-primary/10 p-3 text-sm text-primary">
             <Check className="h-4 w-4 shrink-0" aria-hidden />
-            Você já tem o plano <strong className="font-medium">{ent.plano}</strong> ativo.
+            {aviso}
           </div>
         )}
 
@@ -150,9 +156,9 @@ export function TelaPlanos() {
               )}
               <Button
                 onClick={() => assinar(plano)}
-                disabled={processando !== null || ent.plano !== "gratis"}
+                disabled={processando !== null || !dáParaAssinar}
                 className="mt-3 w-full min-h-11"
-                variant={ent.plano === "gratis" ? "default" : "secondary"}
+                variant={dáParaAssinar ? "default" : "secondary"}
               >
                 {processando === plano.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {autenticado ? "Assinar" : "Entrar para assinar"}
