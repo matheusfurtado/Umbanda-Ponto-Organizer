@@ -740,7 +740,7 @@ export function TelaRepertorios() {
                     }
                   }}
                   aria-label={`Apagar ${r.nome}`}
-                  className="absolute right-4 top-4 rounded-md bg-background/80 p-2 text-muted-foreground opacity-0 transition hover:text-destructive focus:opacity-100 group-hover:opacity-100"
+                  className="absolute right-4 top-4 rounded-md bg-background/80 p-2 text-muted-foreground [@media(hover:hover)]:opacity-0 transition hover:text-destructive focus:opacity-100 group-hover:opacity-100"
                 >
                   <Trash2 className="h-4 w-4" aria-hidden />
                 </button>

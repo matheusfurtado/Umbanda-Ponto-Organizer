@@ -122,13 +122,23 @@ export function LinhaPonto({
           </span>
         )}
 
+        {/* Favoritar, adicionar à gira e sugerir autor ficavam INVISÍVEIS no
+            celular.
+            
+            Eram `opacity-0` revelados por `group-hover`, e em tela de toque não
+            existe hover — os três sumiam. Pior que sumir: o botão continuava
+            ocupando espaço e respondendo ao toque, então dava para acertar um
+            que não se vê.
+            
+            `[@media(hover:hover)]:opacity-0` esconde só onde há mouse. No
+            celular, que é onde este app é usado de verdade, eles aparecem. */}
         <div className="flex shrink-0 items-center gap-1">
           {onAdicionar && (
             <button
               onClick={() => onAdicionar(ponto)}
               title="Adicionar a um repertório"
               aria-label={`Adicionar ${ponto.titulo} a um repertório`}
-              className="rounded-md p-2 text-muted-foreground opacity-0 transition hover:bg-accent hover:text-foreground focus:opacity-100 group-hover:opacity-100"
+              className="rounded-md p-2 text-muted-foreground [@media(hover:hover)]:opacity-0 transition hover:bg-accent hover:text-foreground focus:opacity-100 group-hover:opacity-100"
             >
               <Plus className="h-4 w-4" />
             </button>
@@ -139,7 +149,7 @@ export function LinhaPonto({
               onClick={() => onSugerirAutor(ponto)}
               title={ponto.autor ? "Corrigir o autor" : "Sugerir o autor"}
               aria-label={`Sugerir o autor de ${ponto.titulo}`}
-              className="rounded-md p-2 text-muted-foreground opacity-0 transition hover:bg-accent hover:text-foreground focus:opacity-100 group-hover:opacity-100"
+              className="rounded-md p-2 text-muted-foreground [@media(hover:hover)]:opacity-0 transition hover:bg-accent hover:text-foreground focus:opacity-100 group-hover:opacity-100"
             >
               <UserPen className="h-4 w-4" />
             </button>
@@ -152,7 +162,7 @@ export function LinhaPonto({
             className={`rounded-md p-2 transition hover:bg-accent ${
               ponto.favorito
                 ? "text-amber-400"
-                : "text-muted-foreground opacity-0 focus:opacity-100 group-hover:opacity-100"
+                : "text-muted-foreground [@media(hover:hover)]:opacity-0 focus:opacity-100 group-hover:opacity-100"
             }`}
           >
             <Star className={`h-4 w-4 ${ponto.favorito ? "fill-current" : ""}`} />
