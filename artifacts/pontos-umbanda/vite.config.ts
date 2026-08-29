@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { tagsComEndereco } from "./scripts/opengraph";
 
 const port = Number(process.env.PORT) || 3000;
 const basePath = process.env.BASE_PATH || "/";
@@ -11,6 +12,19 @@ export default defineConfig({
   base: basePath,
   plugins: [
     react(),
+    {
+      // As duas tags de OpenGraph que exigem URL absoluta. Ver
+      // `scripts/opengraph.ts`: sem `PONTOS_URL_APP` elas NÃO saem, e no lugar
+      // fica um comentário dizendo por quê — prévia quebrada é cacheada pelo
+      // WhatsApp por muito tempo, e um link já compartilhado não se conserta.
+      name: "opengraph-com-endereco",
+      transformIndexHtml(html: string) {
+        return html.replace(
+          "</head>",
+          `  ${tagsComEndereco(process.env.PONTOS_URL_APP)}\n  </head>`,
+        );
+      },
+    },
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",

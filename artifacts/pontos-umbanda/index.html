@@ -15,6 +15,25 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Pontos" />
     <title>Pontos de Umbanda</title>
+
+    <!-- A PRÉVIA DO LINK, que é como este app circula.
+         
+         O canal deste produto é o link colado no grupo do terreiro. Sem estas
+         tags, o WhatsApp mostrava a URL crua — e uma URL crua num grupo é o
+         que ninguém abre.
+         
+         `og:url` e `og:image` NÃO estão aqui: precisam de URL absoluta, e o
+         endereço público ainda não existe (ADR 0003). Eles são injetados no
+         build a partir de `PONTOS_URL_APP` — ver `scripts/opengraph.ts`, que
+         explica por que omitir é melhor que chutar um caminho relativo. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Pontos de Umbanda" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content="Pontos de Umbanda" />
+    <meta
+      property="og:description"
+      content="O acervo organizado por orixá, na ordem da gira. Funciona sem sinal."
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <!-- A FONTE VEM DAQUI, e não do Google.
