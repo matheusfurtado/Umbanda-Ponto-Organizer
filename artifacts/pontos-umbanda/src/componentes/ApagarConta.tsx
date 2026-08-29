@@ -33,7 +33,33 @@ export function ApagarConta({ aberto, onFechar }: { aberto: boolean; onFechar: (
   const [apagando, setApagando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
+  /**
+   * Fechar por QUALQUER caminho limpa a senha.
+   *
+   * O `onOpenChange` limpava (X, Esc, clique fora); o botão "Cancelar" não.
+   * Quem digitava a senha, desistia e reabria encontrava o campo cheio e
+   * "Apagar para sempre" ACESO — armado antes de ter lido uma linha do aviso,
+   * que é exatamente o que o desenho desta tela existe para impedir: "quem lê
+   * 'isto não tem volta' já com a senha digitada lê tarde demais".
+   *
+   * Duas saídas para a mesma porta, e só uma limpava. Por isso agora é uma
+   * função só.
+   */
+  const fechar = () => {
+    setSenha("");
+    setErro(null);
+    onFechar();
+  };
+
   const confirmar = async () => {
+    // SEGUNDA tranca. O botão já está `disabled` sem senha, então nenhum
+    // clique chega aqui com o campo vazio — a mutação que apaga esta linha
+    // sobrevive à suíte, e isso está registrado de propósito.
+    //
+    // Ela fica porque a primeira tranca é de APRESENTAÇÃO: basta alguém ligar
+    // um `onKeyDown` de Enter, ou chamar `confirmar` de outro lugar, para o
+    // `disabled` deixar de ser o caminho único. Numa ação irreversível, a
+    // regra mora junto de quem a executa.
     if (!senha || apagando) return;
     setApagando(true);
     setErro(null);
@@ -53,11 +79,7 @@ export function ApagarConta({ aberto, onFechar }: { aberto: boolean; onFechar: (
     <Dialog
       open={aberto}
       onOpenChange={(v) => {
-        if (!v) {
-          setSenha("");
-          setErro(null);
-          onFechar();
-        }
+        if (!v) fechar();
       }}
     >
       <DialogContent className="max-w-md">
@@ -103,7 +125,7 @@ export function ApagarConta({ aberto, onFechar }: { aberto: boolean; onFechar: (
         )}
 
         <div className="flex justify-end gap-2 pt-1">
-          <Button variant="ghost" onClick={onFechar} disabled={apagando}>
+          <Button variant="ghost" onClick={fechar} disabled={apagando}>
             Cancelar
           </Button>
           <Button
