@@ -6,13 +6,7 @@ import { useAuth } from "@/auth/AuthContext";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { avisoDoPlano, podeAssinar } from "@/billing/podeAssinar";
 import { registrarPagamentoPendente } from "@/billing/pagamentoPendente";
-import {
-  criarCheckout,
-  emReais,
-  listarPlanos,
-  type CheckoutResult,
-  type Plano,
-} from "@/lib/apiBilling";
+import { criarCheckout, emReais, listarPlanos, minhaAssinatura, type Assinatura, type CheckoutResult, type Plano } from "@/lib/apiBilling";
 
 /**
  * Os planos vêm do SERVIDOR, com preço e periodicidade.
@@ -49,8 +43,17 @@ export function TelaPlanos() {
   // A regra mora em `podeAssinar` e não aqui: escrita no meio do JSX ela
   // ficava invisível, e foi assim que "quem está no teste não consegue
   // pagar" durou até virar achado de auditoria.
-  const dáParaAssinar = podeAssinar(ent.plano);
-  const aviso = avisoDoPlano(ent.plano, ent.diasRestantes);
+  // O `status` vem de `minhaAssinatura()` e não de `ent`: `DireitosOut` não
+  // carrega o status da linha, e quem cancelou continua com `plano: "mensal"`
+  // até a data paga.
+  const [assinatura, setAssinatura] = useState<Assinatura | null>(null);
+  useEffect(() => {
+    if (!autenticado) return;
+    minhaAssinatura().then(setAssinatura).catch(() => setAssinatura(null));
+  }, [autenticado]);
+
+  const dáParaAssinar = podeAssinar(ent.plano, assinatura?.status);
+  const aviso = avisoDoPlano(ent.plano, ent.diasRestantes, assinatura?.status);
   const [planos, setPlanos] = useState<Plano[] | null>(null);
   const [erroCarga, setErroCarga] = useState<string | null>(null);
   const [processando, setProcessando] = useState<string | null>(null);
