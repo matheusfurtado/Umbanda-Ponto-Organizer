@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { listar, criar, definirItens, type Repertorio } from "@/api/repertorio";
-import { ehErroDeRede } from "@/api/cliente";
+import { ehErroDeApi, ehErroDeRede } from "@/api/cliente";
 import type { Ponto } from "@/types";
 
 /**
@@ -21,6 +21,24 @@ import type { Ponto } from "@/types";
  * detalhe de interface. As sugestões vêm das seções que a PRÓPRIA gira já usa,
  * então quem repete um nome não o digita de novo, e quem tem outro nome não é
  * corrigido.
+ *
+ * ## O `PUT` manda a VERSÃO, e este é o segundo caminho de escrita
+ *
+ * `PUT /repertorios/{id}/itens` substitui a sequência inteira, e o servidor só
+ * recusa gravação cega quando o cliente manda `versao`. Este diálogo mandava
+ * sem — e a `dados/repertorios.ts`, que é o outro caminho para a MESMA
+ * escrita, manda. Duas implementações da mesma regra, e só uma com a proteção:
+ * exatamente o que o `useAcoesDePonto` diz, no docstring dele, que este
+ * projeto já pagou para aprender.
+ *
+ * O dano é o que o servidor descreve em `routers/repertorio.py`: a pessoa
+ * monta a gira no computador, abre este diálogo no celular (que carregou a
+ * lista antes), aperta Adicionar — e o servidor grava a sequência ANTIGA mais
+ * um. **O que ela montou no computador some, sem erro e sem aviso.**
+ *
+ * Com a versão, o servidor devolve 409, e aqui a gira é recarregada e a pessoa
+ * fica sabendo. O conserto do 409 NÃO é reenviar sem a versão — isso é a
+ * gravação cega de novo, com um passo a mais.
  */
 export function AdicionarAGira({
   ponto,
@@ -43,6 +61,15 @@ export function AdicionarAGira({
     setSecao("");
     setErro(null);
     setPronto(false);
+    // `nomeNova` também, e ele estava ficando.
+    //
+    // Quem abria sem gira nenhuma, digitava um nome, desistia e abria de novo
+    // noutro ponto encontrava o campo preenchido — com o botão HABILITADO,
+    // porque `nomeNova.trim()` sozinho o habilita. Um toque e nascia uma gira
+    // com o nome abandonado. Pior com giras já existentes: nenhuma escolhida,
+    // o botão aceso pelo texto velho, e "Adicionar" criava uma gira nova em
+    // vez de pôr o ponto na que a pessoa achava ter selecionado.
+    setNomeNova("");
     listar()
       .then((l) => {
         setGiras(l);
@@ -70,16 +97,30 @@ export function AdicionarAGira({
       if (!gira) {
         gira = await criar(nomeNova.trim());
       }
-      // A API substitui a sequência inteira: manda-se a atual mais o novo.
+      // A API substitui a sequência inteira: manda-se a atual mais o novo — e
+      // a VERSÃO junto, que é o que faz o servidor recusar gravar por cima do
+      // que este aparelho não viu. Ver o docstring.
       const atual = gira.itens.map((i) => ({ pontoId: i.pontoId, secao: i.secao ?? null }));
-      await definirItens(gira.id, [
-        ...atual,
-        { pontoId: ponto.id, secao: secao.trim() || null },
-      ]);
+      await definirItens(
+        gira.id,
+        [...atual, { pontoId: ponto.id, secao: secao.trim() || null }],
+        gira.versao ?? null,
+      );
       setPronto(true);
       // Um instante para a pessoa VER que deu certo antes de a janela sumir.
       setTimeout(onFechar, 700);
     } catch (problema) {
+      if (ehErroDeApi(problema) && problema.status === 409) {
+        // Mudou noutro aparelho. Recarrega e devolve a decisão à pessoa: o
+        // conserto NÃO é reenviar sem a versão, que é a gravação cega de novo.
+        const frescas = await listar().catch(() => null);
+        if (frescas) setGiras(frescas);
+        setErro(
+          "Esta gira mudou em outro aparelho. Recarreguei o que está lá — " +
+            "confira e toque em Adicionar de novo. Nada foi perdido.",
+        );
+        return;
+      }
       setErro(
         ehErroDeRede(problema)
           ? "Sem conexão. Para mexer nas giras é preciso estar online."
