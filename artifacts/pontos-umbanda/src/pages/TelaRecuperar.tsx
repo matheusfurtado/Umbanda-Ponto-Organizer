@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { pedirRecuperacao } from "@/api/conta";
-import { ehErroDeRede } from "@/api/cliente";
+import { ehErroDeApi, ehErroDeRede } from "@/api/cliente";
 
 /**
  * Pedir o link de redefinição.
@@ -14,6 +14,16 @@ import { ehErroDeRede } from "@/api/cliente";
  * porque o contrário transformaria isto num verificador de quem tem conta num
  * app de Umbanda — o mesmo motivo pelo qual o login não diferencia "e-mail não
  * existe" de "senha errada".
+ *
+ * ## O 429 é a exceção, e ele não fura a regra
+ *
+ * O limite de tentativas roda para QUALQUER endereço, exista conta ou não —
+ * é o que mantém a resposta uniforme. Então repassar "Tente de novo em 47
+ * minutos" não conta nada sobre quem tem conta.
+ *
+ * Isto estava engolido num "algo deu errado", no lugar mais errado possível:
+ * quem chega nesta tela já está trancada fora, e a mensagem genérica a faz
+ * tentar de novo, falhar de novo, e concluir que o app quebrou.
  */
 export function TelaRecuperar() {
   const [email, setEmail] = useState("");
@@ -30,12 +40,27 @@ export function TelaRecuperar() {
       await pedirRecuperacao(email.trim());
       setEnviado(true);
     } catch (problema) {
-      // Só falha de rede aparece: o servidor responde igual para e-mail que
-      // existe e que não existe, então não há outro erro a mostrar.
       setErro(
         ehErroDeRede(problema)
           ? "Sem conexão. Verifique a internet e tente de novo."
-          : "Algo deu errado. Tente de novo em instantes.",
+          // O 429 SAI, e isso não abre oráculo nenhum.
+          //
+          // O limite roda para qualquer endereço, exista conta ou não — está
+          // escrito assim no `routers/auth.py`, e é o que mantém a resposta
+          // uniforme. Então "Tente de novo em 47 minutos" não conta nada sobre
+          // quem tem conta: conta sobre quantas vezes ESTE pedido foi feito.
+          //
+          // Engolir isso num "algo deu errado" era cruel no lugar mais errado
+          // possível: quem está aqui já está trancada fora, e a mensagem
+          // genérica a faz tentar de novo, falhar de novo, e concluir que o
+          // app quebrou. O servidor calcula o tempo; repassar é melhor que
+          // inventar, e é o que a `TelaLogin` já faz com o mesmo status.
+          : ehErroDeApi(problema) && problema.status === 429
+            ? problema.detalhe
+            // O resto continua genérico de propósito: fora do 429, o servidor
+            // responde 204 exista o e-mail ou não, e qualquer texto novo aqui
+            // seria texto sobre um caso que não existe.
+            : "Algo deu errado. Tente de novo em instantes.",
       );
     } finally {
       setCarregando(false);
