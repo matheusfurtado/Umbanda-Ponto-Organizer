@@ -29,6 +29,26 @@ export function SugerirAutor({ ponto, onFechar }: { ponto: Ponto | null; onFecha
     setPronto(false);
   }, [ponto]);
 
+  /**
+   * Fechar por qualquer caminho devolve o campo ao autor que o ponto já tem.
+   *
+   * O `useEffect` acima reseta quando o PONTO muda. Reabrir o MESMO ponto não
+   * dispara efeito nenhum — e aí o nome que a pessoa digitou e descartou
+   * continua lá, com o botão aceso.
+   *
+   * Aqui isso é sério pelo motivo que o docstring já dá: "autoria de obra
+   * religiosa atribuída errado circula e vira referência. Não é erro que se
+   * conserta depois." Um toque manda para revisão um nome que a pessoa tinha
+   * decidido não sugerir.
+   *
+   * Ver `dialogo-limpa-ao-fechar.test.ts`: é o quinto diálogo com esta falha.
+   */
+  const fechar = () => {
+    setAutor(ponto?.autor ?? "");
+    setErro(null);
+    onFechar();
+  };
+
   if (!ponto) return null;
 
   const enviar = async () => {
@@ -38,7 +58,7 @@ export function SugerirAutor({ ponto, onFechar }: { ponto: Ponto | null; onFecha
     try {
       await sugerirAutor(ponto.id, autor.trim());
       setPronto(true);
-      setTimeout(onFechar, 1200);
+      setTimeout(fechar, 1200);
     } catch (problema) {
       setErro(mensagemDeErro(problema, "Não consegui enviar."));
     } finally {
@@ -47,7 +67,7 @@ export function SugerirAutor({ ponto, onFechar }: { ponto: Ponto | null; onFecha
   };
 
   return (
-    <Dialog open onOpenChange={(v) => !v && onFechar()}>
+    <Dialog open onOpenChange={(v) => !v && fechar()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="text-base">Quem compôs este ponto?</DialogTitle>

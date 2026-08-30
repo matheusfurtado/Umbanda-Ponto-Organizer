@@ -26,6 +26,24 @@ export function ModalMigracao({ aberto, onFechar }: Props) {
 
   const totalFavoritos = dados?.pontos.filter((p) => p.favorito).length ?? 0;
 
+  /**
+   * Fechar devolve o diálogo ao começo.
+   *
+   * Ele fica MONTADO com `aberto={false}`, então o estado sobrevive: reabrir
+   * depois de uma migração mostrava de novo a tela de "pronto" com o resumo da
+   * vez anterior — "12 pontos migrados" para uma migração que não aconteceu
+   * agora —, ou o erro velho antes de qualquer tentativa nova.
+   *
+   * Ver `dialogo-limpa-ao-fechar.test.ts`: é o mesmo defeito de outros cinco
+   * diálogos, e aqui o que sobrevive não é um campo digitado, é um RESULTADO.
+   */
+  const fechar = () => {
+    setEstado("idle");
+    setResumo(null);
+    setErro(null);
+    onFechar();
+  };
+
   const enviar = async () => {
     if (!dados) return;
     setEstado("enviando");
@@ -41,7 +59,7 @@ export function ModalMigracao({ aberto, onFechar }: Props) {
   };
 
   return (
-    <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
+    <Dialog open={aberto} onOpenChange={(v) => !v && fechar()}>
       <DialogContent className="bg-card border-border text-foreground max-w-md mx-4">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -86,10 +104,10 @@ export function ModalMigracao({ aberto, onFechar }: Props) {
 
         <DialogFooter className="gap-2">
           {estado === "ok" ? (
-            <Button onClick={onFechar}>Pronto</Button>
+            <Button onClick={fechar}>Pronto</Button>
           ) : (
             <>
-              <Button variant="ghost" onClick={onFechar}>
+              <Button variant="ghost" onClick={fechar}>
                 Agora não
               </Button>
               <Button onClick={enviar} disabled={estado === "enviando" || !dados}>

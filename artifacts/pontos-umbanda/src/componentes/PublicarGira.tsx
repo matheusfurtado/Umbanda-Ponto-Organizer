@@ -40,6 +40,28 @@ export function PublicarGira({
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
+  /**
+   * Fechar por QUALQUER caminho devolve o diálogo ao estado limpo.
+   *
+   * Este componente fica MONTADO com `gira={null}` — some da tela e guarda o
+   * estado. Quem digitava um apelido, cancelava e reabria encontrava o campo
+   * cheio e "Publicar" aceso.
+   *
+   * Aqui isso é pior que nos outros diálogos: o nome digitado nesta tela não
+   * vale só para esta gira, vira o **nome público da pessoa em todo o app**.
+   * Um toque, e um nome que ela descartou passa a aparecer embaixo de cada
+   * ponto que ela enviar.
+   *
+   * Terceiro diálogo com a mesma falha (depois de `ApagarConta` e
+   * `TrocarApelido`), e por isso agora existe cerca:
+   * `dialogo-limpa-ao-fechar.test.ts`.
+   */
+  const fechar = () => {
+    setApelido("");
+    setErro(null);
+    onFechar();
+  };
+
   if (!gira) return null;
 
   const jaPublica = gira.publico === true;
@@ -54,7 +76,7 @@ export function PublicarGira({
         await recarregar();
       }
       onMudou(await definirVisibilidade(gira, !jaPublica));
-      onFechar();
+      fechar();
     } catch (problema) {
       setErro(mensagemDeErro(problema, "Não consegui salvar."));
     } finally {
@@ -63,7 +85,7 @@ export function PublicarGira({
   };
 
   return (
-    <Dialog open onOpenChange={(v) => !v && onFechar()}>
+    <Dialog open onOpenChange={(v) => !v && fechar()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base">
@@ -133,7 +155,7 @@ export function PublicarGira({
             {salvando && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {jaPublica ? "Fechar gira" : "Publicar"}
           </Button>
-          <Button variant="ghost" onClick={onFechar}>Cancelar</Button>
+          <Button variant="ghost" onClick={fechar}>Cancelar</Button>
         </div>
       </DialogContent>
     </Dialog>

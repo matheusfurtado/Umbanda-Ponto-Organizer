@@ -86,6 +86,24 @@ export function AdicionarAGira({
     return [...new Set(nomes)];
   }, [giras, escolhida]);
 
+  /**
+   * Fechar por qualquer caminho devolve o diálogo ao estado limpo.
+   *
+   * O `useEffect` acima reseta quando o PONTO muda — e foi assim que o nome de
+   * gira abandonado deixou de virar gira. Mas reabrir o MESMO ponto não
+   * dispara efeito nenhum: a seção digitada e o nome da gira nova continuam
+   * lá, e o botão continua aceso.
+   *
+   * Ver `dialogo-limpa-ao-fechar.test.ts`: é o mesmo defeito de cinco
+   * diálogos, e a cerca nasceu do terceiro.
+   */
+  const fechar = () => {
+    setNomeNova("");
+    setSecao("");
+    setErro(null);
+    onFechar();
+  };
+
   if (!ponto) return null;
 
   const adicionar = async () => {
@@ -108,7 +126,7 @@ export function AdicionarAGira({
       );
       setPronto(true);
       // Um instante para a pessoa VER que deu certo antes de a janela sumir.
-      setTimeout(onFechar, 700);
+      setTimeout(fechar, 700);
     } catch (problema) {
       if (ehErroDeApi(problema) && problema.status === 409) {
         // Mudou noutro aparelho. Recarrega e devolve a decisão à pessoa: o
@@ -130,7 +148,7 @@ export function AdicionarAGira({
   };
 
   return (
-    <Dialog open onOpenChange={(v) => !v && onFechar()}>
+    <Dialog open onOpenChange={(v) => !v && fechar()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="text-base">Adicionar à gira</DialogTitle>
