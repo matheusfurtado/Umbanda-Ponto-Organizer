@@ -9,6 +9,8 @@
  * cada rota, no servidor (HTTP 402). Ver `components/Gate.tsx`.
  */
 
+import { chamarApi } from "@/api/cliente";
+
 export interface Entitlements {
   plano: string;
   /** Quando o acesso acaba. `null` = não acaba, ou não começou. */
@@ -37,17 +39,22 @@ export interface CheckoutResult {
   referencia_externa: string;
 }
 
+/**
+ * O MESMO cliente do resto do app.
+ *
+ * Havia aqui um `pegar` próprio que lançava `new Error(detalhe)` — e para essa
+ * forma `ehErroDeApi` e `ehErroDeRede` respondem **false**. Desde que as telas
+ * passaram a usar `mensagemDeErro`, o texto que o servidor escreve sobre
+ * cobrança (o "quem está no teste PODE assinar", o motivo de um checkout
+ * recusado) virava o padrão genérico de quem chamou.
+ *
+ * É o mesmo defeito que já apareceu no `api/artista.ts`, nos quatro módulos de
+ * `api/`, nos dois caminhos de `multipart` e no `api/painel.ts`. Este arquivo
+ * escapou das cercas anteriores por morar em `lib/` em vez de `api/` — e a
+ * cerca foi alargada junto com este conserto.
+ */
 async function pegar<T>(caminho: string, init?: RequestInit): Promise<T> {
-  const resposta = await fetch(caminho, {
-    ...init,
-    credentials: "same-origin",
-    headers: { "Content-Type": "application/json", ...init?.headers },
-  });
-  if (!resposta.ok) {
-    const corpo = (await resposta.json().catch(() => ({}))) as { detail?: string };
-    throw new Error(corpo.detail ?? `Falha na requisição (HTTP ${resposta.status}).`);
-  }
-  return (await resposta.json()) as T;
+  return chamarApi<T>(caminho.replace(/^\/api\/v1/, ""), init);
 }
 
 /** Funciona logado ou não: sem conta, devolve os direitos do plano grátis. */

@@ -5,6 +5,7 @@ import { Capa } from "@/componentes/Capa";
 import { LinhaPonto } from "@/componentes/LinhaPonto";
 import { useAcoesDePonto } from "@/componentes/AcoesDePonto";
 import { useApp } from "@/context";
+import { novidades, type Novidade, type OrixaDaNovidade } from "@/api/novidades";
 import type { Ponto } from "@/types";
 
 /**
@@ -25,20 +26,13 @@ import type { Ponto } from "@/types";
  * recebeu algo agora aparece primeiro.
  */
 
-interface OrixaDaNovidade {
-  id: string;
-  nome: string;
-  cor: string | null;
-  emoji: string | null;
-}
-
 interface Grupo {
   orixa: OrixaDaNovidade;
   pontos: Ponto[];
 }
 
 export function TelaNovidades() {
-  const [linhas, setLinhas] = useState<Array<{ ponto: Ponto; orixa: OrixaDaNovidade }> | null>(null);
+  const [linhas, setLinhas] = useState<Novidade[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const { adicionar, sugerir, modais } = useAcoesDePonto();
   const { dados } = useApp();
@@ -62,44 +56,9 @@ export function TelaNovidades() {
   );
 
   useEffect(() => {
-    fetch("/api/v1/novidades")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("Falha ao carregar."))))
-      .then((corpo) =>
-        setLinhas(
-          (corpo as Array<Record<string, unknown>>).map((p) => {
-            const o = (p.orixa ?? {}) as Record<string, unknown>;
-            const video = p.video as Record<string, unknown> | null;
-            return {
-              orixa: {
-                id: String(o.id ?? ""),
-                nome: String(o.nome ?? "Sem orixá"),
-                cor: (o.cor as string | null) ?? null,
-                emoji: (o.emoji as string | null) ?? null,
-              },
-              ponto: {
-                id: String(p.id),
-                subcategoriaId: String(p.subcategoria_id ?? ""),
-                orixaId: String(o.id ?? ""),
-                titulo: String(p.titulo ?? ""),
-                letra: String(p.letra ?? ""),
-                autor: (p.autor as string | null) ?? null,
-                aprovadoEm: p.aprovado_em ? Date.parse(String(p.aprovado_em)) : null,
-                enviadoPor: (p.enviado_por as string | null) ?? null,
-                favorito: false, // resolvido na renderização, a partir do acervo
-                ordem: Number(p.ordem ?? 0),
-                criadoEm: 0,
-                // O vídeo vem do servidor já respeitando o plano: sem plano ele
-                // simplesmente não é enviado. Aqui só se lê o que chegou.
-                videoUrl: (video?.url as string | null) ?? null,
-                videoStatus: (video?.status as string | null) ?? null,
-                videoCanal: (video?.canal as string | null) ?? null,
-                videoTitulo: (video?.titulo as string | null) ?? null,
-              } as Ponto,
-            };
-          }),
-        ),
-      )
-      .catch((e) => setErro(mensagemDeErro(e, "Falha.")));
+    novidades()
+      .then(setLinhas)
+      .catch((e) => setErro(mensagemDeErro(e, "Não consegui carregar as novidades.")));
   }, []);
 
   // Agrupa preservando a ordem em que os orixás apareceram — que é a ordem de

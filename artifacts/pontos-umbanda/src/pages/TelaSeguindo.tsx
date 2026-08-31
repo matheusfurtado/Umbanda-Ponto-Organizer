@@ -46,12 +46,18 @@ export function TelaSeguindo() {
       <h2 className="mb-2 flex items-center gap-2 text-lg font-bold text-foreground">
         <Mic2 className="h-5 w-5 text-muted-foreground" aria-hidden /> Artistas
       </h2>
+      {/* O esqueleto some quando dá erro. Sem isto, a metade que falhou fica
+          com os cartões fantasmas animando ao lado da mensagem, para sempre —
+          quem vê espera, e não há o que esperar. Mesmo defeito que a vitrine
+          tinha. */}
       {artistas === null ? (
-        <div aria-busy="true" className="mb-8 space-y-2">
-          {[0, 1].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-xl bg-muted/40" />
-          ))}
-        </div>
+        erro ? null : (
+          <div aria-busy="true" className="mb-8 space-y-2">
+            {[0, 1].map((i) => (
+              <div key={i} className="h-16 animate-pulse rounded-xl bg-muted/40" />
+            ))}
+          </div>
+        )
       ) : artistas.length === 0 ? (
         <div className="mb-8 rounded-xl border border-dashed p-8 text-center">
           <Mic2 className="mx-auto mb-3 h-6 w-6 text-muted-foreground" aria-hidden />
@@ -91,11 +97,13 @@ export function TelaSeguindo() {
         <Users className="h-5 w-5 text-muted-foreground" aria-hidden /> Pessoas
       </h2>
       {gente === null ? (
-        <div aria-busy="true" className="space-y-2">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-xl bg-muted/40" />
-          ))}
-        </div>
+        erro ? null : (
+          <div aria-busy="true" className="space-y-2">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="h-16 animate-pulse rounded-xl bg-muted/40" />
+            ))}
+          </div>
+        )
       ) : gente.length === 0 ? (
         <div className="rounded-xl border border-dashed p-8 text-center">
           <Users className="mx-auto mb-3 h-6 w-6 text-muted-foreground" aria-hidden />

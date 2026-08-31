@@ -5,7 +5,7 @@
  * Express) não existem mais.
  */
 
-import { baixarAcervo, enviarAcervo } from "@/api/cliente";
+import { baixarAcervo, chamarApi, enviarAcervo } from "@/api/cliente";
 import type { AppData } from "@/types";
 
 export interface ResumoImport {
@@ -42,8 +42,11 @@ export function baixarDadosDaConta(): Promise<AppData> {
  * Num app que revela religião, poder sair levando o próprio acervo é o que
  * impede a conta de virar armadilha.
  */
-export async function exportarConta(): Promise<unknown> {
-  const resposta = await fetch("/api/v1/auth/exportar", { credentials: "same-origin" });
-  if (!resposta.ok) throw new Error(`Falha ao exportar (HTTP ${resposta.status}).`);
-  return resposta.json();
+export function exportarConta(): Promise<unknown> {
+  // Pelo cliente compartilhado: é ele que lança `ErroApi`/`ErroRede`, o
+  // vocabulário que `mensagemDeErro` sabe traduzir. Com o `Error` cru daqui,
+  // uma falha ao exportar chegava à tela como o texto genérico — num fluxo que
+  // é direito da pessoa (LGPD art. 18, V) e onde ela precisa saber se o
+  // problema foi a rede ou o servidor.
+  return chamarApi<unknown>("/auth/exportar");
 }

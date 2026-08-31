@@ -112,19 +112,57 @@ test("a exceção ainda precisa existir", () => {
  * Já tinha doído uma vez, no `api/artista.ts`, e continuou nos outros quatro
  * mais dois caminhos de `multipart`. Cerca para não voltar uma sétima vez.
  */
-test("nenhum módulo de api/ inventa a própria forma de erro", () => {
-  const modulos = arquivos(join(SRC, "api"));
-  ok(modulos.length >= 8, `só ${modulos.length} módulos de api/ varridos`);
+/** Este arquivo fala HTTP? */
+function falaHttp(fonte: string): boolean {
+  return /\bfetch\(/.test(fonte);
+}
 
-  const culpados = modulos.filter(
+test("quem fala HTTP fala o vocabulário de erro — esteja onde estiver", () => {
+  // A varredura era só `api/`, e foi assim que `lib/apiBilling.ts`,
+  // `lib/apiConta.ts` e um `fetch` cru dentro da `TelaNovidades` escaparam de
+  // seis rodadas deste mesmo conserto. **A pasta não é o critério; falar HTTP
+  // é.** Um arquivo que chama `fetch` e monta o próprio erro deixa
+  // `ehErroDeApi` e `ehErroDeRede` cegos para ele, e o texto que o servidor
+  // escreveu não chega a quem está lendo a tela.
+  const lista = arquivos(SRC);
+  const clientes = lista.filter((c) => falaHttp(readFileSync(c, "utf8")));
+  ok(clientes.length >= 6, `só ${clientes.length} arquivos falam HTTP: a varredura quebrou`);
+  // Âncoras que AINDA falam HTTP. `lib/apiBilling.ts` esteve aqui e saiu — ele
+  // passou a usar `chamarApi`, que é o desfecho certo; âncora tem de ser um
+  // fato de hoje, não a lembrança de um conserto.
+  for (const obrigatorio of ["api/cliente.ts", "api/painel.ts"]) {
+    ok(clientes.some((c) => c.endsWith(obrigatorio)), `a varredura não alcança ${obrigatorio}`);
+  }
+
+  const culpados = clientes.filter(
     // `cliente.ts` é quem DEFINE o vocabulário; ele não pode ser réu dele.
-    (c) => !c.endsWith("cliente.ts") && inventaErro(readFileSync(c, "utf8")),
+    (c) => !c.endsWith(join("api", "cliente.ts")) && inventaErro(readFileSync(c, "utf8")),
   );
   equal(
     culpados.length,
     0,
-    "estes módulos lançam erro fora do vocabulário — use `chamarApi`, ou " +
+    "estes arquivos falam HTTP e inventam o próprio erro — use `chamarApi`, ou " +
       `\`ErroApi\`/\`ErroRede\` direto:\n${culpados.map((c) => "  " + c.slice(SRC.length + 1)).join("\n")}`,
+  );
+});
+
+test("nenhuma TELA chama `fetch` direto", () => {
+  // Cerca separada porque o defeito é outro: além do vocabulário, uma tela que
+  // fala HTTP na mão perde o tempo limite de 8 s do `chamarApi` — "na gira o
+  // celular costuma estar em rede ruim, e esperar 30 s parado é pior que cair
+  // para o cache" — e some da conferência de fronteira do lado do Python, que
+  // lê os módulos de `api/`.
+  //
+  // A `TelaNovidades` fazia isso, e por isso a rota `/novidades` nunca tinha
+  // sido conferida contra o OpenAPI.
+  const telas = arquivos(join(SRC, "pages")).concat(arquivos(join(SRC, "componentes")));
+  ok(telas.length > 30, `só ${telas.length} telas varridas`);
+  const culpados = telas.filter((c) => falaHttp(readFileSync(c, "utf8")));
+  equal(
+    culpados.length,
+    0,
+    "estas telas chamam `fetch` direto — o caminho é um módulo em `api/`:\n" +
+      culpados.map((c) => "  " + c.slice(SRC.length + 1)).join("\n"),
   );
 });
 
@@ -164,6 +202,13 @@ test("o detector de `message` cru reconhece as formas que aparecem de verdade", 
   for (const fonte of limpas) {
     ok(!VAZAMENTO.test(fonte), `acusou código correto: ${fonte}`);
   }
+});
+
+test("o detector de HTTP reconhece chamada, e não menção", () => {
+  ok(falaHttp("const r = await fetch(`${BASE}/x`);"));
+  ok(falaHttp("void fetch(url, { method: \"POST\" });"));
+  ok(!falaHttp("// o `chamarApi` faz o fetch por você"), "acusou uma menção em comentário");
+  ok(!falaHttp("import { chamarApi } from \"@/api/cliente\";"), "acusou um import");
 });
 
 test("o detector de erro inventado reconhece as duas formas", () => {
