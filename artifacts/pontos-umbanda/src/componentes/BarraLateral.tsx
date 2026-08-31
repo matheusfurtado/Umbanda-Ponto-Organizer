@@ -88,7 +88,7 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
       )}
       {autenticado && (
         <Link href="/seguindo" className={item(local === "/seguindo")}>
-          <Library className="h-4 w-4" aria-hidden /> Biblioteca
+          <Library className="h-4 w-4" aria-hidden /> Meus artistas
         </Link>
       )}
       {/* Só para quem escolheu apelido: sem ele não existe perfil, e um link

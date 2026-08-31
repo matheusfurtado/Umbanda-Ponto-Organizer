@@ -114,3 +114,32 @@ test("a barra lateral continua aberta ao que é de todo mundo", async () => {
     await limpar();
   }
 });
+
+test("a lateral leva a 'Meus artistas' com esse nome, e só para quem entrou", async () => {
+  // Chamava-se "Biblioteca": exato e sem serventia — ninguém procura
+  // "biblioteca" atrás do artista que acabou de seguir. E é de quem tem conta:
+  // sem sessão a lista é sempre vazia.
+  const comConta = await abrir(BarraLateral, true);
+  try {
+    const item = comConta.tela
+      .todos("a")
+      .find((a) => a.getAttribute("href") === "/seguindo");
+    ok(item, "sumiu o caminho para os artistas que a pessoa segue");
+    ok(
+      /Meus artistas/.test(item.textContent ?? ""),
+      `o item voltou a se chamar "${item.textContent?.trim()}"`,
+    );
+  } finally {
+    await comConta.limpar();
+  }
+
+  const semConta = await abrir(BarraLateral, false);
+  try {
+    ok(
+      !destinos(semConta.tela).includes("/seguindo"),
+      "ofereceu a lista de seguidos a quem não entrou",
+    );
+  } finally {
+    await semConta.limpar();
+  }
+});

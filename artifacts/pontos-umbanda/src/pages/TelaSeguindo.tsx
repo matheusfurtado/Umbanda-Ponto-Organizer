@@ -7,7 +7,19 @@ import { quemEuSigo, type PerfilResumo } from "@/api/perfil";
 import { minhaBiblioteca, type ArtistaResumo } from "@/api/artista";
 
 /**
- * A biblioteca: os artistas e as pessoas que eu sigo.
+ * "Meus artistas": os artistas — e as pessoas — que eu sigo.
+ *
+ * ## Por que o título nomeia METADE do conteúdo
+ *
+ * A tela tem duas seções, e a de cima é a que existe de verdade: seguir gente
+ * depende de a comunidade existir, e hoje ela não existe (zero pessoas seguindo
+ * pessoas, uma conta com apelido). "Biblioteca" era exato e não dizia nada —
+ * ninguém procura "biblioteca" atrás do artista que acabou de seguir.
+ *
+ * Nomear pelo conteúdo principal e deixar a seção "Pessoas" com o próprio
+ * rótulo não engana: o título é onde a pessoa CHEGA, os rótulos são o que ela
+ * encontra. Se um dia seguir gente for tão usado quanto seguir artista, o nome
+ * volta a ser sobre as duas metades.
  *
  * **Só eu vejo esta lista.** Ela não aparece no meu perfil nem no de ninguém:
  * quem alguém segue num app de Umbanda é um mapa da rede religiosa dela, e o
@@ -35,7 +47,7 @@ export function TelaSeguindo() {
   return (
     <div className="max-w-3xl px-4 pb-24 pt-5 sm:px-8">
       <h1 className="flex items-center gap-2 text-2xl font-black text-foreground sm:text-3xl">
-        <Library className="h-6 w-6 text-primary" aria-hidden /> Biblioteca
+        <Library className="h-6 w-6 text-primary" aria-hidden /> Meus artistas
       </h1>
       <p className="mb-6 mt-1 text-sm text-muted-foreground">
         Esta lista é sua. Ninguém mais vê quem você segue.
