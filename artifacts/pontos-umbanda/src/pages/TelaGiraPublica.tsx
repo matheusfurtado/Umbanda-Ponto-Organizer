@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { CapaGira } from "@/componentes/CapaGira";
 import { giraPublica, type GiraPublica } from "@/api/repertorio";
 import { registrarCliqueNoPonto } from "@/api/metricas";
+import { duracao } from "@/lib/duracao";
 
 /**
  * Uma gira pública, aberta por link — é assim que ela se compartilha.
@@ -25,11 +26,25 @@ export function TelaGiraPublica() {
   const [gira, setGira] = useState<GiraPublica | null>(null);
   const [erro, setErro] = useState<string | null>(null);
 
+  // O `Route path="/gira/:id"` NÃO remonta quando só o parâmetro muda — ir de
+  // uma gira para outra (voltar/avançar do navegador entre dois links de gira)
+  // deixava a anterior na tela até a nova chegar, e a resposta atrasada da
+  // primeira podia vencer a da segunda. É o mesmo desenho do `TelaArtista`.
   useEffect(() => {
     if (!params?.id) return;
+    setGira(null);
+    setErro(null);
+    let atual = true;
     giraPublica(params.id)
-      .then(setGira)
-      .catch((e) => setErro(mensagemDeErro(e, "Falha.")));
+      .then((g) => {
+        if (atual) setGira(g);
+      })
+      .catch((e) => {
+        if (atual) setErro(mensagemDeErro(e, "Não consegui abrir esta gira."));
+      });
+    return () => {
+      atual = false;
+    };
   }, [params?.id]);
 
   if (erro) {
@@ -51,7 +66,9 @@ export function TelaGiraPublica() {
     );
   }
 
-  const duracao = gira.itens.reduce((t, i) => t + (i.videoDuracaoSeg ?? 0), 0);
+  // Segundos somados da gira inteira. Nome diferente do helper `duracao`
+  // de propósito: um é total em segundos, o outro formata um item.
+  const segundosDaGira = gira.itens.reduce((t, i) => t + (i.videoDuracaoSeg ?? 0), 0);
 
   return (
     <div className="min-h-full">
@@ -90,7 +107,8 @@ export function TelaGiraPublica() {
                 <strong className="font-medium text-foreground">{gira.de}</strong>
               )}
               {" · "}{gira.itens.length} {gira.itens.length === 1 ? "ponto" : "pontos"}
-              {duracao > 0 && ` · cerca de ${Math.round(duracao / 60)} min`}
+              {segundosDaGira > 0 &&
+                ` · cerca de ${Math.round(segundosDaGira / 60)} min`}
             </p>
             {/* A gira é o que circula no grupo do terreiro — e era o que menos
                 tinha como circular: nem botão havia. Ver ADR 0006. */}
@@ -120,12 +138,11 @@ export function TelaGiraPublica() {
                   </span>
                 )}
               </span>
-              {i.videoDuracaoSeg ? (
+              {duracao(i.videoDuracaoSeg) && (
                 <span className="hidden w-12 shrink-0 text-right text-xs tabular-nums text-muted-foreground sm:block">
-                  {Math.floor(i.videoDuracaoSeg / 60)}:
-                  {String(i.videoDuracaoSeg % 60).padStart(2, "0")}
+                  {duracao(i.videoDuracaoSeg)}
                 </span>
-              ) : null}
+              )}
               {i.videoUrl && (
                 <a
                   href={i.videoUrl}

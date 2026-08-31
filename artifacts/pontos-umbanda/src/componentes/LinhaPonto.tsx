@@ -3,6 +3,7 @@ import { ChevronDown, Star, Youtube, AlertTriangle, VideoOff, Plus, UserPen, Clo
 import { Link } from "wouter";
 import { useApp } from "@/context";
 import { destacar } from "@/lib/destacar";
+import { duracao } from "@/lib/duracao";
 import type { Ponto } from "@/types";
 import { registrarCliqueNoPonto } from "@/api/metricas";
 import { CreditoDoArtista } from "@/componentes/CreditoDoArtista";
@@ -38,26 +39,6 @@ const DIAS_DE_NOVIDADE = 30;
 function eNovo(aprovadoEm?: number | null): boolean {
   if (!aprovadoEm) return false;
   return Date.now() - aprovadoEm < DIAS_DE_NOVIDADE * 24 * 60 * 60 * 1000;
-}
-
-/**
- * Segundos no formato de faixa: `2:05`, e `1:19:21` quando passa da hora.
- *
- * Sem o ramo da hora, um vídeo de 1h19 saía como **"79:21"**. Ninguém lê
- * duração assim — quem procura um ponto curto para ensaiar teria de fazer a
- * conta. Hoje é 1 vídeo em 360 no acervo, e vai crescer: os canais que o
- * casamento encontra publicam gira inteira, e gira inteira passa da hora.
- *
- * Devolve `null` para nulo e para zero: "0:00" não é informação, é ruído numa
- * coluna que existe para ser lida de relance.
- */
-function duracao(segundos?: number | null): string | null {
-  if (!segundos || segundos < 0) return null;
-  const h = Math.floor(segundos / 3600);
-  const m = Math.floor((segundos % 3600) / 60);
-  const s = segundos % 60;
-  const dois = (n: number) => String(n).padStart(2, "0");
-  return h > 0 ? `${h}:${dois(m)}:${dois(s)}` : `${m}:${dois(s)}`;
 }
 
 export function LinhaPonto({

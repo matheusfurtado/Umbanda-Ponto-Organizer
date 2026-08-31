@@ -45,6 +45,7 @@ import { ModalConfirmar } from "@/components/ModalConfirmar";
 import { useApp } from "@/context";
 import { ehErroDeRede, mensagemDeErro } from "@/api/cliente";
 import { destacar, semAcento } from "@/lib/destacar";
+import { duracao } from "@/lib/duracao";
 import { apagar, criar, type ItemRepertorio, type Repertorio } from "@/api/repertorio";
 import { registrarCliqueNoPonto } from "@/api/metricas";
 import {
@@ -107,12 +108,11 @@ function ItemArrastavel({
           </span>
         )}
       </span>
-      {item.videoDuracaoSeg ? (
+      {duracao(item.videoDuracaoSeg) && (
         <span className="hidden w-12 shrink-0 text-right text-xs tabular-nums text-muted-foreground sm:block">
-          {Math.floor(item.videoDuracaoSeg / 60)}:
-          {String(item.videoDuracaoSeg % 60).padStart(2, "0")}
+          {duracao(item.videoDuracaoSeg)}
         </span>
-      ) : null}
+      )}
       {item.videoUrl && (
         <a
           href={item.videoUrl}

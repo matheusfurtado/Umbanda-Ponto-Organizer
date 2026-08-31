@@ -17,13 +17,7 @@
 import { AlertTriangle, Youtube } from "lucide-react";
 import type { Ponto } from "@/types";
 import { registrarCliqueNoPonto } from "@/api/metricas";
-
-function duracao(segundos?: number | null): string | null {
-  if (!segundos || segundos <= 0) return null;
-  const m = Math.floor(segundos / 60);
-  const s = segundos % 60;
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
+import { duracao } from "@/lib/duracao";
 
 export function LinkVideo({ ponto }: { ponto: Ponto }) {
   if (!ponto.videoUrl) return null;
