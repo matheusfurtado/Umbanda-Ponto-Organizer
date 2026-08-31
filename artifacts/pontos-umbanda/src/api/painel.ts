@@ -5,7 +5,23 @@
  * frase junto. É de propósito: quem lê este painel decide preço, prazo e
  * prioridade, e um número lido como outra coisa custa mais caro que número
  * nenhum. Ver `servicos/metricas.py`.
+ *
+ * ## O erro fala o vocabulário do app
+ *
+ * Estas duas funções montavam `new Error(...)` com um `.status` pendurado à
+ * mão. Para esse formato, `ehErroDeApi` e `ehErroDeRede` respondem **false** —
+ * e desde que as telas passaram a usar `mensagemDeErro`, o texto cuidadoso
+ * daqui ("Esta área é de quem modera o acervo.") virava o padrão genérico de
+ * quem chamou. Quem não é admin lia "Não consegui carregar." e ficava sem
+ * saber que a resposta era sobre permissão, não sobre falha.
+ *
+ * O `chamarApi` de `api/cliente.ts` não serve aqui porque a mensagem do 404 é
+ * ESCRITA no cliente, não vem do servidor — o 404 é a API dizendo "você não é
+ * admin" sem confirmar que a área existe. Então o que se compartilha é o
+ * vocabulário (`ErroApi`/`ErroRede`), não a função.
  */
+
+import { ErroApi, ErroRede } from "@/api/cliente";
 
 export interface NumeroDoPainel {
   chave: string;
@@ -21,22 +37,41 @@ export interface GrupoDoPainel {
   numeros: NumeroDoPainel[];
 }
 
-export async function verMetricas(): Promise<GrupoDoPainel[]> {
-  const r = await fetch("/api/v1/admin/metricas", { credentials: "same-origin" });
-  if (!r.ok) {
-    const erro = new Error(
-      // 404 aqui não é "sumiu": é a API dizendo que esta conta não é admin,
-      // sem confirmar que a área existe. A tela traduz para linguagem de gente.
-      r.status === 404
-        ? "Esta área é de quem modera o acervo."
-        : `O servidor respondeu ${r.status}.`,
-    ) as Error & { status?: number };
-    erro.status = r.status;
-    throw erro;
-  }
-  return ((await r.json()) as { grupos: GrupoDoPainel[] }).grupos;
+/**
+ * A resposta ruim, no vocabulário que as telas sabem ler.
+ *
+ * Estava copiada nas duas funções abaixo, com o mesmo texto e o mesmo defeito.
+ * Regra que vale em mais de um lugar, reimplementada em cada um, diverge — e
+ * aqui já tinha divergido do resto do app.
+ */
+function recusa(status: number): ErroApi {
+  return new ErroApi(
+    status,
+    // 404 aqui não é "sumiu": é a API dizendo que esta conta não é admin, sem
+    // confirmar que a área existe. A frase é escrita aqui porque o servidor,
+    // de propósito, não manda uma.
+    status === 404
+      ? "Esta área é de quem modera o acervo."
+      : `O servidor respondeu ${status}.`,
+  );
 }
 
+async function pedir<T>(caminho: string): Promise<T> {
+  let r: Response;
+  try {
+    r = await fetch(`/api/v1${caminho}`, { credentials: "same-origin" });
+  } catch (causa) {
+    // Sem isto, cair a rede chega como `TypeError` e `ehErroDeRede` responde
+    // "não é rede" para uma falha de rede — e a tela culpa a permissão.
+    throw new ErroRede(causa);
+  }
+  if (!r.ok) throw recusa(r.status);
+  return (await r.json()) as T;
+}
+
+export async function verMetricas(): Promise<GrupoDoPainel[]> {
+  return (await pedir<{ grupos: GrupoDoPainel[] }>("/admin/metricas")).grupos;
+}
 
 /**
  * Uma linha de ranking. **Ponto, nunca pessoa** — a regra do painel é "diz
@@ -52,22 +87,8 @@ export interface PontoNoRanking {
   quantos: number;
 }
 
-async function ranking(caminho: string): Promise<PontoNoRanking[]> {
-  const r = await fetch(`/api/v1${caminho}`, { credentials: "same-origin" });
-  if (!r.ok) {
-    const erro = new Error(
-      r.status === 404
-        ? "Esta área é de quem modera o acervo."
-        : `O servidor respondeu ${r.status}.`,
-    ) as Error & { status?: number };
-    erro.status = r.status;
-    throw erro;
-  }
-  return (await r.json()) as PontoNoRanking[];
-}
-
 export const pontosMaisClicados = () =>
-  ranking("/admin/metricas/pontos-mais-clicados");
+  pedir<PontoNoRanking[]>("/admin/metricas/pontos-mais-clicados");
 
 export const pontosEmMaisGiras = () =>
-  ranking("/admin/metricas/pontos-em-mais-giras");
+  pedir<PontoNoRanking[]>("/admin/metricas/pontos-em-mais-giras");

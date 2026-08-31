@@ -103,6 +103,23 @@ test("rede de verdade é barrada por padrão", async () => {
  */
 const AQUI = dirname(fileURLToPath(import.meta.url));
 
+/** O teste monta o provedor de sessão? */
+function montaAuth(fonte: string): boolean {
+  return fonte.includes("AuthProvider");
+}
+
+/**
+ * E ele limpa o aparelho entre os cenários?
+ *
+ * Exige a chamada numa linha que não comece com `//`. Um `includes` cru
+ * aceitaria `// localStorage.clear() seria bom aqui` como se fosse limpeza —
+ * e uma cerca satisfeita por um comentário é pior que cerca nenhuma, porque
+ * dá a sensação de proteção.
+ */
+function limpaAparelho(fonte: string): boolean {
+  return /^\s*(?!\/\/).*localStorage\.clear\(\)/m.test(fonte);
+}
+
 function testes(dir: string): string[] {
   return readdirSync(dir).flatMap((nome) => {
     const caminho = join(dir, nome);
@@ -115,12 +132,12 @@ test("todo teste que monta AuthProvider limpa o localStorage", () => {
   const arquivos = testes(AQUI);
   ok(arquivos.length > 15, `só ${arquivos.length} arquivos de teste varridos`);
 
-  const comAuth = arquivos.filter((c) => readFileSync(c, "utf8").includes("AuthProvider"));
+  const comAuth = arquivos.filter((c) => montaAuth(readFileSync(c, "utf8")));
   // GUARDA DE COMPLETUDE: se a varredura parar de achar os arquivos que
   // sabidamente montam o provedor, ela acusa em vez de passar vazia.
   ok(comAuth.length >= 10, `só ${comAuth.length} arquivos montam AuthProvider`);
 
-  const semLimpeza = comAuth.filter((c) => !readFileSync(c, "utf8").includes("localStorage.clear()"));
+  const semLimpeza = comAuth.filter((c) => !limpaAparelho(readFileSync(c, "utf8")));
   equal(
     semLimpeza.length,
     0,
@@ -128,4 +145,26 @@ test("todo teste que monta AuthProvider limpa o localStorage", () => {
       "teste anterior segue logada neles:\n" +
       semLimpeza.map((c) => "  " + c.slice(AQUI.length + 1)).join("\n"),
   );
+});
+
+test("os dois classificadores desta cerca reconhecem o que dizem reconhecer", () => {
+  /**
+   * Cerca de ausência não consegue falhar quando não há violação: enfraquecer
+   * o classificador deixa a lista vazia do mesmo jeito, e o verde continua.
+   *
+   * Aconteceu no `dialogo-limpa-ao-fechar` — a mutação que apagava metade do
+   * detector sobreviveu — e a mesma fragilidade estava aqui. O alvo estava
+   * testado; o INSTRUMENTO não estava.
+   */
+  ok(montaAuth("render(<AuthProvider>{filho}</AuthProvider>)"));
+  ok(!montaAuth("render(<EntitlementsProvider />)"), "chamou de auth o que não é");
+
+  ok(limpaAparelho("beforeEach(() => localStorage.clear());"));
+  ok(limpaAparelho("  localStorage.clear();\n"));
+  ok(
+    !limpaAparelho("localStorage.removeItem('pontos-umbanda-data');"),
+    "aceitou uma limpeza PARCIAL como se fosse a completa — o usuário lembrado " +
+      "sobreviveria, que é justamente o que esta cerca existe para impedir",
+  );
+  ok(!limpaAparelho("// localStorage.clear() seria bom aqui"), "aceitou um comentário");
 });
