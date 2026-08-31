@@ -77,6 +77,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const buscarDoServidor = useCallback(async () => {
     setEstado("carregando");
     const r = await carregar();
+    // Uma carga mais nova já começou — esta responde tarde e não fala pela
+    // tela. Ver `carregar`: o caso comum é a carga ANÔNIMA voltando depois de
+    // a pessoa ter entrado, e ela traz o acervo achatado do portão.
+    if (r.obsoleta) return;
     setDados(r.dados);
     setFonte(r.fonte);
     setMotivoFalha(r.motivo);

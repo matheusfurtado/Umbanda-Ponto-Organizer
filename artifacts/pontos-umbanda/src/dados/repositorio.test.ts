@@ -74,6 +74,13 @@ interface Servidor {
   recusaPutCom: number | null;
   /** Liga o portão do ADR 0002: o GET devolve o acervo achatado. */
   portaoFechado: boolean;
+  /**
+   * Segura o próximo GET até `soltarGet()`.
+   *
+   * É o que permite ORDENAR duas cargas: sem isso as duas resolvem na mesma
+   * volta do laço e a corrida — que é o defeito — não acontece no teste.
+   */
+  prenderProximoGet: boolean;
 }
 
 /**
@@ -103,7 +110,9 @@ async function montar(cenario: string, inicial: {
     fora: false,
     recusaPutCom: null,
     portaoFechado: false,
+    prenderProximoGet: false,
   };
+  let soltarOGetPreso: (() => void) | null = null;
 
   Object.assign(globalThis, {
     localStorage: {
@@ -127,6 +136,17 @@ async function montar(cenario: string, inicial: {
       });
 
     if (!init?.method || init.method === "GET") {
+      if (servidor.prenderProximoGet) {
+        servidor.prenderProximoGet = false;
+        await new Promise<void>((liberar) => {
+          soltarOGetPreso = liberar;
+        });
+        // De novo DEPOIS de soltar: `fora` é checado lá em cima, antes do
+        // portão, então a requisição presa já passou por ele. Sem esta segunda
+        // checagem não dá para simular "a rede caiu enquanto esta carga
+        // esperava", que é o caminho do `catch`.
+        if (servidor.fora) throw new TypeError("fetch failed");
+      }
       if (!servidor.portaoFechado) return resposta(200, servidor.acervo);
       // O que o portão faz de verdade, medido numa conta que perdeu o plano:
       // 520 pontos ficam, 55 subcategorias viram 0, toda `ordem` vira 0 e
@@ -189,6 +209,11 @@ async function montar(cenario: string, inicial: {
     noServidor: () => servidor.acervo.pontos.map((p) => p.id).join(","),
     /** O navegador avisando que a rede voltou. */
     redeVoltou: () => ouvintes.get("online")?.(),
+    /** Solta o GET que ficou preso, para ele responder DEPOIS do outro. */
+    soltarGet: () => {
+      soltarOGetPreso?.();
+      soltarOGetPreso = null;
+    },
     /**
      * Deixa o módulo em repouso ao fim do cenário.
      *
@@ -825,5 +850,125 @@ test("baixar o acervo da conta traz a marca `parcial`", async () => {
     assert.equal(cru.parcial, true, "a marca não nasce no cliente");
   } finally {
     c.encerrar();
+  }
+});
+
+test("a carga que perde a corrida NÃO grava o cache", async () => {
+  /*
+   * O caso comum, e ele é comum de verdade: a pessoa abre o app (carga
+   * ANÔNIMA em voo), entra na conta, e começa uma segunda carga — o
+   * `context.tsx` rebusca quando o login muda, e a faixa de cache ainda tem um
+   * botão "Atualizar" que chama o mesmo caminho.
+   *
+   * Se a anônima responder por último — rede lenta na primeira, cache quente na
+   * segunda —, ela ganha. E a anônima é a visão do PORTÃO: acervo achatado,
+   * `subcategorias: []`, `subcategoriaId` vazio (ADR 0002).
+   *
+   * O prejuízo não é a tela piscar. É o CACHE ficar com a cópia reduzida: na
+   * próxima abertura sem rede, quem PAGA vê o acervo de anônimo, e nada
+   * explica por quê.
+   */
+  const a = await montar("corrida-de-cargas", {
+    servidor: acervo([{ id: "p1", subcategoriaId: "s1", titulo: "Ogum de Lei" }]),
+  });
+  a.servidor.acervo.subcategorias = [{ id: "s1", orixaId: "o1", nome: "Chegada" }];
+  a.servidor.acervo.orixas = [{ id: "o1", nome: "Ogum" }];
+  try {
+    // Carga A: anônima (portão fechado) e PRESA antes de responder.
+    a.servidor.portaoFechado = true;
+    a.servidor.prenderProximoGet = true;
+    const velha = a.mod.carregar();
+
+    // Carga B: a pessoa entrou. Sai e volta inteira, primeiro.
+    a.servidor.portaoFechado = false;
+    const nova = await a.mod.carregar();
+    assert.equal(nova.obsoleta, undefined, "a carga mais nova não pode se declarar obsoleta");
+    assert.equal(a.cache().subcategorias.length, 1, "a carga nova não gravou a hierarquia");
+
+    // Agora a anônima responde, tarde.
+    a.soltarGet();
+    const atrasada = await velha;
+
+    assert.equal(atrasada.obsoleta, true, "a carga velha não se declarou obsoleta");
+    assert.equal(
+      a.cache().subcategorias.length,
+      1,
+      "a carga anônima gravou o acervo achatado por cima da hierarquia",
+    );
+    assert.equal(
+      a.cache().pontos[0].subcategoriaId,
+      "s1",
+      "o ponto perdeu a subcategoria para a carga que chegou atrasada",
+    );
+  } finally {
+    a.encerrar();
+  }
+});
+
+test("a carga atrasada não REARMA a fila de envio", async () => {
+  /*
+   * O ramo do pendente grava por outro caminho, e o que a carga atrasada faz de
+   * errado ali não é a escrita — as duas leem o mesmo pendente, porque ele é
+   * lido DEPOIS do `await`, e escrevem a mesma coisa. São os EFEITOS: pôr o
+   * pendente de volta em `aguardando`, anunciar `pendente: true` e reagendar um
+   * envio que a carga nova já agendou.
+   *
+   * Este teste conta os ANÚNCIOS depois de a carga nova terminar. Sem ele, o
+   * guarda podia ficar no lugar errado — e ficou: na primeira versão ele estava
+   * abaixo dos efeitos, e tirá-lo não quebrava nada.
+   */
+  const a = await montar("corrida-rearma-a-fila", {
+    cache: acervo([{ id: "p1", titulo: "Do cache" }]),
+    pendente: { dono: "u1", dados: acervo([{ id: "pend", titulo: "Da fila" }]) },
+    servidor: acervo([{ id: "srv", titulo: "Do servidor" }]),
+  });
+  try {
+    a.mod.definirDono("u1");
+
+    a.servidor.prenderProximoGet = true;
+    const velha = a.mod.carregar();
+    const nova = await a.mod.carregar();
+    assert.equal(nova.fonte, "cache", "a carga nova não achou o pendente");
+
+    // Conta só o que a ATRASADA fizer daqui para a frente. `observarEnvio`
+    // chama o ouvinte na hora, então a primeira não conta.
+    let anuncios = -1;
+    const parar = a.mod.observarEnvio(() => {
+      anuncios += 1;
+    });
+
+    a.soltarGet();
+    const atrasada = await velha;
+    parar();
+
+    assert.equal(atrasada.obsoleta, true, "a carga atrasada não se declarou obsoleta");
+    assert.equal(anuncios, 0, `a carga atrasada rearmou a fila (${anuncios} anúncios)`);
+  } finally {
+    a.encerrar();
+  }
+});
+
+test("a FALHA de uma carga velha também não fala pela tela", async () => {
+  // Sem isto, uma carga anônima que caiu derrubava a tela para "erro" DEPOIS
+  // de a carga nova ter trazido o acervo inteiro — a pessoa via "não consegui
+  // carregar" com o acervo na frente dela.
+  const a = await montar("corrida-com-falha", {
+    servidor: acervo([{ id: "p1", titulo: "Ogum de Lei" }]),
+  });
+  try {
+    a.servidor.prenderProximoGet = true;
+    const velha = a.mod.carregar();
+
+    const nova = await a.mod.carregar();
+    assert.equal(nova.fonte, "servidor");
+
+    // A velha só descobre que a rede caiu quando é solta.
+    a.servidor.fora = true;
+    a.soltarGet();
+    const atrasada = await velha;
+
+    assert.equal(atrasada.obsoleta, true, "a falha atrasada não se declarou obsoleta");
+  } finally {
+    a.encerrar();
   }
 });

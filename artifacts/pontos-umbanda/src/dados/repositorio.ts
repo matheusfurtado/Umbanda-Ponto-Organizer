@@ -24,6 +24,13 @@ export interface ResultadoCarga {
   fonte: FonteAcervo;
   /** Preenchido quando caiu para o cache: a UI mostra o porquê. */
   motivo?: string;
+  /**
+   * Outra carga começou depois desta. **Quem chamou tem de descartar.**
+   *
+   * Ver `carregar`: a resposta ainda vem, porque cancelar um `fetch` no meio
+   * não desfaz o que o servidor já mandou — o que se cancela é o EFEITO.
+   */
+  obsoleta?: boolean;
 }
 
 /** Espera antes de empurrar para o servidor. Arrastar um ponto dispara várias
@@ -70,7 +77,37 @@ function comFavoritosLocais(doServidor: AppData["pontos"], local: AppData): AppD
  */
 export const MOTIVO_PENDENTE = "há mudanças suas ainda não enviadas";
 
+/**
+ * Qual carga é a válida. Duas podem estar no ar ao mesmo tempo.
+ *
+ * ## O caso que dói, e ele é comum
+ *
+ * `context.tsx` rebusca o acervo quando o login muda, e a faixa de cache tem um
+ * botão "Atualizar" que chama o mesmo caminho. Então: a pessoa abre o app
+ * (carga A, ANÔNIMA, em voo), entra na conta, e começa a carga B, autenticada.
+ *
+ * Se A responder depois de B — rede lenta na primeira, cache quente na segunda
+ * —, A ganha. E A é a visão do PORTÃO: acervo achatado, sem subcategorias, sem
+ * vídeo (ADR 0002). O `salvarDados` de A grava isso por cima da hierarquia que
+ * B acabou de trazer, no estado E no aparelho.
+ *
+ * O prejuízo não é a tela piscar: é o cache ficar com a cópia reduzida. Na
+ * próxima abertura sem rede, o que a pessoa que PAGA vê é o acervo de anônimo,
+ * e nada explica por quê.
+ *
+ * ## Por que um contador, e não `AbortController`
+ *
+ * Abortar cancelaria o `fetch`, mas a corrida não é sobre a requisição: é sobre
+ * QUEM ESCREVE por último. Mesmo abortando, a carga velha já pode estar entre
+ * o `await` e o `salvarDados`. O contador cobre a janela inteira, e cobre
+ * também o ramo do pendente, que grava por outro caminho.
+ */
+let cargaAtual = 0;
+
 export async function carregar(): Promise<ResultadoCarga> {
+  const minha = ++cargaAtual;
+  /** Só a carga mais nova escreve. As outras respondem e vão embora. */
+  const souAAtual = () => minha === cargaAtual;
   try {
     const doServidor = await baixarAcervo();
     // A preferência de qual orixá estava aberto é deste aparelho e não vem do
@@ -99,10 +136,20 @@ export async function carregar(): Promise<ResultadoCarga> {
       // que ficou guardado antes desta correção.
       descartarPendente();
     } else if (pendente) {
+      const dados: AppData = { ...pendente, ultimoOrixaId: local.ultimoOrixaId };
+      // ANTES dos efeitos, e não só antes do `salvarDados`.
+      //
+      // Na primeira versão o guarda estava lá embaixo, e por isso não guardava
+      // nada: as duas cargas leem o mesmo pendente (é lido DEPOIS do `await`),
+      // então a escrita da atrasada tinha conteúdo idêntico. O que a atrasada
+      // fazia de errado eram os EFEITOS — rearmar a fila (`aguardando`),
+      // anunciar `pendente: true` e reagendar um envio — depois de a carga nova
+      // já ter feito tudo isso. Medido por mutação: com o guarda embaixo, tirá-lo
+      // não quebrava teste nenhum.
+      if (!souAAtual()) return { dados, fonte: "cache", obsoleta: true };
       aguardando = pendente;
       anunciar({ pendente: true });
       agendar();
-      const dados: AppData = { ...pendente, ultimoOrixaId: local.ultimoOrixaId };
       salvarDados(dados);
       return { dados, fonte: "cache", motivo: MOTIVO_PENDENTE };
     }
@@ -119,6 +166,7 @@ export async function carregar(): Promise<ResultadoCarga> {
       // `salvarDados` abaixo grava o do servidor por cima.
       pontos: doServidor.parcial ? comFavoritosLocais(doServidor.pontos, local) : doServidor.pontos,
     };
+    if (!souAAtual()) return { dados, fonte: "servidor", obsoleta: true };
     salvarDados(dados);
     return { dados, fonte: "servidor" };
   } catch (erro) {
@@ -131,6 +179,10 @@ export async function carregar(): Promise<ResultadoCarga> {
       dados: cache,
       fonte: houveVisita ? "cache" : "local",
       motivo: descrever(erro),
+      // A falha de uma carga velha também não pode falar pela tela: sem isto,
+      // uma carga anônima que caiu derrubava a tela DEPOIS de a carga nova ter
+      // trazido o acervo inteiro.
+      obsoleta: !souAAtual(),
     };
   }
 }
