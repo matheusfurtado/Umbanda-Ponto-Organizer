@@ -195,16 +195,26 @@ test("desistir NÃO deixa o nome abandonado pronto para virar público", async (
 
 test("o erro de uma tentativa não persegue a próxima", async () => {
   const { tela, limpar } = await abrir(EU_COM_APELIDO, GIRA, {
-    status: 402, corpo: { detail: "Seu plano não inclui giras públicas." },
+    status: 402,
+    corpo: {
+      detail:
+        "Montar playlists faz parte do plano pago. Suas letras continuam " +
+        "disponíveis normalmente.",
+    },
   });
   try {
     await tela.clicar(botao(tela, /^Publicar$/)!);
     await assentar();
     // A frase é do SERVIDOR, palavra por palavra — é isso que este teste
-    // prende. A API ainda diz "giras"; quando ela for renomeada junto, esta
-    // linha muda com ela. Ver o PROGRESSO: o rename do front está feito, o do
-    // servidor não.
-    match(tela.textoNaPagina(), /não inclui giras públicas/);
+    // prende: o `mensagemDeErro` repassa o texto de lá para a pessoa ler o
+    // motivo, e não um genérico.
+    //
+    // O texto do fixture abaixo é o `NEGADO` de `routers/repertorio.py`, que é
+    // o que este 402 devolve de verdade. A primeira versão deste teste
+    // inventou "Seu plano não inclui giras públicas" — frase que a API nunca
+    // disse — e o comentário aqui afirmava que ela vinha de lá. Fixture
+    // inventado que passa é teste que prende a própria invenção.
+    match(tela.textoNaPagina(), /Montar playlists faz parte do plano pago/);
 
     await tela.clicar(botao(tela, /^Cancelar$/)!);
     await assentar();
