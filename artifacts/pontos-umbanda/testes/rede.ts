@@ -12,7 +12,12 @@
  * saiu batendo em `localhost:80` sem ninguém notar.
  */
 
-type Resposta = { status?: number; corpo?: unknown };
+type Resposta = {
+  status?: number;
+  corpo?: unknown;
+  /** Corpo CRU (`text/html`), para imitar portal cativo. Vence o `corpo`. */
+  bruto?: string;
+};
 type Rota = (url: string, init?: RequestInit) => Resposta | Promise<Resposta>;
 
 export interface Rede {
@@ -58,7 +63,23 @@ export function fingirRede(rota: Rota): Rede {
   globalThis.fetch = (async (entrada: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof entrada === "string" ? entrada : String((entrada as URL).toString());
     chamadas.push({ url, metodo: init?.method ?? "GET" });
-    const { status = 200, corpo = {} } = await rota(url, init);
+    const resposta = await rota(url, init);
+    const { status = 200, corpo = {} } = resposta;
+    /**
+     * Corpo CRU, sem passar por `JSON.stringify`.
+     *
+     * O dublê só sabia responder JSON, e por isso não conseguia imitar o caso
+     * mais comum de rede em terreiro: Wi-Fi com **portal cativo**, que devolve
+     * 200 com a página de login em `text/html`. Sem isto, o defeito de "200 que
+     * não é JSON" não tinha como ser testado.
+     */
+    const { bruto } = resposta;
+    if (bruto !== undefined) {
+      return new Response(bruto, {
+        status,
+        headers: { "content-type": "text/html" },
+      });
+    }
     // 204/205/304 NÃO podem ter corpo: o `Response` estoura com
     // "Response with null body status cannot have body", e o `catch` de quem
     // chamou lê isso como falha de REDE. Um `DELETE` que respondia 204 chegava

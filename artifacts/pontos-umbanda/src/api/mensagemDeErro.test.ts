@@ -117,3 +117,38 @@ test("resposta ruim vira ErroApi; queda de rede vira ErroRede", async () => {
 function ehErroDeApiLocal(p: unknown): p is ErroApi {
   return p instanceof Error && p.name === "ErroApi";
 }
+
+test("200 que NÃO é JSON entra no vocabulário — não escapa cru", async () => {
+  /*
+   * O terceiro caso, que faltava. Este módulo promete duas saídas — `ErroRede`
+   * para rede caída, `ErroApi` para resposta ruim — e um **200 com corpo
+   * não-JSON** escapava como `SyntaxError` cru, que não é nenhum dos dois.
+   *
+   * Não é hipótese: é Wi-Fi com portal cativo, a rede mais comum de terreiro.
+   * Toda requisição volta 200 com a página de login em `text/html`.
+   *
+   * Doía em dois lugares: na tela, `descrever` caía em "falha desconhecida" e a
+   * frase ia literal para a faixa; no envio, `insistirAdianta` não reconhecia o
+   * erro e o app reagendava contra o portal a cada 1,5 s.
+   */
+  const rede = fingirRede(() => ({
+    status: 200,
+    bruto: "<html><body>Faça login na rede Wi-Fi</body></html>",
+  }));
+  try {
+    await chamarApi("/acervo");
+    ok(false, "o corpo não-JSON passou como se fosse resposta boa");
+  } catch (problema) {
+    ok(problema instanceof ErroApi, `escapou fora do vocabulário: ${problema}`);
+    // 5xx de propósito: `insistirAdianta` trata como "vale tentar de novo", e
+    // aqui vale mesmo — basta a pessoa passar pelo login do Wi-Fi.
+    equal((problema as ErroApi).status, 502);
+    // E a frase é legível: sem ela, a faixa dizia "falha desconhecida".
+    ok(
+      !/desconhecid/i.test(mensagemDeErro(problema, "padrão")),
+      `a tela continua sem saber o que dizer: ${mensagemDeErro(problema, "padrão")}`,
+    );
+  } finally {
+    rede.restaurar();
+  }
+});

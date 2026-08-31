@@ -128,7 +128,29 @@ async function requisitar<T>(caminho: string, init?: RequestInit): Promise<T> {
 
   // 204/205 não têm corpo, e `json()` neles estoura.
   if (resposta.status === 204 || resposta.status === 205) return undefined as T;
-  return (await resposta.json()) as T;
+  try {
+    return (await resposta.json()) as T;
+  } catch {
+    // **O terceiro caso**, que faltava.
+    //
+    // O docstring deste módulo promete duas saídas — `ErroRede` para a rede
+    // caída, `ErroApi` para resposta ruim — e havia uma terceira escapando: um
+    // **200 que não é JSON**. `resposta.json()` lançava `SyntaxError` cru, que
+    // não é nenhum dos dois.
+    //
+    // Não é hipótese: é o Wi-Fi com portal cativo, que é a rede mais comum de
+    // terreiro. Toda requisição volta 200 com a página de login em `text/html`.
+    //
+    // Doía em dois lugares. Na tela, `descrever` caía em "falha desconhecida" e
+    // essa frase ia literal para a faixa. No envio, `insistirAdianta` não
+    // reconhecia o erro e o app reagendava a cada 1,5 s contra um portal que
+    // nunca vai responder JSON.
+    //
+    // 502 de propósito: é o código de "o intermediário respondeu bobagem", e
+    // `insistirAdianta` trata 5xx como "vale tentar de novo" — que é verdade
+    // aqui, porque basta a pessoa passar pelo login do Wi-Fi.
+    throw new ErroApi(502, "o servidor respondeu algo que não consigo ler");
+  }
 }
 
 /**

@@ -36,8 +36,52 @@ export function carregarDados(): AppData {
   }
 }
 
-export function salvarDados(dados: AppData): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+/**
+ * Guarda o acervo. **Devolve se conseguiu.**
+ *
+ * Era `void` com `setItem` nu — ao contrário do `carregarDados` logo acima e do
+ * `gravarPendente`, que já tinham guarda. Com a cota estourada (o acervo tem
+ * ~250 KB e o pendente guarda uma SEGUNDA cópia inteira) ou o armazenamento
+ * bloqueado, o `setItem` lançava, e daí:
+ *
+ * - **escrevendo:** o erro subia por `persistir` → `atualizar` e matava o
+ *   `setDados` no meio. A edição da pessoa sumia da tela, sem uma palavra.
+ * - **lendo:** estourava dentro do `try` de `carregar()`, e o `catch` de lá
+ *   apresentava uma carga que DEU CERTO como falha — "falha desconhecida".
+ *
+ * Devolver `boolean` deixa quem chama decidir. Ninguém é obrigado a tratar, mas
+ * agora dá para distinguir "não consegui guardar no aparelho" de "não consegui
+ * falar com o servidor", que são coisas diferentes e têm saídas diferentes.
+ */
+export function salvarDados(dados: AppData): boolean {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+    return true;
+  } catch {
+    // Sem espaço, ou sem armazenamento. O dado continua em memória e na tela —
+    // perder o que a pessoa acabou de fazer porque o disco recusou seria trocar
+    // um problema de armazenamento por um de acervo.
+    return false;
+  }
+}
+
+/**
+ * Já houve uma visita que guardou acervo neste aparelho?
+ *
+ * Mora AQUI porque a chave é daqui. O `repositorio` lia
+ * `localStorage.getItem("pontos-umbanda-data")` com o literal copiado e SEM
+ * guarda — duas coisas erradas: renomear a chave de um lado deixaria a faixa
+ * "este aparelho ainda não tem cópia guardada" aparecer para quem tem o acervo
+ * inteiro, e com o armazenamento bloqueado aquela leitura nua lançava dentro do
+ * `catch` de `carregar()` — o erro dentro do tratador de erro, sem ninguém para
+ * pegar, e o esqueleto girando para sempre.
+ */
+export function houveVisita(): boolean {
+  try {
+    return localStorage.getItem(STORAGE_KEY) !== null;
+  } catch {
+    return false;
+  }
 }
 
 export function exportarDados(): void {

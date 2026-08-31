@@ -16,7 +16,7 @@
  */
 
 import { baixarAcervo, ehErroDeApi, ehErroDeRede, enviarAcervo } from "../api/cliente";
-import { carregarDados, salvarDados } from "../storage";
+import { carregarDados, houveVisita, salvarDados } from "../storage";
 import type { AppData, FonteAcervo } from "../types";
 
 export interface ResultadoCarga {
@@ -174,10 +174,9 @@ export async function carregar(): Promise<ResultadoCarga> {
     // `carregarDados` semeia o acervo embutido quando não há nada gravado.
     // Distinguir "cache de uma visita anterior" de "nunca falei com servidor"
     // muda a mensagem: a segunda não é uma falha, é a primeira abertura.
-    const houveVisita = localStorage.getItem("pontos-umbanda-data") !== null;
     return {
       dados: cache,
-      fonte: houveVisita ? "cache" : "local",
+      fonte: houveVisita() ? "cache" : "local",
       motivo: descrever(erro),
       // A falha de uma carga velha também não pode falar pela tela: sem isto,
       // uma carga anônima que caiu derrubava a tela DEPOIS de a carga nova ter

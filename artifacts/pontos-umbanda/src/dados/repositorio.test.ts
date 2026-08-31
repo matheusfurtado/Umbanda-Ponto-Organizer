@@ -114,10 +114,26 @@ async function montar(cenario: string, inicial: {
   };
   let soltarOGetPreso: (() => void) | null = null;
 
+  /**
+   * O aparelho recusando o disco.
+   *
+   * `"cheio"` = cota estourada (o acervo tem ~250 KB e o pendente guarda uma
+   * segunda cópia inteira). `"bloqueado"` = Safari com "bloquear todos os
+   * cookies", webview restrita, iframe de terceiro — cenário que o próprio
+   * `storage.ts` já tratava como real na LEITURA e não tratava na escrita.
+   */
+  const aparelho = { recusa: null as null | "cheio" | "bloqueado" };
+
   Object.assign(globalThis, {
     localStorage: {
-      getItem: (k: string) => disco.get(k) ?? null,
-      setItem: (k: string, v: string) => void disco.set(k, v),
+      getItem: (k: string) => {
+        if (aparelho.recusa === "bloqueado") throw new Error("SecurityError");
+        return disco.get(k) ?? null;
+      },
+      setItem: (k: string, v: string) => {
+        if (aparelho.recusa) throw new Error("QuotaExceededError");
+        disco.set(k, v);
+      },
       removeItem: (k: string) => void disco.delete(k),
     },
     window: {
@@ -209,6 +225,7 @@ async function montar(cenario: string, inicial: {
     noServidor: () => servidor.acervo.pontos.map((p) => p.id).join(","),
     /** O navegador avisando que a rede voltou. */
     redeVoltou: () => ouvintes.get("online")?.(),
+    aparelho,
     /** Solta o GET que ficou preso, para ele responder DEPOIS do outro. */
     soltarGet: () => {
       soltarOGetPreso?.();
@@ -969,6 +986,81 @@ test("a FALHA de uma carga velha também não fala pela tela", async () => {
 
     assert.equal(atrasada.obsoleta, true, "a falha atrasada não se declarou obsoleta");
   } finally {
+    a.encerrar();
+  }
+});
+
+test("disco cheio NÃO transforma uma carga boa em falha", async () => {
+  /*
+   * `salvarDados` era `setItem` nu — ao contrário do `carregarDados` e do
+   * `gravarPendente`, que já tinham guarda. Com a cota estourada ele lançava
+   * DENTRO do `try` de `carregar()`, e o `catch` de lá apresentava como falha
+   * uma carga que tinha dado certo: a faixa vermelha dizia "falha
+   * desconhecida" com o acervo do servidor na mão.
+   */
+  const a = await montar("disco-cheio", {
+    cache: acervo([{ id: "velho", titulo: "Do cache" }]),
+    servidor: acervo([{ id: "novo", titulo: "Do servidor" }]),
+  });
+  try {
+    a.aparelho.recusa = "cheio";
+    const r = await a.mod.carregar();
+
+    assert.equal(r.fonte, "servidor", `a carga boa virou ${r.fonte}: ${r.motivo}`);
+    assert.equal(r.motivo, undefined, `inventou um motivo de falha: ${r.motivo}`);
+    // O dado chega à tela mesmo sem caber no disco — perder o que veio porque o
+    // armazenamento recusou seria trocar um problema por outro, pior.
+    assert.equal(r.dados.pontos[0].id, "novo");
+  } finally {
+    a.aparelho.recusa = null;
+    a.encerrar();
+  }
+});
+
+test("disco cheio não faz a edição da pessoa sumir da tela", async () => {
+  // Caminho de ESCRITA: `persistir` lançava, o erro subia por `atualizar` e
+  // matava o `setDados` no meio — a edição sumia da tela, sem uma palavra.
+  const a = await montar("disco-cheio-escrita", {
+    cache: acervo([{ id: "p1", titulo: "Um" }]),
+    servidor: acervo([{ id: "p1", titulo: "Um" }]),
+  });
+  try {
+    a.mod.definirDono("u1");
+    a.aparelho.recusa = "cheio";
+    // Não pode lançar: quem chama é o `atualizar` do contexto, e o que vem
+    // depois dele é o `setDados` que põe a edição na tela.
+    a.mod.persistir(acervo([{ id: "p1", titulo: "Um" }, { id: "p2", titulo: "Dois" }]));
+  } finally {
+    a.aparelho.recusa = null;
+    a.encerrar();
+  }
+});
+
+test("armazenamento BLOQUEADO não deixa o esqueleto girando para sempre", async () => {
+  /*
+   * O erro dentro do tratador de erro. `carregar()` caía no `catch`, e lá
+   * dentro havia um `localStorage.getItem` NU para descobrir se já houve
+   * visita. Com o armazenamento bloqueado ele lançava de novo — agora sem
+   * ninguém para pegar —, a promessa de `carregar()` rejeitava, e o
+   * `buscarDoServidor` (que não tem `try/catch`) nunca chegava a `setEstado`.
+   *
+   * Efeito na tela: os cartões cinza pulsando, para sempre, sem mensagem e sem
+   * "tentar de novo".
+   */
+  const a = await montar("disco-bloqueado", {
+    servidor: acervo([{ id: "p1", titulo: "Um" }]),
+  });
+  try {
+    a.servidor.fora = true;
+    a.aparelho.recusa = "bloqueado";
+
+    // O que se prende é que ela RESOLVE — antes, rejeitava.
+    const r = await a.mod.carregar();
+    assert.ok(r.motivo, "a falha de rede perdeu o motivo");
+    // Sem disco não há cópia guardada: é primeira abertura, não "cache velho".
+    assert.equal(r.fonte, "local", `disse ${r.fonte} sobre um aparelho sem disco`);
+  } finally {
+    a.aparelho.recusa = null;
     a.encerrar();
   }
 });
