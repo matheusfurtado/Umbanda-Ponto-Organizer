@@ -128,6 +128,16 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
               >
                 <BadgeCheck className="h-4 w-4" aria-hidden /> Perfis de artista
               </Link>
+              {/* Fila SEPARADA da de cima, e não a mesma com um filtro. As duas
+                  respondem perguntas diferentes: "esta pessoa é quem diz ser?"
+                  (tem código de prova) e "este canal merece uma página?" (não
+                  tem o que provar — quem sugeriu não controla o canal). */}
+              <Link
+                href="/moderacao/sugestoes"
+                className={item(local === "/moderacao/sugestoes")}
+              >
+                <Mic2 className="h-4 w-4" aria-hidden /> Sugestões de artista
+              </Link>
               {/* Separado de "Denúncias" de propósito: denúncia é alguém
                   apontando conteúdo de terceiro; isto é a pessoa da página
                   pedindo para sair dela. Misturar os dois faria o segundo

@@ -11,6 +11,7 @@ import { Link } from "wouter";
 import { Mic2, Music2 } from "lucide-react";
 import { listarArtistas, type ArtistaResumo } from "@/api/artista";
 import { mensagemDeErro } from "@/api/cliente";
+import { SugerirArtista } from "@/componentes/SugerirArtista";
 
 export function TelaArtistas() {
   const [artistas, setArtistas] = useState<ArtistaResumo[] | null>(null);
@@ -63,6 +64,11 @@ export function TelaArtistas() {
           ))}
         </div>
       )}
+
+      {/* Depois da lista: é rolando até o fim que a pessoa conclui que o canal
+          dela não está aqui. No vazio vale ainda mais — sem isto, "Nenhum
+          artista no acervo ainda" é um beco. */}
+      <SugerirArtista />
     </div>
   );
 }

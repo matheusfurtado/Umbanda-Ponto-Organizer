@@ -22,6 +22,7 @@ import { TelaPainel } from "@/pages/TelaPainel";
 import { TelaNovidades } from "@/pages/TelaNovidades";
 import { TelaArtista } from "@/pages/TelaArtista";
 import { TelaModerarArtistas } from "@/pages/TelaModerarArtistas";
+import { TelaSugestoesDeArtista } from "@/pages/TelaSugestoesDeArtista";
 import { TelaRemocoesDeArtista } from "@/pages/TelaRemocoesDeArtista";
 import { TelaPedirArtista } from "@/pages/TelaPedirArtista";
 import { TelaArtistas } from "@/pages/TelaArtistas";
@@ -251,6 +252,13 @@ function App() {
                   <Route path="/moderacao/artistas">
                     <RotaProtegida>
                       <TelaModerarArtistas />
+                    </RotaProtegida>
+                  </Route>
+                  {/* Mesma proteção das outras filas: só login aqui, e a API
+                      responde 404 a quem não é admin. */}
+                  <Route path="/moderacao/sugestoes">
+                    <RotaProtegida>
+                      <TelaSugestoesDeArtista />
                     </RotaProtegida>
                   </Route>
                   <Route path="/moderacao">

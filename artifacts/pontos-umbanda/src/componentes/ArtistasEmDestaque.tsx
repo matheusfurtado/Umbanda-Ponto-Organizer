@@ -70,9 +70,13 @@ export function ArtistasEmDestaque() {
       <h2 className="mb-1 flex items-center gap-2 px-2 text-lg font-bold text-foreground">
         <Mic2 className="h-5 w-5 text-primary" aria-hidden />
         Artistas
+        {/* "ver mais", e não "ver todos os 16": o número dava uma precisão
+            que não ajuda ninguém a decidir se vale tocar — e envelhece, porque
+            cada canal novo muda o rótulo de um botão que faz sempre a mesma
+            coisa. */}
         {artistas !== null && artistas.length > QUANTOS && (
           <Link href="/artistas" className="ml-auto text-xs font-medium text-primary underline">
-            ver todos os {artistas.length}
+            ver mais
           </Link>
         )}
       </h2>

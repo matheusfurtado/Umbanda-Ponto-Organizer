@@ -64,7 +64,10 @@ test("com muitos, mostra dez e a saída para os outros", async () => {
     const naPrateleira = destinos(tela).filter((h) => h?.startsWith("/artista/")).length;
     ok(naPrateleira === 10, `mostrou ${naPrateleira} em vez de dez`);
     ok(destinos(tela).includes("/artistas"), "os outros quatro sumiram do app");
-    match(tela.texto(), /ver todos os 14/);
+    // "ver mais", sem o número: ele dava uma precisão que não ajuda a decidir
+    // se vale tocar, e envelhecia a cada canal novo no acervo.
+    match(tela.texto(), /ver mais/);
+    ok(!/ver todos os \d/.test(tela.texto()), "o rótulo voltou a contar os artistas");
   } finally {
     await limpar();
   }
