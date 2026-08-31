@@ -24,6 +24,19 @@
  * `subcategoria_id`) porque o schema dela não declara apelido — ao contrário
  * do `GET /acervo`, que é `camelCase`. A tela não tem por que saber disso: o
  * trabalho de um módulo de `api/` é justamente entregar a forma que o app usa.
+ *
+ * ## Por que a resposta crua é uma INTERFACE, e não `Record<string, unknown>`
+ *
+ * Foi assim que nasceu, e a cerca de vocabulário (`test_vocabulario_
+ * compartilhado.py`) reprovou — com razão. Ela confere que todo campo que o
+ * front lê de uma resposta existe mesmo no schema do servidor, e faz isso
+ * lendo as `interface` de `api/*.ts`. Com a resposta tipada como saco de
+ * `unknown`, os dez campos lidos aqui ficavam INVISÍVEIS para ela: o servidor
+ * podia parar de mandar `enviado_por` e nada acusaria — o crédito de quem
+ * enviou o ponto sumiria em silêncio.
+ *
+ * Declarada, a forma crua entra na `RESPOSTAS` e volta a ser conferida contra
+ * `NovidadeOut`. E os `as` desaparecem de quebra.
  */
 
 import { chamarApi } from "@/api/cliente";
@@ -37,44 +50,67 @@ export interface OrixaDaNovidade {
   emoji: string | null;
 }
 
+/**
+ * O vídeo casado, quando existe. Vem do servidor já respeitando o plano: sem
+ * plano ele simplesmente não é enviado, e aqui só se lê o que chegou (ADR
+ * 0002 — o portão mora no servidor, não na tela).
+ */
+export interface VideoDaNovidade {
+  url: string | null;
+  status: string | null;
+  canal: string | null;
+  titulo: string | null;
+}
+
+/** A linha como o servidor a manda: `snake_case`, com o orixá dentro. */
+export interface NovidadeDoServidor {
+  id: string;
+  titulo: string;
+  letra: string;
+  ordem: number;
+  subcategoria_id: string;
+  autor: string | null;
+  aprovado_em: string | null;
+  enviado_por: string | null;
+  orixa: OrixaDaNovidade;
+  video: VideoDaNovidade | null;
+}
+
+/** A forma que a TELA consome — o orixá separado do ponto, tudo em camelCase. */
 export interface Novidade {
   ponto: Ponto;
   orixa: OrixaDaNovidade;
 }
 
 export async function novidades(): Promise<Novidade[]> {
-  const corpo = await chamarApi<Array<Record<string, unknown>>>("/novidades");
-  return corpo.map((p) => {
-    const o = (p.orixa ?? {}) as Record<string, unknown>;
-    const video = p.video as Record<string, unknown> | null;
-    return {
-      orixa: {
-        id: String(o.id ?? ""),
-        nome: String(o.nome ?? "Sem orixá"),
-        cor: (o.cor as string | null) ?? null,
-        emoji: (o.emoji as string | null) ?? null,
-      },
-      ponto: {
-        id: String(p.id),
-        subcategoriaId: String(p.subcategoria_id ?? ""),
-        orixaId: String(o.id ?? ""),
-        titulo: String(p.titulo ?? ""),
-        letra: String(p.letra ?? ""),
-        autor: (p.autor as string | null) ?? null,
-        aprovadoEm: p.aprovado_em ? Date.parse(String(p.aprovado_em)) : null,
-        enviadoPor: (p.enviado_por as string | null) ?? null,
-        // Resolvido na renderização, a partir do acervo: o favorito é do
-        // acervo da pessoa, e esta rota não o conhece.
-        favorito: false,
-        ordem: Number(p.ordem ?? 0),
-        criadoEm: 0,
-        // O vídeo vem do servidor já respeitando o plano: sem plano ele
-        // simplesmente não é enviado. Aqui só se lê o que chegou.
-        videoUrl: (video?.url as string | null) ?? null,
-        videoStatus: (video?.status as string | null) ?? null,
-        videoCanal: (video?.canal as string | null) ?? null,
-        videoTitulo: (video?.titulo as string | null) ?? null,
-      } as Ponto,
-    };
-  });
+  const corpo = await chamarApi<NovidadeDoServidor[]>("/novidades");
+  return corpo.map((p) => ({
+    orixa: {
+      id: p.orixa?.id ?? "",
+      // "Sem orixá" e não vazio: a lista é AGRUPADA por este nome, e um grupo
+      // sem título vira uma fila de títulos soltos.
+      nome: p.orixa?.nome ?? "Sem orixá",
+      cor: p.orixa?.cor ?? null,
+      emoji: p.orixa?.emoji ?? null,
+    },
+    ponto: {
+      id: p.id,
+      subcategoriaId: p.subcategoria_id,
+      orixaId: p.orixa?.id ?? "",
+      titulo: p.titulo,
+      letra: p.letra,
+      autor: p.autor,
+      aprovadoEm: p.aprovado_em ? Date.parse(p.aprovado_em) : null,
+      enviadoPor: p.enviado_por,
+      // Resolvido na renderização, a partir do acervo: o favorito é do acervo
+      // da pessoa, e esta rota não o conhece.
+      favorito: false,
+      ordem: p.ordem,
+      criadoEm: 0,
+      videoUrl: p.video?.url ?? null,
+      videoStatus: p.video?.status ?? null,
+      videoCanal: p.video?.canal ?? null,
+      videoTitulo: p.video?.titulo ?? null,
+    } as Ponto,
+  }));
 }
