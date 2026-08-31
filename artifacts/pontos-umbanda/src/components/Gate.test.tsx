@@ -45,7 +45,7 @@ async function comDireitos(direitos: Record<string, unknown>, logado = true) {
     <AuthProvider>
       <EntitlementsProvider>
         <Gate feature="repertorios" fallback={<span>assine para usar giras</span>}>
-          <span>minhas giras</span>
+          <span>minhas playlists</span>
         </Gate>
       </EntitlementsProvider>
     </AuthProvider>,
@@ -57,7 +57,7 @@ async function comDireitos(direitos: Record<string, unknown>, logado = true) {
 test("quem tem o direito vê o conteúdo", async () => {
   const { tela, rede } = await comDireitos({ plano: "mensal", repertorios: true });
   try {
-    match(tela.texto(), /minhas giras/);
+    match(tela.texto(), /minhas playlists/);
   } finally {
     await tela.desmontar();
     rede.restaurar();

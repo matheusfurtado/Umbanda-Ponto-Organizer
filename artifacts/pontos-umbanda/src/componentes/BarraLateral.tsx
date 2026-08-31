@@ -54,19 +54,27 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
       {/* A estrela precisava levar a algum lugar. Ela aparecia em toda linha de
           ponto e o único lugar que mostrava o resultado era uma seção do
           Início, com no máximo oito e escondida quando vazia — então quem
-          favoritava de dentro de um orixá não via nada acontecer. */}
-      <Link href="/favoritos" className={item(local === "/favoritos")}>
-        <Star className="h-4 w-4" aria-hidden /> Favoritos
-        {favoritos > 0 && (
-          <span className="ml-auto text-xs tabular-nums text-muted-foreground">{favoritos}</span>
-        )}
-      </Link>
+          favoritava de dentro de um orixá não via nada acontecer.
+
+          E favoritar passou a ser de quem tem conta: sem sessão, o favorito
+          vive só neste aparelho e some na primeira troca de celular, sem nada
+          avisar. A estrela continua na lista e leva ao login (ver
+          `componentes/BotaoFavorito.tsx`); o item de menu, não — menu que abre
+          uma lista sempre vazia é promessa quebrada em toda abertura. */}
+      {autenticado && (
+        <Link href="/favoritos" className={item(local === "/favoritos")}>
+          <Star className="h-4 w-4" aria-hidden /> Favoritos
+          {favoritos > 0 && (
+            <span className="ml-auto text-xs tabular-nums text-muted-foreground">{favoritos}</span>
+          )}
+        </Link>
+      )}
 
       <Link href="/novidades" className={item(local === "/novidades")}>
         <Sparkles className="h-4 w-4" aria-hidden /> Novos do mês
       </Link>
       <Link href="/giras-publicas" className={item(local.startsWith("/giras-publicas"))}>
-        <Globe className="h-4 w-4" aria-hidden /> Giras da comunidade
+        <Globe className="h-4 w-4" aria-hidden /> Playlists da comunidade
       </Link>
       {/* Artistas é aberto: quem ainda não tem conta descobre por aqui, e é
           isso que faz alguém querer uma. */}
@@ -155,7 +163,7 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
 
         {ent.repertorios ? (
           <Link href="/repertorios" className={item(local.startsWith("/repertorios"))}>
-            <ListMusic className="h-4 w-4" aria-hidden /> Minhas giras
+            <ListMusic className="h-4 w-4" aria-hidden /> Minhas playlists
           </Link>
         ) : (
           // O convite fica no lugar onde o recurso VIVERIA. Explicar o que se

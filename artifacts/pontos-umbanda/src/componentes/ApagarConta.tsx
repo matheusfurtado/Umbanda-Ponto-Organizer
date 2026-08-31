@@ -92,7 +92,7 @@ export function ApagarConta({ aberto, onFechar }: { aberto: boolean; onFechar: (
         <div className="space-y-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm leading-snug">
           <p className="font-medium text-foreground">Isto não tem volta.</p>
           <p className="text-muted-foreground">
-            Some o seu acervo organizado, as suas giras (inclusive as públicas), o seu
+            Some o seu acervo organizado, as suas playlists (inclusive as públicas), o seu
             perfil, quem você segue e quem segue você.
           </p>
           <p className="text-muted-foreground">

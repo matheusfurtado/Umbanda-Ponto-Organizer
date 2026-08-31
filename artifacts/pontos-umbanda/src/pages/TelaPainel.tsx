@@ -198,10 +198,10 @@ export function TelaPainel() {
         />
 
         <RankingDePontos
-          titulo="Pontos em mais giras"
+          titulo="Pontos em mais playlists"
           ressalva="Sai dos repertórios montados, sem coleta nenhuma. Mede intenção de cantar, que é mais forte que clique — e por isso mexe devagar."
           linhas={emGiras}
-          unidade={(n) => `${n} ${n === 1 ? "gira" : "giras"}`}
+          unidade={(n) => `${n} ${n === 1 ? "playlist" : "playlists"}`}
         />
       </div>
     </div>

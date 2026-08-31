@@ -40,7 +40,7 @@ export function TelaGiraPublica() {
         if (atual) setGira(g);
       })
       .catch((e) => {
-        if (atual) setErro(mensagemDeErro(e, "Não consegui abrir esta gira."));
+        if (atual) setErro(mensagemDeErro(e, "Não consegui abrir esta playlist."));
       });
     return () => {
       atual = false;
@@ -52,7 +52,7 @@ export function TelaGiraPublica() {
       <div className="mx-auto max-w-md px-4 py-20 text-center">
         <p className="text-sm text-muted-foreground">{erro}</p>
         <Link href="/giras-publicas">
-          <Button variant="ghost" className="mt-4">Ver outras giras</Button>
+          <Button variant="ghost" className="mt-4">Ver outras playlists</Button>
         </Link>
       </div>
     );
@@ -75,7 +75,7 @@ export function TelaGiraPublica() {
       <div className="max-w-3xl px-4 pb-24 pt-5 sm:px-8">
         <Link href="/giras-publicas">
           <Button variant="ghost" size="sm" className="-ml-2 mb-4 gap-1.5 text-muted-foreground">
-            <ArrowLeft className="h-4 w-4" /> Giras da comunidade
+            <ArrowLeft className="h-4 w-4" /> Playlists da comunidade
           </Button>
         </Link>
 
@@ -85,7 +85,7 @@ export function TelaGiraPublica() {
           </div>
           <div className="min-w-0 pb-1">
             <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              <Globe className="h-3.5 w-3.5" aria-hidden /> Gira pública
+              <Globe className="h-3.5 w-3.5" aria-hidden /> Playlist pública
             </p>
             <h1 className="mt-1 break-words text-3xl font-black leading-tight text-foreground sm:text-4xl">
               {gira.nome}
@@ -115,7 +115,7 @@ export function TelaGiraPublica() {
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <Compartilhar titulo={`${gira.nome} — Pontos de Umbanda`} caminho={`/gira/${gira.id}`} />
               {autenticado && (
-                <Denunciar alvoTipo="gira" alvoId={gira.id} oQueE="esta gira" />
+                <Denunciar alvoTipo="gira" alvoId={gira.id} oQueE="esta playlist" />
               )}
             </div>
           </div>

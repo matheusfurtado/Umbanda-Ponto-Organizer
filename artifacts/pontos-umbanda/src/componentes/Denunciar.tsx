@@ -47,7 +47,7 @@ export function Denunciar({
 }: {
   alvoTipo: AlvoDeDenuncia;
   alvoId: string;
-  /** "este perfil", "esta gira" — entra na frase da tela. */
+  /** "este perfil", "esta playlist" — entra na frase da tela. */
   oQueE: string;
 }) {
   const [fase, setFase] = useState<Fase>("fechado");

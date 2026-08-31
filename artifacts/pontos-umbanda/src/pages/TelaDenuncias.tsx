@@ -39,7 +39,7 @@ const MOTIVO: Record<string, string> = {
 
 const ALVO: Record<string, string> = {
   perfil: "Perfil",
-  gira: "Gira pública",
+  gira: "Playlist pública",
   ponto: "Ponto",
   artista: "Página de artista",
 };

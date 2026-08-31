@@ -106,7 +106,7 @@ export function TrocarApelido({
             className="min-h-11"
           />
           <p className="text-xs text-muted-foreground">
-            Aparece no seu perfil, nas giras que você publica e embaixo dos pontos que
+            Aparece no seu perfil, nas playlists que você publica e embaixo dos pontos que
             você envia. Pode ser o nome do terreiro — não precisa ser o seu. Entre{" "}
             {MINIMO} e {MAXIMO} caracteres.
           </p>

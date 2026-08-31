@@ -62,7 +62,7 @@ export function TelaTermos() {
           <li>o acervo organizado por orixá e seção, na ordem da gira;</li>
           <li>reordenar os pontos do seu jeito;</li>
           <li>o link do vídeo casado com cada ponto, dentro do acervo;</li>
-          <li>montar repertórios de gira;</li>
+          <li>montar playlists de gira;</li>
           <li>sincronizar entre aparelhos;</li>
           <li>usar sem internet.</li>
         </ul>
@@ -146,7 +146,7 @@ export function TelaTermos() {
         <p>
           Ao enviar um ponto para a comunidade, você declara que pode
           compartilhá-lo e autoriza que ele entre no acervo de todos, com o seu
-          apelido creditado. Ao publicar uma gira, ela fica visível para quem
+          apelido creditado. Ao publicar uma playlist, ela fica visível para quem
           abrir a vitrine.
         </p>
         <p>

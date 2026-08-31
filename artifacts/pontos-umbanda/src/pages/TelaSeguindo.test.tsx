@@ -72,7 +72,7 @@ test("artistas e pessoas aparecem, cada um levando ao seu lugar", async () => {
     deepEqual(links(tela, "/artista/"), ["/artista/a1"]);
     deepEqual(links(tela, "/perfil/"), ["/perfil/Pai%20Jo%C3%A3o"]);
     match(tela.texto(), /12 pontos/);
-    match(tela.texto(), /2 giras públicas/);
+    match(tela.texto(), /2 playlists públicas/);
   } finally {
     await limpar();
   }

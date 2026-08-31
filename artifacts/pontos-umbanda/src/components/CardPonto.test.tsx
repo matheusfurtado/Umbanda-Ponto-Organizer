@@ -14,6 +14,8 @@ import { assentar, renderizar } from "../../testes/renderizar.ts";
 import { fingirRede } from "../../testes/rede.ts";
 import { CardPonto } from "@/components/CardPonto";
 import { AppProvider } from "@/context";
+import { Router } from "wouter";
+import { memoryLocation } from "wouter/memory-location";
 import { AuthProvider } from "@/auth/AuthContext";
 import type { AppData, Ponto } from "@/types";
 
@@ -55,14 +57,29 @@ const PONTO: Ponto = {
   criadoEm: 0,
 };
 
-async function cartao(p: Ponto = PONTO, sortable = false) {
+/**
+ * `logado` importa desde que favoritar virou coisa de conta: sem sessão a
+ * estrela do cartão é um `<Link>` para o login, não um botão que marca.
+ */
+async function cartao(p: Ponto = PONTO, sortable = false, { logado = false } = {}) {
   localStorage.setItem("pontos-umbanda-data", JSON.stringify(ACERVO));
   const rede = fingirRede((url) => {
-    if (url.includes("/auth/eu")) return { status: 401, corpo: {} };
+    if (url.includes("/auth/eu")) {
+      return logado
+        ? { corpo: {
+            id: "u1", email: "m@e.com", email_verificado: true,
+            apelido: "m", admin: false, foto: null, favoritos_publicos: false,
+          } }
+        : { status: 401, corpo: {} };
+    }
     if (url.includes("/acervo")) return { corpo: { ...ACERVO, acesso: { acervoOrganizado: true } } };
     throw new Error(`chamada não prevista: ${url}`);
   });
   const tela = await renderizar(
+    // O Router é dependência de verdade agora: sem sessão a estrela do card é
+    // um `<Link>` para o login, e `Link` fora de Router assina o histórico do
+    // navegador — que este DOM não expõe de propósito.
+    <Router hook={memoryLocation({ path: "/" }).hook}>
     <AuthProvider>
       <AppProvider>
         <DndContext>
@@ -71,7 +88,8 @@ async function cartao(p: Ponto = PONTO, sortable = false) {
           </SortableContext>
         </DndContext>
       </AppProvider>
-    </AuthProvider>,
+    </AuthProvider>
+    </Router>,
   );
   await assentar();
   return {
@@ -174,7 +192,7 @@ test("favoritar da barra NÃO fecha a letra que a pessoa acabou de abrir", async
   // estivessem dentro do gatilho. Não estão — a barra é IRMÃ do cabeçalho.
   // O `stopPropagation` saiu; o comportamento que ele alegava proteger fica
   // preso aqui, que é o que importa.
-  const { tela, limpar } = await cartao();
+  const { tela, limpar } = await cartao(PONTO, false, { logado: true });
   try {
     await tela.clicar("button[aria-expanded]");
     const favoritar = tela.todos("button").find((b) => /Favoritar/.test(b.textContent ?? ""));
@@ -209,6 +227,10 @@ test("o destaque da busca vale no título e na letra", async () => {
       : { status: 401, corpo: {} },
   );
   const tela = await renderizar(
+    // O Router é dependência de verdade agora: sem sessão a estrela do card é
+    // um `<Link>` para o login, e `Link` fora de Router assina o histórico do
+    // navegador — que este DOM não expõe de propósito.
+    <Router hook={memoryLocation({ path: "/" }).hook}>
     <AuthProvider>
       <AppProvider>
         <DndContext>
@@ -217,7 +239,8 @@ test("o destaque da busca vale no título e na letra", async () => {
           </SortableContext>
         </DndContext>
       </AppProvider>
-    </AuthProvider>,
+    </AuthProvider>
+    </Router>,
   );
   await assentar();
   try {
@@ -228,5 +251,17 @@ test("o destaque da busca vale no título e na letra", async () => {
     await tela.desmontar();
     rede.restaurar();
     localStorage.clear();
+  }
+});
+
+test("sem conta, a estrela do cartão leva ao login", async () => {
+  const { tela, limpar } = await cartao();
+  try {
+    await tela.clicar("button[aria-expanded]");
+    const estrela = tela.exigir('a[href="/login?motivo=favoritos"]');
+    equal(estrela.getAttribute("aria-label"), "Entrar para favoritar");
+    match(estrela.textContent ?? "", /Favoritar/);
+  } finally {
+    await limpar();
   }
 });

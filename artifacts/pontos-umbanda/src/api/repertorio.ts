@@ -164,13 +164,13 @@ export function definirVisibilidade(
 /** A vitrine. Não exige conta: é por aqui que o app circula no boca a boca. */
 export async function publicas(): Promise<GiraNaVitrine[]> {
   const r = await fetch(`${BASE}/publicos`);
-  if (!r.ok) throw new ErroApi(r.status, "Não consegui carregar as giras públicas.");
+  if (!r.ok) throw new ErroApi(r.status, "Não consegui carregar as playlists públicas.");
   return (await r.json()) as GiraNaVitrine[];
 }
 
 export async function giraPublica(id: string): Promise<GiraPublica> {
   const r = await fetch(`${BASE}/publicos/${id}`);
-  if (r.status === 404) throw new ErroApi(404, "Esta gira não existe ou não é pública.");
-  if (!r.ok) throw new ErroApi(r.status, "Não consegui carregar a gira.");
+  if (r.status === 404) throw new ErroApi(404, "Esta playlist não existe ou não é pública.");
+  if (!r.ok) throw new ErroApi(r.status, "Não consegui carregar a playlist.");
   return (await r.json()) as GiraPublica;
 }

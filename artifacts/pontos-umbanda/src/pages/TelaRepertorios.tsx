@@ -136,8 +136,8 @@ function ItemArrastavel({
       {aoMudarSecao && (
         <button
           onClick={aoMudarSecao}
-          aria-label={`Mudar a parte da gira de ${item.titulo ?? "ponto"}`}
-          title="Parte da gira"
+          aria-label={`Mudar a parte da playlist de ${item.titulo ?? "ponto"}`}
+          title="Parte da playlist"
           className="min-h-11 shrink-0 px-2 text-muted-foreground hover:text-foreground"
         >
           <Tag className="h-4 w-4" aria-hidden />
@@ -145,7 +145,7 @@ function ItemArrastavel({
       )}
       <button
         onClick={aoRemover}
-        aria-label={`Tirar ${item.titulo ?? "ponto"} da gira`}
+        aria-label={`Tirar ${item.titulo ?? "ponto"} da playlist`}
         className="min-h-11 shrink-0 px-2 text-muted-foreground hover:text-destructive"
       >
         <Trash2 className="h-4 w-4" aria-hidden />
@@ -177,7 +177,7 @@ function Adicionar({ aoEscolher }: { aoEscolher: (pontoId: string) => void }) {
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Buscar ponto para incluir..."
-          aria-label="Buscar ponto para incluir na gira"
+          aria-label="Buscar ponto para incluir na playlist"
           className="min-h-11 w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground"
         />
       </div>
@@ -244,8 +244,8 @@ function FaixaSincronia({
     } catch (problema) {
       setErroDecisao(
         ehErroDeRede(problema)
-          ? "Sem conexão agora. Sua gira continua guardada neste aparelho — tente de novo quando a rede voltar."
-          : "Não consegui falar com o servidor. Sua gira continua guardada neste aparelho.",
+          ? "Sem conexão agora. Sua playlist continua guardada neste aparelho — tente de novo quando a rede voltar."
+          : "Não consegui falar com o servidor. Sua playlist continua guardada neste aparelho.",
       );
     } finally {
       setResolvendo(false);
@@ -310,10 +310,10 @@ function FaixaSincronia({
         <UploadCloud className="h-4 w-4 shrink-0" aria-hidden />
         <span className="flex-1">
           {sincronia.enviando
-            ? "Salvando sua gira…"
+            ? "Salvando sua playlist…"
             : sincronia.ultimoErro
-              ? `Sua gira está salva neste aparelho, mas ainda não subiu — ${sincronia.ultimoErro}.`
-              : "Sua gira está salva neste aparelho e vai subir em instantes."}
+              ? `Sua playlist está salva neste aparelho, mas ainda não subiu — ${sincronia.ultimoErro}.`
+              : "Sua playlist está salva neste aparelho e vai subir em instantes."}
         </span>
         {!sincronia.enviando && (
           <button
@@ -336,7 +336,7 @@ function FaixaSincronia({
       >
         <CloudOff className="h-4 w-4 shrink-0" aria-hidden />
         <span className="flex-1">
-          Mostrando a gira guardada neste aparelho — {motivo}.
+          Mostrando a playlist guardada neste aparelho — {motivo}.
         </span>
       </div>
     );
@@ -457,7 +457,7 @@ export function TelaRepertorios() {
             </div>
             <div className="min-w-0 pb-1">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Gira
+                Playlist
               </p>
               <div className="mt-1 flex items-center gap-2">
                 <h1 className="break-words text-3xl font-black leading-tight text-foreground sm:text-4xl">
@@ -511,7 +511,7 @@ export function TelaRepertorios() {
             fonte={fonte}
             motivo={motivoFonte}
             sincronia={sincronia}
-            nomeDe={(id) => lista?.find((r) => r.id === id)?.nome ?? "Sua gira"}
+            nomeDe={(id) => lista?.find((r) => r.id === id)?.nome ?? "Sua playlist"}
             aoResolver={() => void carregar()}
           />
 
@@ -537,7 +537,7 @@ export function TelaRepertorios() {
           {aberto.itens.length === 0 ? (
             <div className="py-10 text-center text-muted-foreground">
               <Music className="mx-auto mb-3 h-8 w-8" aria-hidden />
-              <p className="font-medium">Gira vazia</p>
+              <p className="font-medium">Playlist vazia</p>
               <p className="mt-1 text-sm">Busque acima para incluir o primeiro ponto.</p>
             </div>
           ) : (
@@ -583,7 +583,7 @@ export function TelaRepertorios() {
                               value={textoSecao}
                               onChange={(e) => setTextoSecao(e.target.value)}
                               placeholder="Chegada, Louvação... (vazio = sem parte)"
-                              aria-label="Parte da gira"
+                              aria-label="Parte da playlist"
                               list="secoes-da-gira"
                               className="min-h-11 flex-1 rounded-lg border border-border bg-card px-3 text-sm text-foreground"
                             />
@@ -638,7 +638,7 @@ export function TelaRepertorios() {
   return (
     <div className="min-h-full">
       <div className="max-w-5xl px-4 pb-24 pt-5 sm:px-8">
-        <h1 className="text-2xl font-black text-foreground sm:text-3xl">Minhas giras</h1>
+        <h1 className="text-2xl font-black text-foreground sm:text-3xl">Minhas playlists</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           A sequência de pontos da sua gira, na ordem em que serão cantados.
         </p>
@@ -653,14 +653,14 @@ export function TelaRepertorios() {
           className="mb-6 mt-3 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-primary underline underline-offset-2 lg:hidden"
         >
           <Users className="h-4 w-4" aria-hidden />
-          Ver as giras da comunidade
+          Ver as playlists da comunidade
         </Link>
 
         <FaixaSincronia
             fonte={fonte}
             motivo={motivoFonte}
             sincronia={sincronia}
-            nomeDe={(id) => lista?.find((r) => r.id === id)?.nome ?? "Sua gira"}
+            nomeDe={(id) => lista?.find((r) => r.id === id)?.nome ?? "Sua playlist"}
             aoResolver={() => void carregar()}
           />
 
@@ -681,7 +681,7 @@ export function TelaRepertorios() {
               // reconciliação para resolver um caso raro — ninguém batiza uma
               // gira nova no meio dela. A mensagem diz o que dá para fazer.
               setErro(
-                mensagemDeErro(problema, "Falha ao criar.", "Sem conexão. Para criar um repertório novo é preciso estar online — as giras que você já tem continuam funcionando."),
+                mensagemDeErro(problema, "Falha ao criar.", "Sem conexão. Para criar um repertório novo é preciso estar online — as playlists que você já tem continuam funcionando."),
               );
             }
           }}
@@ -715,7 +715,7 @@ export function TelaRepertorios() {
           <div className="py-10 text-center text-muted-foreground">
             <Music className="mx-auto mb-3 h-8 w-8" aria-hidden />
             <p className="font-medium">Nenhum repertório ainda</p>
-            <p className="mt-1 text-sm">Dê um nome acima e monte a primeira gira.</p>
+            <p className="mt-1 text-sm">Dê um nome acima e monte a primeira playlist.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -752,7 +752,7 @@ export function TelaRepertorios() {
         titulo={paraApagar ? `Apagar “${paraApagar.nome}”?` : ""}
         descricao={
           paraApagar
-            ? `A gira tem ${paraApagar.itens.length} ponto${
+            ? `A playlist tem ${paraApagar.itens.length} ponto${
                 paraApagar.itens.length === 1 ? "" : "s"
               }. Isto não pode ser desfeito — os pontos continuam no acervo, a sequência é que se perde.`
             : ""

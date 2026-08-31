@@ -187,7 +187,7 @@ export function TelaPerfil() {
       <div className="max-w-3xl px-4 pb-24 pt-16 text-center sm:px-8">
         <p className="text-sm text-muted-foreground">{erro}</p>
         <Link href="/giras-publicas" className="mt-4 inline-block text-sm text-primary underline">
-          Ver as giras da comunidade
+          Ver as playlists da comunidade
         </Link>
       </div>
     );
@@ -227,7 +227,7 @@ export function TelaPerfil() {
               {perfil.apelido}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              {n(perfil.giras.length, "gira pública", "giras públicas")}
+              {n(perfil.giras.length, "playlist pública", "playlists públicas")}
               {" · "}
               {n(perfil.seguidores, "seguidor", "seguidores")}
               {" · "}
@@ -318,13 +318,13 @@ export function TelaPerfil() {
       <div className="max-w-4xl px-4 pb-24 sm:px-8">
         <section className="mb-8">
           <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
-            <ListMusic className="h-4 w-4 text-primary" aria-hidden /> Giras públicas
+            <ListMusic className="h-4 w-4 text-primary" aria-hidden /> Playlists públicas
           </h2>
           {perfil.giras.length === 0 ? (
             <p className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
               {perfil.souEu
-                ? "Você ainda não publicou nenhuma gira. Em Minhas giras dá para tornar uma pública."
-                : "Nenhuma gira pública ainda."}
+                ? "Você ainda não publicou nenhuma playlist. Em Minhas playlists dá para tornar uma pública."
+                : "Nenhuma playlist pública ainda."}
             </p>
           ) : (
             <div className="grid gap-2 sm:grid-cols-2">

@@ -3,7 +3,7 @@
  *
  * ## A lição veio da gira
  *
- * O `ModalConfirmar` de apagar uma gira diz o tamanho ("A gira tem 12 pontos")
+ * O `ModalConfirmar` de apagar uma playlist diz o tamanho ("A playlist tem 12 pontos")
  * e o que NÃO se perde ("os pontos continuam no acervo, a sequência é que se
  * vai"). As exclusões do acervo organizado diziam só **"isso também excluirá
  * todas as subcategorias e pontos deste Orixá"**.

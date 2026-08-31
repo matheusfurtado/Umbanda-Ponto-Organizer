@@ -102,7 +102,7 @@ test("a tela diz o que expõe ANTES de a pessoa confirmar", async () => {
     match(texto, /O que fica visível/);
     match(texto, /O que nunca aparece/);
     match(texto, /Seu e-mail/, "não disse que o e-mail fica de fora");
-    match(texto, /Suas outras giras/);
+    match(texto, /Suas outras playlists/);
     // O ponto que decide: dito sem rodeio.
     match(texto, /revela que você é de Umbanda/);
   } finally {
@@ -128,7 +128,7 @@ test("fechar a gira é reversível, e a tela diz o que NÃO se perde", async () 
   });
   try {
     match(tela.textoNaPagina(), /não perde o que copiou/);
-    await tela.clicar(botao(tela, /Fechar gira/)!);
+    await tela.clicar(botao(tela, /Fechar playlist/)!);
     await assentar();
     deepEqual(visibilidades, [{ id: "g1", publico: false }]);
   } finally {
@@ -200,6 +200,10 @@ test("o erro de uma tentativa não persegue a próxima", async () => {
   try {
     await tela.clicar(botao(tela, /^Publicar$/)!);
     await assentar();
+    // A frase é do SERVIDOR, palavra por palavra — é isso que este teste
+    // prende. A API ainda diz "giras"; quando ela for renomeada junto, esta
+    // linha muda com ela. Ver o PROGRESSO: o rename do front está feito, o do
+    // servidor não.
     match(tela.textoNaPagina(), /não inclui giras públicas/);
 
     await tela.clicar(botao(tela, /^Cancelar$/)!);

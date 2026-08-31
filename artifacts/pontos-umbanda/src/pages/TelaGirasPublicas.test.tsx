@@ -75,7 +75,7 @@ const cartoes = (tela: Tela) =>
 test("abre sem conta — é o canal de aquisição do produto", async () => {
   const { tela, limpar } = await abrir();
   try {
-    match(tela.texto(), /Giras da comunidade/);
+    match(tela.texto(), /Playlists da comunidade/);
     deepEqual(cartoes(tela), ["/gira/g1", "/gira/g2"]);
     // O apelido de quem montou, nunca o e-mail.
     match(tela.texto(), /Terreiro de Ogum/);
@@ -134,8 +134,8 @@ test("se as giras de quem se segue falharem, a vitrine continua inteira", async 
 test("vitrine vazia convida a publicar, e diz onde", async () => {
   const { tela, limpar } = await abrir({ vitrine: { corpo: [] } });
   try {
-    match(tela.texto(), /Nenhuma gira pública ainda/);
-    match(tela.texto(), /Minhas giras/, "não disse onde se torna pública");
+    match(tela.texto(), /Nenhuma playlist pública ainda/);
+    match(tela.texto(), /Minhas playlists/, "não disse onde se torna pública");
     ok(tela.naoTem('[aria-busy="true"]'), "ficou carregando sobre uma resposta vazia");
   } finally {
     await limpar();
@@ -150,7 +150,7 @@ test("quando a vitrine falha, a tela para de dizer que está carregando", async 
     vitrine: { status: 503, corpo: { detail: "Não consegui carregar as giras públicas." } },
   });
   try {
-    match(tela.texto(), /Não consegui carregar as giras públicas/);
+    match(tela.texto(), /Não consegui carregar as playlists públicas/);
     ok(
       tela.naoTem('[aria-busy="true"]'),
       "mostrou o erro e continuou fingindo que carrega",

@@ -300,7 +300,7 @@ export async function forcarEnvio(repertorioId: string): Promise<void> {
     fila.delete(repertorioId);
     gravarFila();
     conflitos.delete(repertorioId);
-    anunciar({ ultimoErro: "essa gira foi apagada em outro aparelho" });
+    anunciar({ ultimoErro: "essa playlist foi apagada em outro aparelho" });
     return;
   }
   fila.set(repertorioId, { ...pendente, versao: doServidor.versao ?? null });

@@ -90,7 +90,7 @@ export function PublicarGira({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base">
             {jaPublica
-              ? <><Lock className="h-4 w-4" /> Fechar esta gira</>
+              ? <><Lock className="h-4 w-4" /> Fechar esta playlist</>
               : <><Globe className="h-4 w-4" /> Tornar pública</>}
           </DialogTitle>
         </DialogHeader>
@@ -106,19 +106,19 @@ export function PublicarGira({
           <div className="space-y-3 rounded-lg border border-dashed p-3">
             <p className="text-sm font-medium text-foreground">O que fica visível</p>
             <ul className="space-y-1 text-sm text-muted-foreground">
-              <li>· O nome da gira e a sequência de pontos</li>
+              <li>· O nome da playlist e a sequência de pontos</li>
               <li>· O seu <strong className="font-medium text-foreground">apelido</strong></li>
             </ul>
             <p className="text-sm font-medium text-foreground">O que nunca aparece</p>
             <ul className="space-y-1 text-sm text-muted-foreground">
               <li>· Seu e-mail</li>
-              <li>· Suas outras giras</li>
+              <li>· Suas outras playlists</li>
             </ul>
             {/* Dito sem rodeio: é o que a pessoa precisa pesar antes, não
                 depois. Uma lista de pontos de Umbanda ligada a alguém revela
                 a religião dessa pessoa para qualquer um que abra o link. */}
             <p className="text-xs leading-snug text-amber-400/90">
-              Uma gira pública fica visível para qualquer pessoa, inclusive sem
+              Uma playlist pública fica visível para qualquer pessoa, inclusive sem
               conta — e revela que você é de Umbanda. Publique só se estiver
               tudo bem para você.
             </p>
@@ -138,7 +138,7 @@ export function PublicarGira({
               placeholder="Terreiro de Ogum, Casa da Mata..."
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Não precisa ser seu nome. É só como as pessoas verão suas giras.
+              Não precisa ser seu nome. É só como as pessoas verão suas playlists.
             </p>
           </div>
         )}
@@ -153,7 +153,7 @@ export function PublicarGira({
             className="flex-1"
           >
             {salvando && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {jaPublica ? "Fechar gira" : "Publicar"}
+            {jaPublica ? "Fechar playlist" : "Publicar"}
           </Button>
           <Button variant="ghost" onClick={fechar}>Cancelar</Button>
         </div>

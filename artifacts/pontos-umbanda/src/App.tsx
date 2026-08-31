@@ -177,8 +177,13 @@ function App() {
                   <Route path="/buscar">
                     <AppInner focarBusca />
                   </Route>
+                  {/* Protegida: a lista de favoritos é da CONTA. Sem isto, o
+                      link colado ou o histórico abriam uma tela que só sabe
+                      dizer "nenhum favorito" para sempre. */}
                   <Route path="/favoritos">
-                    <TelaFavoritos />
+                    <RotaProtegida>
+                      <TelaFavoritos />
+                    </RotaProtegida>
                   </Route>
                   <Route path="/novidades">
                     <TelaNovidades />

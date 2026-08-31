@@ -41,7 +41,7 @@ export function TelaGirasPublicas() {
   return (
     <div className="max-w-5xl px-4 pb-24 pt-5 sm:px-8">
       <h1 className="flex items-center gap-2 text-2xl font-black text-foreground sm:text-3xl">
-        <Globe className="h-6 w-6 text-primary" aria-hidden /> Giras da comunidade
+        <Globe className="h-6 w-6 text-primary" aria-hidden /> Playlists da comunidade
       </h1>
       <p className="mb-6 mt-1 text-sm text-muted-foreground">
         Sequências que outras casas montaram e quiseram compartilhar.
@@ -81,8 +81,8 @@ export function TelaGirasPublicas() {
         )
       ) : giras.length === 0 ? (
         <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-          Nenhuma gira pública ainda. Se você montou uma que vale compartilhar,
-          pode torná-la pública em <strong className="text-foreground">Minhas giras</strong>.
+          Nenhuma playlist pública ainda. Se você montou uma que vale compartilhar,
+          pode torná-la pública em <strong className="text-foreground">Minhas playlists</strong>.
         </p>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">

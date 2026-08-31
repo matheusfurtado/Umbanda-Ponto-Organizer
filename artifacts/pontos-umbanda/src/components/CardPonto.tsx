@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { ChevronDown, Edit2, Trash2, Star, FolderInput, GripVertical } from "lucide-react";
+import { ChevronDown, Edit2, Trash2, FolderInput, GripVertical } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useApp } from "@/context";
+import { BotaoFavorito } from "@/componentes/BotaoFavorito";
 import { ModalPonto } from "@/components/ModalPonto";
 import { ModalConfirmar } from "@/components/ModalConfirmar";
 import { CreditoDoArtista } from "@/componentes/CreditoDoArtista";
@@ -33,7 +34,7 @@ interface Props {
 
 
 export function CardPonto({ ponto, busca, sortable = false }: Props) {
-  const { dados, editarPonto, excluirPonto, toggleFavorito, moverPontoParaSubcategoria } = useApp();
+  const { dados, editarPonto, excluirPonto, moverPontoParaSubcategoria } = useApp();
   const [expandido, setExpandido] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
   const [confirmarExcluir, setConfirmarExcluir] = useState(false);
@@ -149,18 +150,16 @@ export function CardPonto({ ponto, busca, sortable = false }: Props) {
             <CreditoDoArtista ponto={ponto} className="px-3.5 pb-2" />
             <LinkVideo ponto={ponto} />
             <div className="flex items-center gap-1 px-3.5 py-2 border-t border-border">
-              <button
-                type="button"
-                onClick={() => toggleFavorito(ponto.id)}
+              <BotaoFavorito
+                id={ponto.id}
+                favorito={ponto.favorito}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   ponto.favorito
                     ? "bg-yellow-400/20 text-yellow-400"
                     : "text-muted-foreground hover:text-yellow-400 hover:bg-yellow-400/10"
                 }`}
-              >
-                <Star className={`w-3.5 h-3.5 ${ponto.favorito ? "fill-current" : ""}`} />
-                {ponto.favorito ? "Favorito" : "Favoritar"}
-              </button>
+                comRotulo
+              />
               <div className="flex-1" />
               {(subcategoriasDoOrixa.length > 0 || subcategoriasOutrosOrixas.length > 0) && (
                 <button

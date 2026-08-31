@@ -77,7 +77,7 @@ export function CancelarAssinatura({
           <strong className="text-foreground">Nada do que é seu é apagado.</strong>{" "}
           As letras, os pontos que você escreveu e seus favoritos continuam aqui.
         </li>
-        <li>Depois disso saem a organização por orixá, o link do vídeo, as giras e o uso sem internet.</li>
+        <li>Depois disso saem a organização por orixá, o link do vídeo, as playlists e o uso sem internet.</li>
         <li>Você pode assinar de novo quando quiser.</li>
       </ul>
 

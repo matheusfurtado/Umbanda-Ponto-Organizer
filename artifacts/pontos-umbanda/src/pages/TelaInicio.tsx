@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { Search, X, ListMusic, Star } from "lucide-react";
 import { Link } from "wouter";
 import { useApp } from "@/context";
+import { useAuth } from "@/auth/AuthContext";
+import { ArtistasEmDestaque } from "@/componentes/ArtistasEmDestaque";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { MenuUsuario } from "@/components/MenuUsuario";
 import { Capa } from "@/componentes/Capa";
@@ -53,6 +55,7 @@ export function TelaInicio({
   focarBusca?: boolean;
 }) {
   const { dados, estado } = useApp();
+  const { autenticado } = useAuth();
   const { ent } = useEntitlements();
   const [busca, setBusca] = useState("");
 
@@ -147,7 +150,7 @@ export function TelaInicio({
         </section>
       ) : (
         <>
-          {favoritos.length > 0 && (
+          {autenticado && favoritos.length > 0 && (
             <section className="mb-10">
               <h2 className="mb-2 flex items-center gap-2 px-2 text-lg font-bold text-foreground">
                 <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden />
@@ -163,6 +166,15 @@ export function TelaInicio({
               ))}
             </section>
           )}
+
+          {/* ACIMA dos orixás.
+              
+              Ficou embaixo na primeira versão e, numa tela de celular, isso é
+              longe o bastante para não existir. Subiu por decisão do Matheus.
+              O custo é real — empurra o índice de orixás, que é o que a maioria
+              vem buscar — e é por isso que a seção é uma prateleira horizontal
+              de altura fixa, e não um grid que cresce. */}
+          <ArtistasEmDestaque />
 
           <section aria-label="Orixás">
             <h2 className="mb-3 px-2 text-lg font-bold text-foreground">Orixás</h2>
@@ -259,7 +271,7 @@ export function TelaInicio({
           {!ent.repertorios && dados.orixas.length > 0 && (
             <section className="mt-10 rounded-xl border border-dashed p-6">
               <ListMusic className="mb-2 h-5 w-5 text-muted-foreground" aria-hidden />
-              <h3 className="font-semibold text-foreground">Monte a sua gira</h3>
+              <h3 className="font-semibold text-foreground">Monte a sua playlist</h3>
               <p className="mt-1 max-w-lg text-sm text-muted-foreground">
                 Com o plano você cria repertórios na ordem em que vai cantar, com o
                 vídeo de cada ponto, e leva tudo no celular — inclusive sem sinal.

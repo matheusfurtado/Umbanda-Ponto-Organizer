@@ -134,13 +134,13 @@ export function AdicionarAGira({
         const frescas = await listar().catch(() => null);
         if (frescas) setGiras(frescas);
         setErro(
-          "Esta gira mudou em outro aparelho. Recarreguei o que está lá — " +
+          "Esta playlist mudou em outro aparelho. Recarreguei o que está lá — " +
             "confira e toque em Adicionar de novo. Nada foi perdido.",
         );
         return;
       }
       setErro(
-        mensagemDeErro(problema, "Não consegui adicionar.", "Sem conexão. Para mexer nas giras é preciso estar online."),
+        mensagemDeErro(problema, "Não consegui adicionar.", "Sem conexão. Para mexer nas playlists é preciso estar online."),
       );
     } finally {
       setSalvando(false);
@@ -151,7 +151,7 @@ export function AdicionarAGira({
     <Dialog open onOpenChange={(v) => !v && fechar()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-base">Adicionar à gira</DialogTitle>
+          <DialogTitle className="text-base">Adicionar à playlist</DialogTitle>
         </DialogHeader>
 
         <p className="-mt-1 truncate text-sm text-muted-foreground">{ponto.titulo}</p>
@@ -171,7 +171,7 @@ export function AdicionarAGira({
               value={nomeNova}
               onChange={(e) => setNomeNova(e.target.value)}
               placeholder="Gira de sexta, Festa de Exu..."
-              aria-label="Nome da nova gira"
+              aria-label="Nome da nova playlist"
             />
           </div>
         ) : (

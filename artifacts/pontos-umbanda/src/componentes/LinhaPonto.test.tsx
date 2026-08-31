@@ -45,9 +45,24 @@ function ponto(sobrepor: Partial<Ponto> = {}): Ponto {
   };
 }
 
-async function linha(p: Ponto, extras: Record<string, unknown> = {}) {
+/**
+ * `logado` importa desde que favoritar virou coisa de conta: sem sessão a
+ * estrela é um `<Link>` para o login, não um botão que marca.
+ */
+async function linha(
+  p: Ponto,
+  extras: Record<string, unknown> = {},
+  { logado = false } = {},
+) {
   const rede = fingirRede((url) => {
-    if (url.includes("/auth/eu")) return { status: 401, corpo: {} };
+    if (url.includes("/auth/eu")) {
+      return logado
+        ? { corpo: {
+            id: "u1", email: "m@e.com", email_verificado: true,
+            apelido: "m", admin: false, foto: null, favoritos_publicos: false,
+          } }
+        : { status: 401, corpo: {} };
+    }
     return { corpo: {} };
   });
   const { hook } = memoryLocation({ path: "/" });
@@ -85,12 +100,15 @@ test("o casamento duvidoso NÃO tem a mesma cara do certo", async () => {
     const iconeDe = (t: typeof certo.tela) =>
       t.exigir('a[href="https://y/1"]').querySelector("svg")?.getAttribute("class") ?? "";
     ok(iconeDe(certo.tela) !== iconeDe(duvida.tela), "o palpite tem o ícone do acerto");
+    // Pelo `href`, e não pelo primeiro `<a>` da linha: sem sessão a estrela
+    // também é link (para o login), e ela vem antes. A asserção antiga passava
+    // por sorte de ordem no DOM.
     match(
-      certo.tela.exigir("a").getAttribute("title") ?? "",
+      certo.tela.exigir('a[href="https://y/1"]').getAttribute("title") ?? "",
       /Ouvir no YouTube/,
     );
     match(
-      duvida.tela.exigir("a").getAttribute("title") ?? "",
+      duvida.tela.exigir('a[href="https://y/1"]').getAttribute("title") ?? "",
       /confira antes de usar/,
     );
   } finally {
@@ -272,7 +290,7 @@ test("todo botão da linha é `type=button`", async () => {
   const { tela, rede } = await linha(ponto(), {
     onAdicionar: () => {},
     onSugerirAutor: () => {},
-  });
+  }, { logado: true });
   try {
     const semTipo = tela.todos("button").filter((b) => b.getAttribute("type") !== "button");
     equal(semTipo.length, 0, `sem type=button: ${semTipo.map((b) => b.getAttribute("aria-label"))}`);
@@ -288,7 +306,7 @@ test("as ações de toque NÃO dependem de hover para existir", async () => {
   const { tela, rede } = await linha(ponto(), {
     onAdicionar: () => {},
     onSugerirAutor: () => {},
-  });
+  }, { logado: true });
   try {
     for (const rotulo of [/Adicionar .* a um repertório/, /Sugerir o autor/, /Favoritar/]) {
       const botao = tela.todos("button").find((b) => rotulo.test(b.getAttribute("aria-label") ?? ""));
@@ -299,6 +317,42 @@ test("as ações de toque NÃO dependem de hover para existir", async () => {
         `${rotulo} some no celular: a classe esconde sem depender de hover`,
       );
     }
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});
+
+test("sem conta, a estrela LEVA AO LOGIN em vez de marcar de mentira", async () => {
+  // Favoritar passou a ser de quem tem conta. A estrela fica na tela de
+  // propósito — é vendo o que ela promete que alguém decide criar conta —, mas
+  // ela não pode fingir que marcou: sem sessão o favorito viveria só neste
+  // aparelho, sem lista onde aparecer e sumindo na troca de celular.
+  const { tela, rede } = await linha(ponto({ favorito: true }));
+  try {
+    const estrela = tela.exigir('a[href="/login?motivo=favoritos"]');
+    equal(estrela.getAttribute("aria-label"), "Entrar para favoritar");
+    // E NUNCA cheia: mostrar marcado seria afirmar um favorito que não existe.
+    ok(
+      !(estrela.querySelector("svg")?.getAttribute("class") ?? "").includes("fill-current"),
+      "a estrela apareceu cheia para quem não tem onde guardar favorito",
+    );
+    ok(
+      tela.todos("button").every((b) => !/avoritar/.test(b.getAttribute("aria-label") ?? "")),
+      "sobrou um botão de favoritar que não leva a lugar nenhum",
+    );
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});
+
+test("com conta, a estrela volta a ser botão e marca de verdade", async () => {
+  const { tela, rede } = await linha(ponto({ favorito: true }), {}, { logado: true });
+  try {
+    const botao = tela.todos("button").find((b) => /Desfavoritar/.test(b.getAttribute("aria-label") ?? ""));
+    ok(botao, "quem tem conta perdeu o botão de favoritar");
+    ok(tela.naoTem('a[href="/login?motivo=favoritos"]'), "mandou entrar quem já entrou");
   } finally {
     await tela.desmontar();
     rede.restaurar();

@@ -177,7 +177,7 @@ test("o nome abandonado NÃO sobrevive para criar uma gira que ninguém pediu", 
   try {
     const campo = tela
       .todosNaPagina("input")
-      .find((i) => i.getAttribute("aria-label") === "Nome da nova gira")!;
+      .find((i) => i.getAttribute("aria-label") === "Nome da nova playlist")!;
     await digitar(campo, "Gira que desisti");
     equal(botaoAdicionar(tela).hasAttribute("disabled"), false, "o nome digitado não acendeu o botão");
 

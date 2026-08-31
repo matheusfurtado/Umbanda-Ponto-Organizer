@@ -76,7 +76,7 @@ export function TelaPrivacidade() {
           </li>
           <li>
             <strong>Apelido.</strong> É o nome que aparece quando você contribui
-            com um ponto ou publica uma gira. <strong>O e-mail nunca aparece
+            com um ponto ou publica uma playlist. <strong>O e-mail nunca aparece
             para ninguém</strong> — a lista de novidades abre sem login, e juntar
             e-mail com religião numa página pública seria expor você.
           </li>
@@ -97,7 +97,7 @@ export function TelaPrivacidade() {
           </li>
           <li>
             <strong>O seu acervo</strong>: os pontos que você organizou, seus
-            favoritos e suas giras. É o que o aplicativo existe para guardar.
+            favoritos e suas playlists. É o que o aplicativo existe para guardar.
           </li>
           <li>
             <strong>O que você mandou para a comunidade</strong>: pontos
@@ -182,7 +182,7 @@ export function TelaPrivacidade() {
           </li>
           <li>
             <strong>Apagar a conta</strong>, na mesma página. Some tudo: o seu
-            acervo, suas giras, seus favoritos e suas sessões.
+            acervo, suas playlists, seus favoritos e suas sessões.
           </li>
         </ul>
         <p>

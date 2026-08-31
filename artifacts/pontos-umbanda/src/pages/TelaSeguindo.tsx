@@ -108,14 +108,14 @@ export function TelaSeguindo() {
         <div className="rounded-xl border border-dashed p-8 text-center">
           <Users className="mx-auto mb-3 h-6 w-6 text-muted-foreground" aria-hidden />
           <p className="mx-auto max-w-sm text-sm text-muted-foreground">
-            Você ainda não segue ninguém. Nas giras da comunidade dá para abrir o
+            Você ainda não segue ninguém. Nas playlists da comunidade dá para abrir o
             perfil de quem montou.
           </p>
           <Link
             href="/giras-publicas"
             className="mt-4 inline-block text-sm font-medium text-primary underline"
           >
-            Ver giras da comunidade
+            Ver playlists da comunidade
           </Link>
         </div>
       ) : (
@@ -132,7 +132,7 @@ export function TelaSeguindo() {
                   {p.apelido}
                 </span>
                 <span className="block text-xs text-muted-foreground">
-                  {p.giras} {p.giras === 1 ? "gira pública" : "giras públicas"}
+                  {p.giras} {p.giras === 1 ? "playlist pública" : "playlists públicas"}
                 </span>
               </span>
             </Link>

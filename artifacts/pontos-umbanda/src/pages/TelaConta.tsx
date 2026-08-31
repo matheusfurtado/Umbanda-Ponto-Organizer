@@ -154,7 +154,7 @@ export function TelaConta() {
             </Button>
           </div>
           <p className="mt-2 text-xs leading-snug text-muted-foreground">
-            É o que aparece no seu perfil, nas giras que você publica e embaixo dos
+            É o que aparece no seu perfil, nas playlists que você publica e embaixo dos
             pontos que você envia. Seu e-mail nunca aparece para outras pessoas.
           </p>
           {user?.apelido && (

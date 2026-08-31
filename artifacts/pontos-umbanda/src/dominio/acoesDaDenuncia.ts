@@ -45,7 +45,7 @@ export const ACOES_POR_ALVO: Record<AlvoDeDenuncia, OpcaoDeAcao[]> = {
     {
       valor: "gira_despublicada",
       rotulo: "Tirar da vitrine",
-      aviso: "a gira continua com quem a montou",
+      aviso: "a playlist continua com quem a montou",
     },
     NENHUMA,
   ],

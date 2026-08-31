@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { ChevronDown, Star, Youtube, AlertTriangle, VideoOff, Plus, UserPen, Clock } from "lucide-react";
+import { ChevronDown, Youtube, AlertTriangle, VideoOff, Plus, UserPen, Clock } from "lucide-react";
 import { Link } from "wouter";
-import { useApp } from "@/context";
+import { BotaoFavorito } from "@/componentes/BotaoFavorito";
 import { destacar } from "@/lib/destacar";
 import { duracao } from "@/lib/duracao";
 import type { Ponto } from "@/types";
@@ -55,7 +55,6 @@ export function LinhaPonto({
   onSugerirAutor?: (p: Ponto) => void;
 }) {
   const [aberto, setAberto] = useState(false);
-  const { toggleFavorito } = useApp();
 
   const incerto = ponto.videoStatus === "revisar";
   const tempo = duracao(ponto.videoDuracaoSeg);
@@ -157,19 +156,15 @@ export function LinhaPonto({
             </button>
           )}
 
-          <button
-            type="button"
-            onClick={() => toggleFavorito(ponto.id)}
-            title={ponto.favorito ? "Desfavoritar" : "Favoritar"}
-            aria-label={ponto.favorito ? "Desfavoritar" : "Favoritar"}
+          <BotaoFavorito
+            id={ponto.id}
+            favorito={ponto.favorito}
             className={`rounded-md p-2 transition hover:bg-accent ${
               ponto.favorito
                 ? "text-amber-400"
                 : "text-muted-foreground [@media(hover:hover)]:opacity-0 focus:opacity-100 group-hover:opacity-100"
             }`}
-          >
-            <Star className={`h-4 w-4 ${ponto.favorito ? "fill-current" : ""}`} />
-          </button>
+          />
 
           {ponto.videoUrl ? (
             <a

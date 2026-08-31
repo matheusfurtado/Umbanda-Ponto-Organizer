@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useSearch } from "wouter";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,17 @@ function traduzir(erro: unknown): string {
 
 export function TelaLogin() {
   const [, navegar] = useLocation();
+  /**
+   * Por que a pessoa foi parar aqui.
+   *
+   * A estrela dos pontos manda para cá quem ainda não entrou. Chegar numa tela
+   * de login sem uma palavra sobre o que aconteceu é o beco que a estrela
+   * existia para não ser: ela toca a estrela, a tela troca, e nada explica.
+   *
+   * Só um motivo por enquanto, e é de propósito — cada frase aqui é uma
+   * promessa sobre o que a conta faz, e promessa genérica não ajuda ninguém.
+   */
+  const motivo = new URLSearchParams(useSearch()).get("motivo");
   const { entrar, cadastrar } = useAuth();
   const [modo, setModo] = useState<Modo>("entrar");
   const [email, setEmail] = useState("");
@@ -129,7 +140,9 @@ export function TelaLogin() {
               {criando ? "Criar conta" : "Entrar"}
             </h1>
             <p className="text-muted-foreground text-sm mt-1">
-              Guarde seus pontos na nuvem e acesse de qualquer aparelho.
+              {motivo === "favoritos"
+                ? "Seus favoritos ficam na conta — assim eles seguem com você quando trocar de aparelho."
+                : "Guarde seus pontos na nuvem e acesse de qualquer aparelho."}
             </p>
           </div>
 
@@ -162,12 +175,12 @@ export function TelaLogin() {
                 />
                 {/* O aviso fica AQUI, colado no campo, e não no rodapé.
                     Este nome vai a público embaixo de todo ponto que a pessoa
-                    mandar e de toda gira que publicar — junto, portanto, da
+                    mandar e de toda playlist que publicar — junto, portanto, da
                     informação de que ela é de Umbanda. Quem lê "nome" e escreve
                     o nome civil sem saber disso não consentiu com o que
                     aconteceu; e nome publicado não se despublica. */}
                 <p className="text-xs text-muted-foreground">
-                  Aparece publicamente quando você envia um ponto ou publica uma gira.
+                  Aparece publicamente quando você envia um ponto ou publica uma playlist.
                   Pode ser o nome do terreiro — não precisa ser o seu.
                 </p>
               </div>
@@ -207,7 +220,7 @@ export function TelaLogin() {
                       
                       Ele dizia só "autorizo guardar isso para sincronizar meus
                       pontos" — e o app faz mais que sincronizar: quando a
-                      pessoa manda um ponto, publica uma gira ou abre o perfil,
+                      pessoa manda um ponto, publica uma playlist ou abre o perfil,
                       o apelido dela aparece para qualquer um, ligado a
                       conteúdo de Umbanda. Publicar é sempre escolha dela, mas
                       a autorização precisa dizer que existe essa
@@ -221,7 +234,7 @@ export function TelaLogin() {
                     que isso é um dado sensível sobre minha religião. Autorizo guardar isso
                     para <strong className="font-medium">sincronizar meus pontos</strong> e,
                     quando eu escolher publicar alguma coisa — mandar um ponto, publicar
-                    uma gira, abrir meu perfil —, para{" "}
+                    uma playlist, abrir meu perfil —, para{" "}
                     <strong className="font-medium">mostrar meu apelido junto</strong>.{" "}
                     <strong className="font-medium">Obrigatório para criar conta.</strong>
                   </span>

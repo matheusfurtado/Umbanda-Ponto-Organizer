@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { Home, Search, ListMusic, Palette, Star } from "lucide-react";
 import { useEntitlements } from "@/billing/EntitlementsContext";
+import { useAuth } from "@/auth/AuthContext";
 
 /**
  * A navegação do CELULAR — fixa embaixo, onde o polegar alcança.
@@ -12,6 +13,7 @@ import { useEntitlements } from "@/billing/EntitlementsContext";
 export function BarraInferior({ onTrocarPaleta }: { onTrocarPaleta: () => void }) {
   const [local] = useLocation();
   const { ent } = useEntitlements();
+  const { autenticado } = useAuth();
 
   const item = (ativo: boolean) =>
     `flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] transition ${
@@ -27,15 +29,20 @@ export function BarraInferior({ onTrocarPaleta }: { onTrocarPaleta: () => void }
         <Search className="h-5 w-5" aria-hidden /> Buscar
       </Link>
       {/* No celular a estrela é ainda mais importante: é o atalho de quem está
-          no meio da gira e precisa do ponto que já separou. */}
-      <Link href="/favoritos" className={item(local === "/favoritos")}>
-        <Star className="h-5 w-5" aria-hidden /> Favoritos
-      </Link>
+          no meio da gira e precisa do ponto que já separou.
+
+          Só para quem entrou: sem conta a lista é sempre vazia, e no celular
+          um item de barra que não leva a nada custa um quinto da navegação. */}
+      {autenticado && (
+        <Link href="/favoritos" className={item(local === "/favoritos")}>
+          <Star className="h-5 w-5" aria-hidden /> Favoritos
+        </Link>
+      )}
       <Link
         href={ent.repertorios ? "/repertorios" : "/planos"}
         className={item(local.startsWith("/repertorios"))}
       >
-        <ListMusic className="h-5 w-5" aria-hidden /> Giras
+        <ListMusic className="h-5 w-5" aria-hidden /> Playlists
       </Link>
       <button onClick={onTrocarPaleta} className={item(false)}>
         <Palette className="h-5 w-5" aria-hidden /> Cores
