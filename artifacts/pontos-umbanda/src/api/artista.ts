@@ -62,6 +62,18 @@ export interface ArtistaResumo {
   seguindo: boolean | null;
 }
 
+/** Por que este artista foi sugerido. Sem isto, é palpite que não dá para avaliar. */
+export interface MotivoDaRecomendacao {
+  /** O artista SEGUIDO que puxou a sugestão. */
+  porqueVoceSegue: string;
+  /** Quantos pontos os dois disputam no acervo. */
+  pontosEmComum: number;
+}
+
+export interface ArtistaRecomendado extends ArtistaResumo {
+  motivo: MotivoDaRecomendacao;
+}
+
 export interface PontoDoArtista {
   id: string;
   titulo: string;
@@ -283,3 +295,13 @@ export const manterArtistaOculto = (pedidoId: string) =>
   chamar<null>(`/admin/remocoes-de-artista/${encodeURIComponent(pedidoId)}/manter`, {
     method: "POST",
   });
+
+/**
+ * Artistas parecidos com os que a pessoa segue.
+ *
+ * A semelhança sai do ACERVO — quem disputou os mesmos pontos no casamento com
+ * o YouTube —, e não do comportamento dela: este app não guarda histórico por
+ * pessoa de propósito. Ver o docstring da rota em `routers/artista.py`.
+ */
+export const artistasRecomendados = () =>
+  chamar<ArtistaRecomendado[]>("/eu/artistas/recomendados");

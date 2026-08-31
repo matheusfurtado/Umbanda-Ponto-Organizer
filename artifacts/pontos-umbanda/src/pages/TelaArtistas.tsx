@@ -32,22 +32,41 @@
 
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { Mic2, Users } from "lucide-react";
-import { listarArtistas, type ArtistaResumo } from "@/api/artista";
+import { Library, Mic2, Sparkles, Users } from "lucide-react";
+import {
+  artistasRecomendados, listarArtistas,
+  type ArtistaRecomendado, type ArtistaResumo,
+} from "@/api/artista";
 import { mensagemDeErro } from "@/api/cliente";
+import { useAuth } from "@/auth/AuthContext";
 import { AvatarArtista } from "@/componentes/AvatarArtista";
 import { BotaoSeguirArtista } from "@/componentes/BotaoSeguirArtista";
 import { SugerirArtista } from "@/componentes/SugerirArtista";
 
 export function TelaArtistas() {
+  const { autenticado } = useAuth();
   const [artistas, setArtistas] = useState<ArtistaResumo[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [sugeridos, setSugeridos] = useState<ArtistaRecomendado[]>([]);
 
   useEffect(() => {
     listarArtistas()
       .then(setArtistas)
       .catch((e) => setErro(mensagemDeErro(e, "Falha ao carregar.")));
   }, []);
+
+  // Sem texto de erro e sem esqueleto: a sugestão é acréscimo, e o diretório é
+  // o que a pessoa veio ver. Falhou, a seção não aparece e o resto fica.
+  useEffect(() => {
+    if (!autenticado) return;
+    let vivo = true;
+    artistasRecomendados()
+      .then((l) => vivo && setSugeridos(l))
+      .catch(() => undefined);
+    return () => {
+      vivo = false;
+    };
+  }, [autenticado]);
 
   // A referência da barra é o MAIOR do acervo, não um teto fixo: com teto fixo
   // as barras encolheriam todas juntas no dia em que o acervo crescer, e a
@@ -64,6 +83,60 @@ export function TelaArtistas() {
         o que põe o artista na sua biblioteca, e o que traz ele para a frente
         desta lista.
       </p>
+
+      {/* O caminho para "os meus": a Biblioteca só existia na barra lateral,
+          que não existe no celular — quem seguia um artista pelo telefone não
+          tinha como voltar à própria lista. */}
+      {autenticado && (
+        <Link
+          href="/seguindo"
+          className="mb-6 inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium text-foreground transition hover:border-primary/40"
+        >
+          <Library className="h-4 w-4 text-primary" aria-hidden />
+          Meus artistas
+        </Link>
+      )}
+
+      {/* ANTES do diretório: é a lista curta e pessoal, e o diretório inteiro
+          está logo abaixo de qualquer jeito. */}
+      {sugeridos.length > 0 && (
+        <section aria-label="Recomendados para você" className="mb-8">
+          <h2 className="mb-1 flex items-center gap-2 text-lg font-bold text-foreground">
+            <Sparkles className="h-4 w-4 text-primary" aria-hidden />
+            Para você
+          </h2>
+          <p className="mb-3 text-sm text-muted-foreground">
+            Quem canta os mesmos pontos que os artistas da sua biblioteca.
+          </p>
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {sugeridos.map((a) => (
+              <li key={a.id}>
+                <Link
+                  href={`/artista/${encodeURIComponent(a.id)}`}
+                  className="group flex h-full items-center gap-4 rounded-2xl border border-primary/25 bg-primary/5 p-4 transition hover:border-primary/50"
+                >
+                  <AvatarArtista nome={a.nome} foto={a.foto} tamanho="sm" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-semibold text-foreground group-hover:text-primary">
+                      {a.nome.trim()}
+                    </span>
+                    {/* O MOTIVO, sempre. "O app acha que você vai gostar" não
+                        diz nada; "canta 6 dos mesmos pontos que o canal que
+                        você segue" diz tudo — e deixa a pessoa discordar. */}
+                    <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">
+                      Canta {a.motivo.pontosEmComum} dos mesmos pontos que{" "}
+                      <strong className="font-medium text-foreground">
+                        {a.motivo.porqueVoceSegue.trim()}
+                      </strong>
+                      , que você segue.
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {erro && <p role="alert" className="text-sm text-destructive">{erro}</p>}
 

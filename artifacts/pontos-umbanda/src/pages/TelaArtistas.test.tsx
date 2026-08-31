@@ -23,9 +23,18 @@ const artista = (over: Record<string, unknown> = {}) => ({
   curado: true, foto: null, ...over,
 });
 
-async function abrir(resposta: { status?: number; corpo?: unknown }) {
+const EU = {
+  id: "u1", email: "m@e.com", email_verificado: true,
+  apelido: "maria", admin: false, foto: null, favoritos_publicos: false,
+};
+
+async function abrir(
+  resposta: { status?: number; corpo?: unknown },
+  { logado = false, sugeridos = [] as unknown[] } = {},
+) {
   const rede = fingirRede((url) => {
-    if (url.includes("/auth/eu")) return { status: 401, corpo: {} };
+    if (url.includes("/auth/eu")) return logado ? { corpo: EU } : { status: 401, corpo: {} };
+    if (url.includes("/recomendados")) return { corpo: sugeridos };
     if (url.includes("/artistas")) return resposta;
     throw new Error(`chamada não prevista: ${url}`);
   });
@@ -221,6 +230,69 @@ test("visitante vê o convite de seguir, e ele leva ao login", async () => {
     ok(
       tela.achar('a[href="/login?motivo=seguir-artista"]'),
       "quem não entrou ficou sem caminho para seguir",
+    );
+  } finally {
+    await limpar();
+  }
+});
+
+
+/* ----------------------------------------------------- recomendação e "os meus" */
+
+const recomendado = (over: Record<string, unknown> = {}) => ({
+  ...artista({ id: "r1", nome: "Luan Pureza" }),
+  motivo: { porqueVoceSegue: "Ikaro Ogãn OFC", pontosEmComum: 6 },
+  ...over,
+});
+
+test("a sugestão vem SEMPRE com o motivo — senão é palpite que não dá para avaliar", async () => {
+  // "O app acha que você vai gostar" não diz nada. "Canta 6 dos mesmos pontos
+  // que o canal que você segue" diz tudo — e deixa a pessoa discordar.
+  const { tela, limpar } = await abrir(
+    { corpo: [artista()] },
+    { logado: true, sugeridos: [recomendado()] },
+  );
+  try {
+    match(tela.texto(), /Para você/);
+    match(tela.texto(), /Canta 6 dos mesmos pontos que\s*Ikaro Ogãn OFC, que você segue/);
+  } finally {
+    await limpar();
+  }
+});
+
+test("sem sugestão, a seção não aparece — nem um título vazio", async () => {
+  // Quem não segue ninguém não recebe palpite: preencher com "os mais
+  // seguidos" seria repetir o diretório com outro título.
+  const { tela, limpar } = await abrir(
+    { corpo: [artista()] },
+    { logado: true, sugeridos: [] },
+  );
+  try {
+    ok(!/Para você/.test(tela.texto()), `sobrou a seção vazia: ${tela.texto()}`);
+  } finally {
+    await limpar();
+  }
+});
+
+test("quem entrou tem caminho para a PRÓPRIA lista", async () => {
+  // A Biblioteca só existia na barra lateral, que não existe no celular: quem
+  // seguia um artista pelo telefone não tinha como voltar aos seus.
+  const { tela, limpar } = await abrir({ corpo: [artista()] }, { logado: true });
+  try {
+    const meus = tela.todos("a").find((a) => a.getAttribute("href") === "/seguindo");
+    ok(meus, "não há caminho para os artistas que a pessoa segue");
+    match(meus.textContent ?? "", /Meus artistas/);
+  } finally {
+    await limpar();
+  }
+});
+
+test("visitante não vê 'Meus artistas' — não há o que ver", async () => {
+  const { tela, limpar } = await abrir({ corpo: [artista()] });
+  try {
+    ok(
+      !tela.todos("a").some((a) => a.getAttribute("href") === "/seguindo"),
+      "ofereceu uma biblioteca a quem não tem conta",
     );
   } finally {
     await limpar();
