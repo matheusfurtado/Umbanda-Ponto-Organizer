@@ -102,6 +102,14 @@ export function Moldura({ children }: { children: ReactNode }) {
             com a barra lateral. */}
         <AvisoAcervo />
         {children}
+        {/* Junto com a moldura, e não solta no fim do App.
+            
+            Solta, ela aparecia por cima do login, do verificar e-mail e do
+            redefinir senha — telas que ficam FORA da moldura de propósito
+            ("quem está fazendo login não tem para onde navegar ainda"). Pedir
+            para instalar no meio de um cadastro é interromper a única coisa
+            que a pessoa está tentando fazer. */}
+        <InstallBanner />
       </main>
       <BarraInferior onTrocarPaleta={() => setPaleta(true)} />
       <EscolherPaleta aberto={paleta} onFechar={() => setPaleta(false)} />
@@ -284,7 +292,6 @@ function App() {
               </Moldura>
             </Route>
           </Switch>
-          <InstallBanner />
         </AppProvider>
       </EntitlementsProvider>
     </AuthProvider>

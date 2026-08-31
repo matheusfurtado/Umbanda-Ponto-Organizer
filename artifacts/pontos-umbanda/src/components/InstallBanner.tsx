@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, X, Smartphone } from "lucide-react";
+import { Download, Share, X, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePWA } from "@/usePWA";
 
@@ -57,7 +57,20 @@ export function InstallBanner() {
           <Smartphone className="w-5 h-5 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium">Instalar o app</p>
-            <p className="text-xs opacity-80 truncate">Acesse offline, sem precisar do navegador</p>
+            {/* NÃO promete offline aqui.
+                
+                Dizia "Acesse offline, sem precisar do navegador" — para todo
+                mundo, inclusive para quem não tem conta. E a `TelaPlanos`
+                VENDE "Usar offline, sem depender de sinal" como vantagem da
+                assinatura. O mesmo app oferecia de graça, na faixa, o que
+                cobrava na outra tela.
+                
+                Qual das duas linhas é a mentira é decisão do Matheus e está
+                aberta no ADR 0002 — não dá para consertar escolhendo um lado.
+                O que dá é parar de prometer: esta frase agora diz só o que
+                instalar faz de fato, e vale igual nas duas saídas do ADR. Se a
+                decisão for "(A) offline é grátis", a promessa volta para cá. */}
+            <p className="text-xs opacity-80 truncate">Abre direto da tela inicial, sem a barra do navegador</p>
           </div>
           {isInstallable ? (
             <Button
@@ -93,8 +106,27 @@ export function InstallBanner() {
         <div className="fixed inset-0 z-50 bg-black/70 flex items-end" onClick={() => setShowIOSHelp(false)}>
           <div className="bg-card text-foreground w-full rounded-t-2xl p-6 space-y-3" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-semibold text-lg">Instalar no iPhone/iPad</h3>
+            {/* "No Safari" dito na cara, e não pressuposto.
+                
+                No iPhone e no iPad, adicionar à tela de início é do Safari. Um
+                passo a passo que fala em "a barra do navegador" manda quem
+                está em outro navegador procurar um botão que não existe ali —
+                e ela conclui que o app não instala no aparelho dela. */}
+            <p className="text-sm text-muted-foreground">
+              Estes passos são <strong className="text-foreground">no Safari</strong>. Se você
+              abriu em outro navegador, abra este endereço no Safari primeiro.
+            </p>
             <ol className="space-y-2 text-sm text-muted-foreground list-decimal pl-4">
-              <li>Toque no ícone de compartilhar <span className="text-foreground font-mono">⎋</span> na barra do Safari</li>
+              {/* O símbolo era `⎋` — U+238B, que é a tecla ESC, não o
+                  compartilhar. Quem seguisse a instrução procuraria na barra
+                  do Safari um desenho que não está lá. Agora é o glifo de
+                  verdade (quadrado com a seta saindo para cima), desenhado, e
+                  descrito em palavras para quem não vê a tela. */}
+              <li className="flex flex-wrap items-center gap-1">
+                <span>Toque no ícone de compartilhar</span>
+                <Share className="inline h-4 w-4 text-foreground" aria-hidden />
+                <span>— o quadrado com a seta para cima, na barra do Safari</span>
+              </li>
               <li>Role para baixo e toque em <strong className="text-foreground">"Adicionar à Tela de Início"</strong></li>
               <li>Toque em <strong className="text-foreground">"Adicionar"</strong> no canto superior direito</li>
             </ol>

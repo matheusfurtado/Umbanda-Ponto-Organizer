@@ -116,3 +116,26 @@ test("com tudo certo, a moldura não acrescenta faixa nenhuma", async () => {
     await limpar();
   }
 });
+
+test("o convite de instalar também vem com a moldura, e não solto no App", async () => {
+  // Solto no fim do `App`, ele aparecia por cima do login, do verificar e-mail
+  // e do redefinir senha — telas que ficam FORA da moldura de propósito ("quem
+  // está fazendo login não tem para onde navegar ainda"). Pedir para instalar
+  // no meio de um cadastro é interromper a única coisa que a pessoa está
+  // tentando fazer.
+  //
+  // Dentro da moldura, a exclusão sai de graça: as telas de autenticação não
+  // passam por aqui.
+  for (const [nome, valor] of [
+    ["userAgent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15"],
+    ["maxTouchPoints", 5],
+  ] as const) {
+    Object.defineProperty(window.navigator, nome, { value: valor, configurable: true });
+  }
+  const { tela, limpar } = await montar("/favoritos");
+  try {
+    match(tela.texto(), /Instalar o app/, "o convite não vem junto com a moldura");
+  } finally {
+    await limpar();
+  }
+});
