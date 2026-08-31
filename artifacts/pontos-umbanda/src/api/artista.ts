@@ -56,6 +56,10 @@ export interface ArtistaResumo {
   pontos: number;
   seguidores: number;
   curado: boolean;
+  /** Nulo quando não há foto — a tela cai na inicial do nome. */
+  foto: string | null;
+  /** `null` = visitante não logado. Diferente de "não segue". */
+  seguindo: boolean | null;
 }
 
 export interface PontoDoArtista {

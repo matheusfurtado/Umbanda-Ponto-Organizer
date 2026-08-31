@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Mic2, Music2 } from "lucide-react";
 import { listarArtistas, type ArtistaResumo } from "@/api/artista";
-import { matiz } from "@/lib/matiz";
+import { AvatarArtista } from "@/componentes/AvatarArtista";
 
 /**
  * Quem canta os pontos — no ALTO da tela inicial.
@@ -28,22 +28,6 @@ import { matiz } from "@/lib/matiz";
  * buscar, artista é acréscimo. Falhou, a prateleira some e o resto fica.
  */
 const QUANTOS = 10;
-
-/** A inicial, sobre uma cor tirada do nome — ver `lib/matiz.ts`. */
-function Avatar({ nome }: { nome: string }) {
-  const h = matiz(nome || "artista");
-  return (
-    <span
-      aria-hidden
-      className="flex h-20 w-20 items-center justify-center rounded-full text-2xl font-black text-white/90 shadow-lg"
-      style={{
-        background: `linear-gradient(145deg, hsl(${h} 55% 42%), hsl(${(h + 40) % 360} 50% 26%))`,
-      }}
-    >
-      {nome.trim().charAt(0).toUpperCase() || "?"}
-    </span>
-  );
-}
 
 export function ArtistasEmDestaque() {
   const [artistas, setArtistas] = useState<ArtistaResumo[] | null>(null);
@@ -91,7 +75,7 @@ export function ArtistasEmDestaque() {
         {artistas === null
           ? Array.from({ length: 6 }, (_, i) => (
               <div key={i} aria-busy="true" className="w-24 shrink-0">
-                <div className="h-20 w-20 animate-pulse rounded-full bg-muted/40" />
+                <div className="h-16 w-16 animate-pulse rounded-full bg-muted/40" />
                 <div className="mt-2 h-3 w-20 animate-pulse rounded bg-muted/40" />
               </div>
             ))
@@ -101,7 +85,9 @@ export function ArtistasEmDestaque() {
                 href={`/artista/${encodeURIComponent(a.id)}`}
                 className="group w-24 shrink-0 text-center"
               >
-                <Avatar nome={a.nome} />
+                <span className="flex justify-center">
+                <AvatarArtista nome={a.nome} foto={a.foto} tamanho="md" />
+                </span>
                 <span className="mt-2 block truncate text-sm font-semibold text-foreground group-hover:text-primary">
                   {a.nome}
                 </span>

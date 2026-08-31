@@ -93,10 +93,14 @@ test("a inicial do artista vira o avatar, com cor estável", async () => {
   // visual que o avatar existe para criar.
   const { tela, limpar } = await abrir({ corpo: [artista(1)] });
   try {
-    const avatar = tela.todos("span").find((s) => s.textContent === "C");
-    ok(avatar, "o avatar não mostra a inicial do nome");
-    const cor = avatar.getAttribute("style") ?? "";
-    ok(/hsl\(/.test(cor), `o avatar saiu sem cor derivada do nome: ${cor}`);
+    // Pelo ELEMENTO que carrega a cor, e não pelo primeiro `span` com a letra:
+    // o de fora é só um embrulho de centralização, e a asserção passava por
+    // sorte de ordem no DOM.
+    const avatar = tela
+      .todos("span")
+      .find((s) => /hsl\(/.test(s.getAttribute("style") ?? ""));
+    ok(avatar, "o avatar saiu sem cor derivada do nome");
+    ok(avatar.textContent === "C", `mostrou "${avatar.textContent}" em vez da inicial`);
   } finally {
     await limpar();
   }

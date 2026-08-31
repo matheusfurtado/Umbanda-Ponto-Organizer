@@ -8,7 +8,7 @@
  * mundos — a pessoa fecha o app achando que tem o artista na biblioteca.
  */
 
-import { deepEqual, match, ok } from "node:assert/strict";
+import { deepEqual, equal, match, ok } from "node:assert/strict";
 import { beforeEach, test } from "node:test";
 import { assentar, renderizar, type Tela } from "../../testes/renderizar.ts";
 import { fingirRede } from "../../testes/rede.ts";
@@ -57,7 +57,12 @@ test("visitante não vê botão — vê o caminho de entrar", async () => {
   try {
     ok(tela.naoTem("button"), "ofereceu seguir a quem não tem conta");
     match(tela.texto(), /Entre/);
-    ok(tela.achar('a[href="/login"]'), "a frase não leva a lugar nenhum");
+    // Com o MOTIVO junto: chegar numa tela de login sem uma palavra sobre o
+    // que aconteceu é o beco que o convite existe para não ser.
+    ok(
+      tela.achar('a[href="/login?motivo=seguir-artista"]'),
+      "a frase não leva a lugar nenhum",
+    );
   } finally {
     await limpar();
   }
@@ -137,6 +142,24 @@ test("o estado de seguir é anunciado, e não só desenhado", async () => {
   const { tela, limpar } = await abrir(true);
   try {
     ok(oBotao(tela)!.getAttribute("aria-pressed") === "true");
+  } finally {
+    await limpar();
+  }
+});
+
+test("no cartão do diretório o convite cabe: vira botão, não parágrafo", async () => {
+  // Na página do artista o convite é um parágrafo inteiro — ali há espaço e a
+  // ação é a principal. Num cartão de lista, o mesmo parágrafo empurraria o
+  // nome do terreiro para fora.
+  const { tela, limpar } = await abrir(null);
+  try {
+    await tela.reRenderizar(
+      <BotaoSeguirArtista artistaId="a1" seguindo={null} compacto onMudou={() => {}} />,
+    );
+    const convite = tela.exigir('a[href="/login?motivo=seguir-artista"]');
+    match(convite.textContent ?? "", /Seguir/);
+    equal(convite.getAttribute("aria-label"), "Entrar para seguir este artista");
+    ok(tela.naoTem("p"), "sobrou o parágrafo da versão grande dentro do cartão");
   } finally {
     await limpar();
   }

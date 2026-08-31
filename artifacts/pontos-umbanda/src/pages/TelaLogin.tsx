@@ -142,9 +142,11 @@ export function TelaLogin() {
             <p className="text-muted-foreground text-sm mt-1">
               {motivo === "favoritos"
                 ? "Seus favoritos ficam na conta — assim eles seguem com você quando trocar de aparelho."
-                : motivo === "sugerir-artista"
-                  ? "Sugestões vêm de uma conta — é por ela que a gente responde o que aconteceu com a sua."
-                  : "Guarde seus pontos na nuvem e acesse de qualquer aparelho."}
+                : motivo === "seguir-artista"
+                  ? "Seguir um artista põe ele na sua biblioteca — e traz ele para a frente da lista de todo mundo."
+                  : motivo === "sugerir-artista"
+                    ? "Sugestões vêm de uma conta — é por ela que a gente responde o que aconteceu com a sua."
+                    : "Guarde seus pontos na nuvem e acesse de qualquer aparelho."}
             </p>
           </div>
 

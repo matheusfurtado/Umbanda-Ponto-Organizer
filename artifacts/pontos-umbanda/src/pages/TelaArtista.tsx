@@ -35,6 +35,7 @@ import {
 } from "@/api/artista";
 import { PontoDoArtista as PontoDoArtistaLinha } from "@/componentes/PontoDoArtista";
 import { BotaoSeguirArtista } from "@/componentes/BotaoSeguirArtista";
+import { AvatarArtista } from "@/componentes/AvatarArtista";
 import { Denunciar } from "@/componentes/Denunciar";
 import { PedirRemocao } from "@/componentes/PedirRemocao";
 import { EditarArtista } from "@/componentes/EditarArtista";
@@ -111,26 +112,7 @@ export function TelaArtista() {
     <div className="max-w-3xl px-4 pb-24 pt-5 sm:px-8">
       <header className="rounded-2xl border bg-card/40 p-5">
         <div className="flex items-start gap-4">
-          {artista.foto ? (
-            <img
-              src={artista.foto}
-              alt=""
-              width={72}
-              height={72}
-              className="h-18 w-18 shrink-0 rounded-full object-cover"
-              style={{ width: 72, height: 72 }}
-            />
-          ) : (
-            // Sem foto, a inicial do nome. Vazio deixaria o cabeçalho torto e
-            // faria a página parecer quebrada em vez de simplesmente nova.
-            <span
-              aria-hidden
-              className="flex shrink-0 items-center justify-center rounded-full bg-primary/15 text-2xl font-black text-primary"
-              style={{ width: 72, height: 72 }}
-            >
-              {artista.nome.trim().charAt(0).toUpperCase()}
-            </span>
-          )}
+          <AvatarArtista nome={artista.nome} foto={artista.foto} tamanho="lg" />
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Artista
