@@ -41,7 +41,7 @@ interface AppContextType {
   editarSubcategoria: (id: string, nome: string) => void;
   excluirSubcategoria: (id: string) => void;
 
-  adicionarPonto: (subcategoriaId: string, titulo: string, letra: string) => void;
+  adicionarPonto: (subcategoriaId: string, titulo: string, letra: string, autor?: string) => void;
   editarPonto: (id: string, titulo: string, letra: string, autor?: string | null) => void;
   excluirPonto: (id: string) => void;
   toggleFavorito: (id: string) => void;
@@ -223,13 +223,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [dados, atualizar, subcategoriaSelecionada]
   );
 
+  /**
+   * `autor` estava fora daqui, e por isso o crédito se perdia ao CRIAR.
+   *
+   * O `ModalPonto` sempre teve o campo "Autor (se você souber)" e sempre
+   * chamou `onSalvar(titulo, letra, autor)`. Editar preservava (`editarPonto`,
+   * logo abaixo); criar descartava — o handler de `TelaSubcategorias` recebia
+   * só dois parâmetros e esta assinatura nem tinha o terceiro. O TypeScript
+   * não pega: callback com menos parâmetros é legal.
+   *
+   * Cópia divergente clássica, e o que divergia era autoria de obra
+   * religiosa: a pessoa digitava o nome de quem fez o ponto, o ponto nascia
+   * sem ele, e nada avisava. O `|| null` é o mesmo do `editarPonto` — duas
+   * representações de "não sei" divergem no primeiro `===`.
+   */
   const adicionarPonto = useCallback(
-    (subcategoriaId: string, titulo: string, letra: string) => {
+    (subcategoriaId: string, titulo: string, letra: string, autor?: string) => {
       const ponto: Ponto = {
         id: gerarId(),
         subcategoriaId,
         titulo,
         letra,
+        autor: autor?.trim() || null,
         favorito: false,
         ordem: dados.pontos.filter((p) => p.subcategoriaId === subcategoriaId).length,
         criadoEm: Date.now(),

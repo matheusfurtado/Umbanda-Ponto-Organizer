@@ -37,13 +37,24 @@ const ACERVO: AppData = {
   }],
 };
 
-/** Um botão dentro do componente, para a pessoa "mexer no acervo". */
+/**
+ * As ações da pessoa, por dentro do `useApp` — o mesmo caminho do app.
+ *
+ * `recarregar` e `sincronizarAgora` estão aqui porque a faixa nem sempre os
+ * oferece, e são justamente os estados em que ela NÃO oferece que precisam ser
+ * alcançados. `recarregar` é o que o botão "Atualizar" da própria faixa chama;
+ * `sincronizarAgora` é o "Enviar agora". Semear o pendente direto no
+ * localStorage não serve: `donoAtual` é estado de MÓDULO e só é definido pelo
+ * login, então o pendente precisa nascer como nasce de verdade.
+ */
 function Mexer() {
-  const { toggleFavorito } = useApp();
+  const { toggleFavorito, recarregar, sincronizarAgora } = useApp();
   return (
-    <button type="button" onClick={() => toggleFavorito("p1")}>
-      mexer
-    </button>
+    <>
+      <button type="button" onClick={() => toggleFavorito("p1")}>mexer</button>
+      <button type="button" onClick={recarregar}>reabrir</button>
+      <button type="button" onClick={sincronizarAgora}>sincronizar</button>
+    </>
   );
 }
 
@@ -92,9 +103,24 @@ async function montar(c: Cenario) {
   };
 }
 
-const mexerNoAcervo = async (tela: Tela) => {
-  await tela.clicar(tela.todos("button").find((b) => b.textContent === "mexer")!);
+const apertar = async (tela: Tela, rotulo: string) => {
+  await tela.clicar(tela.todos("button").find((b) => b.textContent === rotulo)!);
   await assentar();
+};
+
+const mexerNoAcervo = (tela: Tela) => apertar(tela, "mexer");
+
+/**
+ * O estado "reabri o app e tenho coisa na fila".
+ *
+ * Mexer enfileira (o envio de verdade só sai depois do debounce de 1,5 s, que
+ * o teste não espera). Recarregar faz o `carregar()` achar esse pendente e
+ * devolver `fonte: "cache"` — apesar de ter falado com o servidor COM SUCESSO.
+ * É esse duplo sentido de "cache" que escondia o conflito e o bloqueio.
+ */
+const reabrirComFila = async (tela: Tela) => {
+  await mexerNoAcervo(tela);
+  await apertar(tela, "reabrir");
 };
 
 const enviarAgora = async (tela: Tela) => {
@@ -104,10 +130,17 @@ const enviarAgora = async (tela: Tela) => {
   await assentar();
 };
 
+/** O que o `Mexer` põe na tela, e que não é faixa. */
+const SEM_A_AJUDA = (tela: Tela) =>
+  tela.texto().replace(/mexer|reabrir|sincronizar/g, "").trim();
+
 test("tudo certo: nenhuma faixa — a tela é do ponto, não do app", async () => {
   const { tela, limpar } = await montar({});
   try {
-    equal(tela.texto().replace("mexer", "").trim(), "");
+    // Pelo TEXTO e não pela ausência de um seletor: a faixa existe para
+    // ocupar espaço acima da letra do ponto, e é esse espaço que precisa
+    // estar vazio quando não há nada a dizer.
+    equal(SEM_A_AJUDA(tela), "");
   } finally {
     await limpar();
   }
@@ -208,6 +241,114 @@ test("conflito: as duas saídas, e o aviso do que se perde ao escolher", async (
     }
     // Conflito INTERROMPE: aqui a pessoa precisa decidir, e por isso é `alert`.
     ok(tela.achar('[role="alert"]'), "não achei o elemento esperado");
+  } finally {
+    await limpar();
+  }
+});
+
+
+/* ------------------------------------------------------------------------ *
+ * A ORDEM DAS FAIXAS
+ *
+ * `dados/repositorio.ts` devolve `fonte: "cache"` em dois casos muito
+ * diferentes: a rede caiu, e existe pendente guardado (aí o servidor foi
+ * alcançado normalmente). A faixa de cache vinha em segundo e RETORNAVA ali,
+ * então bastava ter mudança na fila para ela mascarar o 409 e o 402 — que são
+ * justamente as duas que exigem ação da pessoa.
+ *
+ * A máscara era permanente: 409 e 402 preservam o pendente, então o
+ * `carregar()` seguinte devolve `fonte: "cache"` de novo.
+ * ------------------------------------------------------------------------ */
+
+test("reabrir com fila mostra a fila, e não a faixa de rede caída", async () => {
+  // A frase da faixa de cache é sobre a REDE ("Mostrando os pontos guardados
+  // neste aparelho"). Com a rede boa e uma fila cheia, ela é a resposta errada.
+  const { tela, limpar } = await montar({});
+  try {
+    await reabrirComFila(tela);
+    match(tela.texto(), /ainda não enviadas/);
+  } finally {
+    await limpar();
+  }
+});
+
+test("com fila, o CONFLITO aparece — não a faixa mansa de cache", async () => {
+  // O 409 é a única tela do app onde a pessoa escolhe qual cópia da gira dela
+  // sobrevive. Escondê-la é decidir por ela, em silêncio.
+  const { tela, limpar } = await montar({
+    put: { status: 409, corpo: { detail: "mudou em outro aparelho" } },
+  });
+  try {
+    await reabrirComFila(tela);
+    await apertar(tela, "sincronizar");
+    match(tela.texto(), /mudaram em outro aparelho/);
+    match(tela.texto(), /Manter o deste aparelho/);
+    match(tela.texto(), /Ficar com o do outro/);
+    ok(
+      !/Mostrando os pontos guardados/.test(tela.texto()),
+      `a faixa de cache voltou a mascarar o conflito: ${tela.texto()}`,
+    );
+  } finally {
+    await limpar();
+  }
+});
+
+test("com fila, o BLOQUEADO aparece — o app precisa dizer que desistiu", async () => {
+  // 402 é falta de plano: o app para de tentar sozinho. Se a faixa não conta,
+  // a pessoa segue editando e nada sobe, para sempre.
+  const { tela, limpar } = await montar({
+    put: { status: 402, corpo: { detail: "Guardar seus pontos na nuvem faz parte do plano pago." } },
+  });
+  try {
+    await reabrirComFila(tela);
+    await apertar(tela, "sincronizar");
+    match(tela.texto(), /não vão subir/);
+    match(tela.texto(), /plano pago/);
+    ok(
+      !/Mostrando os pontos guardados/.test(tela.texto()),
+      `a faixa de cache voltou a mascarar o bloqueio: ${tela.texto()}`,
+    );
+  } finally {
+    await limpar();
+  }
+});
+
+test("a rede caída continua vencendo a mera pendência — cache ainda vem antes", async () => {
+  // A reordenação não podia inverter TUDO: quando `cache` significa mesmo "a
+  // rede falhou", ela precede o "vão subir em instantes", que seria promessa
+  // falsa sem rede.
+  const { tela, limpar } = await montar({ getFalha: "rede" });
+  try {
+    match(tela.texto(), /Mostrando os pontos guardados/);
+    await mexerNoAcervo(tela);
+    match(
+      tela.texto(),
+      /Mostrando os pontos guardados/,
+      "a promessa de envio passou na frente de uma rede que caiu",
+    );
+  } finally {
+    await limpar();
+  }
+});
+
+test("depois de subir, a faixa PARA de jurar que não subiu", async () => {
+  // `motivoFalha` congela na carga: "há mudanças suas ainda não enviadas".
+  // Quando o envio completa, `envio.pendente` cai — mas ninguém reescreve o
+  // motivo, porque nada dispara um `carregar()` novo depois de um envio bom.
+  // A faixa ficava afirmando indefinidamente o contrário do que o código sabia.
+  const { tela, limpar } = await montar({});
+  try {
+    await reabrirComFila(tela);
+    match(tela.texto(), /ainda não enviadas/, "não chegou ao estado que o teste precisa");
+    await apertar(tela, "sincronizar");
+    ok(
+      !/ainda não enviadas/.test(tela.texto()),
+      `continuou jurando que não subiu depois de subir: ${tela.texto()}`,
+    );
+    ok(
+      !/Mostrando os pontos guardados/.test(tela.texto()),
+      `sobrou a faixa de cache sobre um acervo que já bate com o servidor: ${tela.texto()}`,
+    );
   } finally {
     await limpar();
   }

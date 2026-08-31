@@ -10,10 +10,23 @@
  *
  * ## A ordem dos avisos é a ordem da urgência
  *
- * `erro` (não há acervo nenhum) → `cache` (é cópia local) → `conflito` (a
- * pessoa precisa decidir) → `pendente` (só informação). Um só aparece por vez:
- * empilhar faixas empurra a letra do ponto para fora da tela, que é o que esta
- * faixa existe para não fazer.
+ * `erro` (não há acervo nenhum) → `conflito` (a pessoa precisa DECIDIR) →
+ * `bloqueado` (o app desistiu de tentar) → `cache` (é cópia local) →
+ * `pendente` (só informação). Um só aparece por vez: empilhar faixas empurra a
+ * letra do ponto para fora da tela, que é o que esta faixa existe para não
+ * fazer.
+ *
+ * ### A ordem estava invertida, e escondia as duas que exigem ação
+ *
+ * `cache` vinha em segundo e RETORNAVA ali. Como `dados/repositorio.ts` devolve
+ * `fonte: "cache"` também quando existe pendente guardado — falando com o
+ * servidor normalmente —, bastava ter mudança na fila para a faixa mansa
+ * ("Mostrando os pontos guardados neste aparelho") mascarar o 409 e o 402.
+ *
+ * O 409 é a única tela do app onde a pessoa escolhe qual cópia da gira dela
+ * sobrevive. O 402/401 é o app avisando que parou de tentar sozinho. Nenhum
+ * dos dois aparecia, e a máscara era PERMANENTE: os dois preservam o pendente,
+ * então o `carregar()` seguinte devolve `fonte: "cache"` de novo.
  */
 
 import { useEffect, useState } from "react";
@@ -21,7 +34,9 @@ import {
   AlertCircle, CloudOff, GitCompare, Loader2, RefreshCw, UploadCloud,
 } from "lucide-react";
 import { ehErroDeApi, ehErroDeRede } from "../api/cliente";
-import { contarSoDoServidor, descartarPendente, forcarEnvio } from "../dados/repositorio";
+import {
+  contarSoDoServidor, descartarPendente, forcarEnvio, MOTIVO_PENDENTE,
+} from "../dados/repositorio";
 import { useApp } from "../context";
 
 export function AvisoAcervo() {
@@ -101,18 +116,6 @@ export function AvisoAcervo() {
     );
   }
 
-  // Lendo do aparelho porque a rede falhou. Informa sem estorvar.
-  if (fonte === "cache") {
-    return (
-      <Faixa
-        icone={<CloudOff className="h-4 w-4" aria-hidden />}
-        acao={{ rotulo: "Atualizar", aoClicar: recarregar }}
-      >
-        Mostrando os pontos guardados neste aparelho — {motivoFalha}.
-      </Faixa>
-    );
-  }
-
   // Conflito: os dois lados têm mudança e ninguém pode ser descartado em
   // silêncio. A pessoa decide — por isso isto vem ANTES do aviso de pendência,
   // e traz as duas saídas explícitas.
@@ -176,33 +179,57 @@ export function AvisoAcervo() {
     );
   }
 
+  // `bloqueado` quer dizer que o app PAROU de tentar sozinho: o servidor
+  // recusou de um jeito que insistir não resolve — falta plano (402), a
+  // sessão caiu (401), o corpo não serve (422). É o `insistirAdianta` do
+  // `dados/repositorio.ts` dizendo, pelo nome, que não adianta.
+  //
+  // Ninguém lia esse estado. A faixa dizia "ainda não subiram", que se lê
+  // como "estão subindo", e oferecia "Enviar agora" — a pessoa toca, falha
+  // igual, toca de novo. O app sabia que não ia adiantar e não contou.
+  //
+  // O botão FICA, porque a causa é de fora e pode ter sido resolvida (ela
+  // assinou, entrou de novo). Mas com outro nome: "Tentar de novo" promete
+  // que agora vai; "Tentar assim mesmo" diz o que é.
+  if (envio.pendente && envio.bloqueado) {
+    return (
+      <Faixa
+        icone={<AlertCircle className="h-4 w-4 text-destructive" aria-hidden />}
+        acao={{ rotulo: "Tentar assim mesmo", aoClicar: sincronizarAgora }}
+      >
+        Suas mudanças estão salvas neste aparelho e <strong>não vão subir
+        sozinhas</strong>
+        {envio.ultimoErro ? ` — ${envio.ultimoErro}` : ""}. Resolva isso e
+        tente de novo; nada aqui se perde enquanto isso.
+      </Faixa>
+    );
+  }
+
+  // Lendo do aparelho. Informa sem estorvar.
+  //
+  // `fonte: "cache"` quer dizer DUAS coisas em `dados/repositorio.ts`: "a rede
+  // falhou" (o ramo do `catch`) e "você tem mudança na fila" (o ramo do
+  // pendente, que fala com o servidor COM SUCESSO). A segunda é uma afirmação
+  // sobre a FILA — e fila muda.
+  //
+  // Quando o envio completa, `envio.pendente` cai e a frase "há mudanças suas
+  // ainda não enviadas" vira mentira. Mas `motivoFalha` está congelado desde a
+  // carga, e só um `carregar()` novo o reescreve — que ninguém dispara depois
+  // de um envio bem-sucedido. A faixa jurava indefinidamente que o trabalho
+  // não tinha subido, DEPOIS de ele ter subido.
+  if (fonte === "cache" && !(motivoFalha === MOTIVO_PENDENTE && !envio.pendente)) {
+    return (
+      <Faixa
+        icone={<CloudOff className="h-4 w-4" aria-hidden />}
+        acao={{ rotulo: "Atualizar", aoClicar: recarregar }}
+      >
+        Mostrando os pontos guardados neste aparelho — {motivoFalha}.
+      </Faixa>
+    );
+  }
+
   // Há mudança local que o servidor ainda não recebeu.
   if (envio.pendente) {
-    // `bloqueado` quer dizer que o app PAROU de tentar sozinho: o servidor
-    // recusou de um jeito que insistir não resolve — falta plano (402), a
-    // sessão caiu (401), o corpo não serve (422). É o `insistirAdianta` do
-    // `dados/repositorio.ts` dizendo, pelo nome, que não adianta.
-    //
-    // Ninguém lia esse estado. A faixa dizia "ainda não subiram", que se lê
-    // como "estão subindo", e oferecia "Enviar agora" — a pessoa toca, falha
-    // igual, toca de novo. O app sabia que não ia adiantar e não contou.
-    //
-    // O botão FICA, porque a causa é de fora e pode ter sido resolvida (ela
-    // assinou, entrou de novo). Mas com outro nome: "Tentar de novo" promete
-    // que agora vai; "Tentar assim mesmo" diz o que é.
-    if (envio.bloqueado) {
-      return (
-        <Faixa
-          icone={<AlertCircle className="h-4 w-4 text-destructive" aria-hidden />}
-          acao={{ rotulo: "Tentar assim mesmo", aoClicar: sincronizarAgora }}
-        >
-          Suas mudanças estão salvas neste aparelho e <strong>não vão subir
-          sozinhas</strong>
-          {envio.ultimoErro ? ` — ${envio.ultimoErro}` : ""}. Resolva isso e
-          tente de novo; nada aqui se perde enquanto isso.
-        </Faixa>
-      );
-    }
     return (
       <Faixa
         icone={<UploadCloud className="h-4 w-4" aria-hidden />}

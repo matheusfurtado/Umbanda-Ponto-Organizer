@@ -560,8 +560,8 @@ export function TelaSubcategorias({ orixa, onVoltar }: Props) {
 
       <ModalPonto
         aberto={modalPontoAberto}
-        onSalvar={(titulo, letra) => {
-          if (subParaNovoPonto) adicionarPonto(subParaNovoPonto, titulo, letra);
+        onSalvar={(titulo, letra, autor) => {
+          if (subParaNovoPonto) adicionarPonto(subParaNovoPonto, titulo, letra, autor);
         }}
         onFechar={() => { setModalPontoAberto(false); setSubParaNovoPonto(null); }}
       />

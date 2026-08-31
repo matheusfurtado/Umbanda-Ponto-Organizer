@@ -60,6 +60,16 @@ function comFavoritosLocais(doServidor: AppData["pontos"], local: AppData): AppD
 }
 
 
+/**
+ * O `motivo` de quando o `fonte: "cache"` NÃO é falha de rede.
+ *
+ * Constante e não literal porque `components/AvisoAcervo.tsx` precisa
+ * distinguir os dois sentidos de `"cache"`: aqui o servidor foi alcançado com
+ * sucesso e o que segura a cópia local é a FILA, não a rede. A faixa usa isso
+ * para parar de afirmar que o trabalho não subiu depois de ele ter subido.
+ */
+export const MOTIVO_PENDENTE = "há mudanças suas ainda não enviadas";
+
 export async function carregar(): Promise<ResultadoCarga> {
   try {
     const doServidor = await baixarAcervo();
@@ -94,7 +104,7 @@ export async function carregar(): Promise<ResultadoCarga> {
       agendar();
       const dados: AppData = { ...pendente, ultimoOrixaId: local.ultimoOrixaId };
       salvarDados(dados);
-      return { dados, fonte: "cache", motivo: "há mudanças suas ainda não enviadas" };
+      return { dados, fonte: "cache", motivo: MOTIVO_PENDENTE };
     }
 
     // `parcial` já vem marcado por `baixarAcervo` — ver o comentário lá. Aqui

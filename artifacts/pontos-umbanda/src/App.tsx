@@ -52,7 +52,6 @@ function AppInner({ focarBusca = false }: { focarBusca?: boolean }) {
   return (
     <>
       <AvisoTeste />
-      <AvisoAcervo />
       {orixaAberto ? (
         <TelaOrixa
           orixa={orixaAberto}
@@ -81,14 +80,29 @@ function AppInner({ focarBusca = false }: { focarBusca?: boolean }) {
  * ida e volta. Com a navegação sempre visível, mudar de lugar é um clique de
  * onde você estiver, e o espaço horizontal vira conteúdo.
  */
-function Moldura({ children }: { children: ReactNode }) {
+export function Moldura({ children }: { children: ReactNode }) {
   const [paleta, setPaleta] = useState(false);
   return (
     <div className="flex min-h-screen bg-background">
       <BarraLateral onTrocarPaleta={() => setPaleta(true)} />
       {/* `min-w-0`: sem isto um título longo estica o flex e a lista inteira
           passa a rolar na horizontal. */}
-      <main className="min-w-0 flex-1 pb-16 lg:pb-0">{children}</main>
+      <main className="min-w-0 flex-1 pb-16 lg:pb-0">
+        {/* AQUI, e não dentro do `AppInner`.
+            
+            Pendurada no `AppInner`, a faixa só existia na rota catch-all e em
+            `/buscar` — e as telas que MUTAM o acervo são outras. `/favoritos`
+            é a que dói: está nas duas barras, qualquer pessoa chega nela, e
+            cada estrela chama `persistir` e entra na mesma fila. Com a fila em
+            conflito o `agendar()` desiste, e cada estrela acendia na tela sem
+            nunca subir, sem uma palavra — enquanto a decisão ("Manter o deste
+            aparelho" / "Ficar com o do outro") só existia na outra rota.
+            
+            Dentro do `<main>` e não acima dele: fora, ela dividiria a linha
+            com a barra lateral. */}
+        <AvisoAcervo />
+        {children}
+      </main>
       <BarraInferior onTrocarPaleta={() => setPaleta(true)} />
       <EscolherPaleta aberto={paleta} onFechar={() => setPaleta(false)} />
     </div>
