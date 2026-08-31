@@ -104,7 +104,7 @@ test("sem vídeo é uma informação anunciada, não um vazio", async () => {
   // ícone não carregou".
   const { tela, rede } = await linha(ponto({ videoUrl: null }));
   try {
-    equal(tela.achar("a[href^='https']"), null, "ofereceu link sem vídeo");
+    ok(tela.naoTem("a[href^='https']"), "ofereceu link sem vídeo");
     const marca = tela.exigir('[aria-label$="sem vídeo ainda"]');
     ok(marca, "o sem-vídeo não se anuncia a quem usa leitor de tela");
   } finally {

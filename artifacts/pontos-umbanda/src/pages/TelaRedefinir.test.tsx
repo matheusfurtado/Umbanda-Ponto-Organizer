@@ -90,7 +90,7 @@ test("link sem token não mostra formulário — mostra como pedir outro", async
   const { tela, limpar } = await abrir("");
   try {
     match(tela.texto(), /Link incompleto/);
-    equal(tela.achar("#senha"), null, "ofereceu o campo de senha sem token");
+    ok(tela.naoTem("#senha"), "ofereceu o campo de senha sem token");
     ok(
       tela.todos("a").some((a) => a.getAttribute("href") === "/recuperar"),
       "disse que o link está quebrado e não ofereceu outro",

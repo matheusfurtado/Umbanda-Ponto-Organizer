@@ -75,7 +75,7 @@ test("Ouvir conta o clique — uma vez, e só quando há vídeo", async () => {
     const semVideo = await renderizar(
       <PontoDoArtista ponto={{ ...PONTO, videoUrl: null }} />,
     );
-    equal(semVideo.achar("a"), null, "ofereceu Ouvir para ponto sem vídeo");
+    ok(semVideo.naoTem("a"), "ofereceu Ouvir para ponto sem vídeo");
     await semVideo.desmontar();
   } finally {
     rede.restaurar();

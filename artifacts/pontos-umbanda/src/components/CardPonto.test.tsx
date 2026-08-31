@@ -163,7 +163,7 @@ test("a alça de arrastar tem nome — é ela que reordena o acervo", async () =
 test("sem `sortable` não há alça nenhuma para confundir", async () => {
   const { tela, limpar } = await cartao(PONTO, false);
   try {
-    equal(tela.achar('button[aria-label^="Reordenar"]'), null);
+    ok(tela.naoTem('button[aria-label^="Reordenar"]'));
   } finally {
     await limpar();
   }

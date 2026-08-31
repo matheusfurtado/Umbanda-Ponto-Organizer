@@ -155,7 +155,7 @@ test("sem favorito nenhum, convida — e não diz que algo deu errado", async ()
   try {
     match(tela.texto(), /Nenhum ponto favoritado ainda/);
     ok(tela.todos("a").some((a) => a.getAttribute("href") === "/"), "sem caminho de volta ao acervo");
-    equal(tela.achar('[role="alert"]'), null, "tratou lista vazia como erro");
+    ok(tela.naoTem('[role="alert"]'), "tratou lista vazia como erro");
   } finally {
     await limpar();
   }

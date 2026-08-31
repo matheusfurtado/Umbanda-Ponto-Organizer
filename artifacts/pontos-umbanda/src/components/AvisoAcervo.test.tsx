@@ -130,8 +130,8 @@ test("sem rede COM cópia guardada: informa e sai da frente", async () => {
   const { tela, limpar } = await montar({ getFalha: "rede" });
   try {
     match(tela.texto(), /Mostrando os pontos guardados neste aparelho/);
-    equal(tela.achar('[role="status"]') !== null, true);
-    equal(tela.achar('[role="alert"]'), null, "interrompeu quem só queria ler a letra");
+    ok(tela.achar('[role="status"]'), "não achei o elemento esperado");
+    ok(tela.naoTem('[role="alert"]'), "interrompeu quem só queria ler a letra");
   } finally {
     await limpar();
   }
@@ -207,7 +207,7 @@ test("conflito: as duas saídas, e o aviso do que se perde ao escolher", async (
       );
     }
     // Conflito INTERROMPE: aqui a pessoa precisa decidir, e por isso é `alert`.
-    equal(tela.achar('[role="alert"]') !== null, true);
+    ok(tela.achar('[role="alert"]'), "não achei o elemento esperado");
   } finally {
     await limpar();
   }

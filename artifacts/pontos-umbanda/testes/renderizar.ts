@@ -54,6 +54,19 @@ export interface Tela {
   todos: (seletor: string) => Element[];
   /** Exige que exista: seletor que não casa é erro do teste, não `null`. */
   exigir: (seletor: string) => Element;
+  /**
+   * Nada casa este seletor?
+   *
+   * Existe para a asserção comparar BOOLEANO, e não elemento com `null`.
+   * `equal(tela.achar(s), null)` passa enquanto está certo — e no dia em que
+   * falha, o Node tenta serializar um nó do DOM para montar a diferença, entra
+   * numa estrutura circular enorme e o processo morre com **SIGKILL, sem
+   * mensagem nenhuma**. O teste que devia explicar o defeito vira um sumiço.
+   *
+   * Aconteceu ao escrever o teste da vitrine: o defeito era real, e a única
+   * pista foi `signal: 'SIGKILL'` no relatório TAP.
+   */
+  naoTem: (seletor: string) => boolean;
   clicar: (alvo: Element | string) => Promise<void>;
   /** Igual a `todos`, mas na PÁGINA inteira: pega portal de diálogo. */
   todosNaPagina: (seletor: string) => Element[];
@@ -91,6 +104,7 @@ export async function renderizar(no: ReactNode): Promise<Tela> {
     achar: (seletor) => container.querySelector(seletor),
     todos: (seletor) => [...container.querySelectorAll(seletor)],
     exigir,
+    naoTem: (seletor) => container.querySelector(seletor) === null,
     clicar: async (alvo) => {
       const el = typeof alvo === "string" ? exigir(alvo) : alvo;
       await act(async () => {

@@ -62,15 +62,23 @@ export function TelaGirasPublicas() {
         </section>
       )}
 
+      {/* O esqueleto some quando dá erro.
+      
+          `giras` fica `null` para sempre quando a busca falha, e o esqueleto
+          olhava só para isso — então a página mostrava a mensagem de falha COM
+          os cartões fantasmas animando embaixo, indefinidamente. Quem vê isso
+          espera; e não há o que esperar, porque ninguém vai tentar de novo. */}
       {giras === null ? (
-        <div aria-busy="true" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="rounded-xl bg-card/60 p-3">
-              <div className="mb-3 aspect-square animate-pulse rounded-xl bg-muted/50" />
-              <div className="h-4 w-2/3 animate-pulse rounded bg-muted/50" />
-            </div>
-          ))}
-        </div>
+        erro ? null : (
+          <div aria-busy="true" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl bg-card/60 p-3">
+                <div className="mb-3 aspect-square animate-pulse rounded-xl bg-muted/50" />
+                <div className="h-4 w-2/3 animate-pulse rounded bg-muted/50" />
+              </div>
+            ))}
+          </div>
+        )
       ) : giras.length === 0 ? (
         <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
           Nenhuma gira pública ainda. Se você montou uma que vale compartilhar,
