@@ -3,9 +3,9 @@ import { Route, Switch, Redirect } from "wouter";
 import { AvisoAcervo } from "@/components/AvisoAcervo";
 import { AvisoTeste } from "@/components/AvisoTeste";
 import { InstallBanner } from "@/components/InstallBanner";
-import { ModalMigracao } from "@/components/ModalMigracao";
 import { AppProvider } from "@/context";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
+import { GerenciadorMigracao } from "@/componentes/GerenciadorMigracao";
 import { EntitlementsProvider } from "@/billing/EntitlementsContext";
 import { TelaInicio } from "@/pages/TelaInicio";
 import { TelaOrixa } from "@/pages/TelaOrixa";
@@ -41,8 +41,6 @@ import { TelaPlanos } from "@/pages/TelaPlanos";
 import { TelaRetornoPagamento } from "@/pages/TelaRetornoPagamento";
 import { TelaRepertorios } from "@/pages/TelaRepertorios";
 import { Orixa } from "@/types";
-
-const FLAG_MIGRACAO = "migracao-oferecida";
 
 function AppInner({ focarBusca = false }: { focarBusca?: boolean }) {
   const [orixaAberto, setOrixaAberto] = useState<Orixa | null>(null);
@@ -95,26 +93,6 @@ function Moldura({ children }: { children: ReactNode }) {
       <EscolherPaleta aberto={paleta} onFechar={() => setPaleta(false)} />
     </div>
   );
-}
-
-// Oferece a migração uma única vez, logo após o login, se houver dados locais.
-// O modo anônimo nunca vê isto. Fechar (mesmo "Agora não") marca como oferecido.
-function GerenciadorMigracao() {
-  const { autenticado, isPending } = useAuth();
-  const [aberto, setAberto] = useState(false);
-
-  useEffect(() => {
-    if (isPending || !autenticado) return;
-    if (localStorage.getItem(FLAG_MIGRACAO) === "1") return;
-    if (localStorage.getItem("pontos-umbanda-data")) setAberto(true);
-  }, [autenticado, isPending]);
-
-  const fechar = () => {
-    localStorage.setItem(FLAG_MIGRACAO, "1");
-    setAberto(false);
-  };
-
-  return <ModalMigracao aberto={aberto} onFechar={fechar} />;
 }
 
 function RotaProtegida({ children }: { children: ReactNode }) {

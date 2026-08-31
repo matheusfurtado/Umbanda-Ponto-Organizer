@@ -27,6 +27,20 @@ export function ModalMigracao({ aberto, onFechar }: Props) {
   const totalFavoritos = dados?.pontos.filter((p) => p.favorito).length ?? 0;
 
   /**
+   * Nada para enviar — e isso muda o que o diálogo pode oferecer.
+   *
+   * O `PUT /acervo` recusa payload vazio com **422** ("Sync recusado: ele
+   * apagaria o acervo inteiro"), cerca que existe porque um envio meio
+   * hidratado já apagou o acervo de uma conta. Sem esta checagem, o diálogo
+   * mostrava três zeros com o botão de enviar ATIVO, e a recusa do servidor
+   * chegava à pessoa como se ela tivesse tentado apagar as próprias coisas.
+   *
+   * O `App` já não OFERECE a migração nesse caso, mas por dentro da conta o
+   * diálogo é aberto à mão — e quem abre à mão merece a mesma verdade.
+   */
+  const vazio = !dados || dados.pontos.length === 0;
+
+  /**
    * Fechar devolve o diálogo ao começo.
    *
    * Ele fica MONTADO com `aberto={false}`, então o estado sobrevive: reabrir
@@ -71,7 +85,14 @@ export function ModalMigracao({ aberto, onFechar }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        {estado !== "ok" && dados && (
+        {estado !== "ok" && vazio && (
+          <p className="text-sm text-muted-foreground">
+            Não há nada guardado neste aparelho para enviar. Seu acervo já está
+            na conta, ou este aparelho ainda não recebeu nenhum ponto.
+          </p>
+        )}
+
+        {estado !== "ok" && dados && !vazio && (
           <div className="space-y-3">
             <div className="grid grid-cols-3 gap-2 text-center">
               <Contador n={dados.orixas.length} rotulo="Orixás" />
@@ -108,11 +129,13 @@ export function ModalMigracao({ aberto, onFechar }: Props) {
           ) : (
             <>
               <Button variant="ghost" onClick={fechar}>
-                Agora não
+                {vazio ? "Fechar" : "Agora não"}
               </Button>
-              <Button onClick={enviar} disabled={estado === "enviando" || !dados}>
-                {estado === "enviando" ? "Enviando..." : "Enviar para minha conta"}
-              </Button>
+              {!vazio && (
+                <Button onClick={enviar} disabled={estado === "enviando"}>
+                  {estado === "enviando" ? "Enviando..." : "Enviar para minha conta"}
+                </Button>
+              )}
             </>
           )}
         </DialogFooter>
