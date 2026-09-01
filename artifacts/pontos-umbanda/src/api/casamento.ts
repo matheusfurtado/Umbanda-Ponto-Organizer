@@ -34,8 +34,19 @@ export interface QuantosFaltam {
   principais: number;
 }
 
-export const filaDeCasamentos = (pagina = 0) =>
-  chamarApi<CasamentoNaFila[]>(`/admin/casamentos?pagina=${pagina}`);
+/**
+ * Um pedaço da fila, a partir de `desde`.
+ *
+ * Deslocamento e não número de página: cada decisão tira a linha do `revisar`,
+ * então a fila ENCOLHE enquanto se trabalha nela. Com páginas, quem confere 10
+ * itens e pede a página seguinte pula 10 que nunca viu. A tela passa
+ * `desde = quantos ainda estão nela`, que é quantos do topo já viu.
+ */
+export const filaDeCasamentos = (desde = 0) =>
+  chamarApi<CasamentoNaFila[]>(`/admin/casamentos?desde=${desde}`);
+
+/** Quantos a rota manda por vez — a tela usa para saber se ainda há mais. */
+export const POR_VEZ = 50;
 
 export const quantosCasamentos = () =>
   chamarApi<QuantosFaltam>("/admin/casamentos/quantos");

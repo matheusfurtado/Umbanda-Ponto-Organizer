@@ -26,8 +26,8 @@ import { useEffect, useState } from "react";
 import { BadgeCheck, ExternalLink, Loader2, Link2Off, ScanSearch, XCircle } from "lucide-react";
 import { mensagemDeErro } from "@/api/cliente";
 import {
-  confirmarCasamento, filaDeCasamentos, quantosCasamentos, recusarCasamento,
-  type CasamentoNaFila, type QuantosFaltam,
+  confirmarCasamento, filaDeCasamentos, POR_VEZ, quantosCasamentos,
+  recusarCasamento, type CasamentoNaFila, type QuantosFaltam,
 } from "@/api/casamento";
 
 export function TelaCasamentos() {
@@ -35,11 +35,37 @@ export function TelaCasamentos() {
   const [quantos, setQuantos] = useState<QuantosFaltam | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [ocupado, setOcupado] = useState<number | null>(null);
+  const [temMais, setTemMais] = useState(false);
+  const [buscando, setBuscando] = useState(false);
+
+  /**
+   * Traz mais um pedaço, a partir de quantos já estão na tela.
+   *
+   * `desde = lista.length` e não um número de página: cada decisão tira a
+   * linha do `revisar`, então a fila ENCOLHE enquanto se trabalha nela. Quem
+   * conferisse 10 itens e pedisse a "página 1" pularia 10 que nunca viu.
+   *
+   * Dedupe por id ao juntar: entre a decisão e a busca, o servidor pode ter
+   * mandado o mesmo item em outra posição, e ponto repetido na fila é decisão
+   * repetida.
+   */
+  async function trazerMais(atual: CasamentoNaFila[]) {
+    setBuscando(true);
+    try {
+      const novos = await filaDeCasamentos(atual.length);
+      setTemMais(novos.length === POR_VEZ);
+      const vistos = new Set(atual.map((c) => c.id));
+      setFila([...atual, ...novos.filter((c) => !vistos.has(c.id))]);
+    } catch (problema) {
+      setErro(mensagemDeErro(problema, "Falha ao carregar."));
+      setFila((f) => f ?? []);
+    } finally {
+      setBuscando(false);
+    }
+  }
 
   function carregar() {
-    filaDeCasamentos()
-      .then(setFila)
-      .catch((e) => setErro(mensagemDeErro(e, "Falha ao carregar.")));
+    void trazerMais([]);
     quantosCasamentos().then(setQuantos).catch(() => undefined);
   }
 
@@ -53,7 +79,12 @@ export function TelaCasamentos() {
       else await recusarCasamento(id);
       // Tira da lista na hora, sem recarregar tudo: a fila tem centenas, e
       // recarregar a cada decisão faria a pessoa esperar por decisão.
-      setFila((f) => (f === null ? f : f.filter((c) => c.id !== id)));
+      const restam = (fila ?? []).filter((c) => c.id !== id);
+      setFila(restam);
+      // Esvaziou: busca o próximo pedaço sozinha. Antes disto a tela ficava
+      // vazia com o contador ainda dizendo que faltavam centenas, e a única
+      // saída era recarregar o navegador — oito vezes às cegas para vencer 395.
+      if (restam.length === 0) void trazerMais(restam);
       setQuantos((q) =>
         q === null ? q : { total: q.total - 1, principais: q.principais },
       );
@@ -175,6 +206,23 @@ export function TelaCasamentos() {
           ))}
         </ul>
       )}
+
+      {/* Adiantar sem decidir. A busca automática cobre quem trabalha a fila
+          até o fim; este botão é para quem quer pular adiante e escolher o que
+          conferir — e é o que dá saída ao caso em que 50 itens seguidos são
+          difíceis e ninguém quer decidir nenhum agora. */}
+      {fila !== null && fila.length > 0 && temMais && (
+        <button
+          type="button"
+          onClick={() => void trazerMais(fila)}
+          disabled={buscando}
+          className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-md border px-4 text-sm font-medium disabled:opacity-60"
+        >
+          {buscando && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+          Ver mais
+        </button>
+      )}
+
     </div>
   );
 }

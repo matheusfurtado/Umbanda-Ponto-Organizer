@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Heart, ArchiveX, BadgeCheck, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { Heart, ArchiveX, BadgeCheck, SlidersHorizontal, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { useApp } from "@/context";
 import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -67,6 +67,21 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
           {favoritos > 0 && (
             <span className="ml-auto text-xs tabular-nums text-muted-foreground">{favoritos}</span>
           )}
+        </Link>
+      )}
+
+      {/* A ferramenta pela qual se COBRA, e não havia um único link para ela.
+          `/organizar` existia como rota desde sempre — arrastar, renomear,
+          criar e excluir orixá, seção e ponto — e só chegava lá quem digitasse
+          a URL. O produto pago era, na prática, invisível.
+
+          Aparece para quem tem conta, não para quem tem plano: a própria tela
+          explica que sem plano não há o que organizar (ADR 0002 achata o
+          acervo do grátis), e esconder o link faria a pessoa não descobrir o
+          que está comprando. */}
+      {autenticado && (
+        <Link href="/organizar" className={item(local === "/organizar")}>
+          <SlidersHorizontal className="h-4 w-4" aria-hidden /> Organizar acervo
         </Link>
       )}
 

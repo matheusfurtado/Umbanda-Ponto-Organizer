@@ -143,3 +143,37 @@ test("a lateral leva a 'Meus artistas' com esse nome, e só para quem entrou", a
     await semConta.limpar();
   }
 });
+
+test("a lateral leva a /organizar — a ferramenta pela qual se cobra", async () => {
+  // Não havia UM link para `/organizar` em todo o front. A rota existia desde
+  // sempre (arrastar, renomear, criar e excluir orixá, seção e ponto) e só
+  // chegava lá quem digitasse a URL: o produto PAGO era, na prática,
+  // invisível. Um link que ninguém prende é um link que some de novo.
+  const comConta = await abrir(BarraLateral, true);
+  try {
+    const item = comConta.tela
+      .todos("a")
+      .find((a) => a.getAttribute("href") === "/organizar");
+    ok(item, "sumiu o caminho para organizar o acervo");
+    ok(
+      /Organizar/.test(item.textContent ?? ""),
+      `o item não diz o que faz: "${item.textContent?.trim()}"`,
+    );
+  } finally {
+    await comConta.limpar();
+  }
+});
+
+test("sem conta, /organizar não é oferecido", async () => {
+  // Sem sessão não há acervo próprio para organizar, e o editor mandaria a
+  // pessoa para o login depois do clique — pior que não oferecer.
+  const semConta = await abrir(BarraLateral, false);
+  try {
+    ok(
+      !semConta.tela.todos("a").some((a) => a.getAttribute("href") === "/organizar"),
+      "ofereceu organizar o acervo a quem não entrou",
+    );
+  } finally {
+    await semConta.limpar();
+  }
+});

@@ -29,13 +29,29 @@ async function abrir(
   quantos: unknown = { total: 390, principais: 156 },
 ) {
   const acoes: string[] = [];
+  // O item DECIDIDO some da fila — é o que o servidor faz, porque decidir tira
+  // a linha do `revisar`. O falso não fazia isso, e passou a importar quando a
+  // tela ganhou busca automática ao esvaziar: ela pedia mais, recebia de volta
+  // o que acabara de ser confirmado, e o teste acusava a tela de não ter
+  // removido nada.
+  const decididos = new Set<string>();
   const rede = fingirRede((url, init) => {
-    if (/\/(confirmar|recusar)$/.test(url)) {
+    const decisao = /\/casamentos\/([^/]+)\/(confirmar|recusar)$/.exec(url);
+    if (decisao) {
       acoes.push(`${init?.method} ${url}`);
+      decididos.add(decisao[1]);
       return { status: 204 };
     }
     if (url.includes("/casamentos/quantos")) return { corpo: quantos };
-    if (url.includes("/admin/casamentos")) return fila;
+    if (url.includes("/admin/casamentos")) {
+      if (!Array.isArray(fila.corpo)) return fila;
+      return {
+        ...fila,
+        corpo: (fila.corpo as { id: number }[]).filter(
+          (c) => !decididos.has(String(c.id)),
+        ),
+      };
+    }
     throw new Error(`chamada não prevista: ${url}`);
   });
   const tela = await renderizar(<TelaCasamentos />);
@@ -151,5 +167,96 @@ test("quem não é admin lê a resposta do servidor, e o esqueleto para", async 
     ok(tela.naoTem('[aria-busy="true"]'), "mostrou o erro e continuou girando");
   } finally {
     await limpar();
+  }
+});
+
+/**
+ * Um servidor de fila de verdade: responde por DESLOCAMENTO e some com o que
+ * foi decidido, que é o comportamento que quebrava a paginação por página.
+ */
+function servidorDeFila(total: number) {
+  const decididos = new Set<number>();
+  const pedidos: number[] = [];
+  const rede = fingirRede((url, init) => {
+    const decisao = /\/casamentos\/(\d+)\/(confirmar|recusar)$/.exec(url);
+    if (decisao) {
+      decididos.add(Number(decisao[1]));
+      return { status: 204 };
+    }
+    if (url.includes("/casamentos/quantos")) {
+      return { corpo: { total: total - decididos.size, principais: 0 } };
+    }
+    if (url.includes("/admin/casamentos")) {
+      const desde = Number(new URL(url, "http://t").searchParams.get("desde") ?? 0);
+      pedidos.push(desde);
+      const vivos = Array.from({ length: total }, (_, i) => i + 1)
+        .filter((id) => !decididos.has(id));
+      return {
+        corpo: vivos.slice(desde, desde + 50).map((id) => caso({ id })),
+      };
+    }
+    throw new Error(`chamada não prevista: ${url}`);
+  });
+  return { rede, pedidos, decididos };
+}
+
+test("pede pelo DESLOCAMENTO, não por número de página", async () => {
+  // A rota paginava por `pagina * 50`. Cada decisão tira a linha da fila, então
+  // ela encolhe enquanto se trabalha: quem confere 10 e pede a "página 1" pula
+  // 10 itens que nunca viu. `desde = quantos estão na tela` continua certo
+  // depois de qualquer número de decisões.
+  const { rede, pedidos } = servidorDeFila(120);
+  const tela = await renderizar(<TelaCasamentos />);
+  await assentar();
+  try {
+    deepEqual(pedidos, [0], "a primeira carga não pediu do começo");
+    const ver = botao(tela, /Ver mais/);
+    ok(ver, "sem 'Ver mais' não há como passar dos 50 primeiros");
+    await tela.clicar(ver!);
+    await assentar();
+    deepEqual(pedidos, [0, 50], "o segundo pedido não usou o tamanho da lista");
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});
+
+test("quando a lista esvazia, a tela busca sozinha o pedaço seguinte", async () => {
+  // O defeito: a tela chamava a rota SEM deslocamento e nunca buscava de novo.
+  // Depois de 50 decisões ela ficava vazia com o contador dizendo que faltavam
+  // centenas, e a única saída era recarregar o navegador — oito vezes às cegas
+  // para vencer os 395.
+  const { rede, pedidos } = servidorDeFila(60);
+  const tela = await renderizar(<TelaCasamentos />);
+  await assentar();
+  try {
+    // Decide os 50 que vieram, um a um.
+    for (let i = 0; i < 50; i++) {
+      const sim = botao(tela, /É este ponto/);
+      ok(sim, `sumiu o botão na decisão ${i + 1}`);
+      await tela.clicar(sim!);
+      await assentar();
+    }
+    ok(pedidos.length > 1, "esvaziou a lista e não pediu mais nada");
+    ok(
+      botao(tela, /É este ponto/),
+      "a tela ficou vazia com fila ainda cheia no servidor",
+    );
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});
+
+test("no fim da fila para de oferecer 'Ver mais'", async () => {
+  // Botão que promete mais e devolve vazio é pior que botão nenhum.
+  const { rede } = servidorDeFila(20);
+  const tela = await renderizar(<TelaCasamentos />);
+  await assentar();
+  try {
+    ok(!botao(tela, /Ver mais/), "ofereceu mais com a fila inteira na tela");
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
   }
 });

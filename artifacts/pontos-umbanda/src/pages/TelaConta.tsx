@@ -14,6 +14,7 @@ import {
   LogOut,
   MailCheck,
   ShieldCheck,
+  SlidersHorizontal,
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -182,6 +183,24 @@ export function TelaConta() {
 
             O link só aparece para admin por conveniência — a defesa é a rota,
             que responde 404 a quem não for. */}
+        {/* `/organizar` no celular pelo mesmo motivo das filas abaixo: a barra
+            lateral é `lg:` para cima, e sem isto a ferramenta pela qual se
+            cobra só existe no desktop. `lg:hidden` porque lá a lateral já leva. */}
+        <div className="mb-6 rounded-xl border p-4 lg:hidden">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Meu acervo
+          </p>
+          <div className="mt-3 flex flex-col gap-1">
+            <Link
+              href="/organizar"
+              className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-foreground"
+            >
+              <SlidersHorizontal className="h-4 w-4 text-primary" aria-hidden />
+              Organizar acervo
+            </Link>
+          </div>
+        </div>
+
         {user?.admin && (
           <div className="mb-6 rounded-xl border p-4 lg:hidden">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
