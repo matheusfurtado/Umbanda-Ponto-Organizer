@@ -26,6 +26,7 @@ import { TelaSugestoesDeArtista } from "@/pages/TelaSugestoesDeArtista";
 import { TelaCasamentos } from "@/pages/TelaCasamentos";
 import { TelaDesativados } from "@/pages/TelaDesativados";
 import { TelaPalpites } from "@/pages/TelaPalpites";
+import { TelaSemVideo } from "@/pages/TelaSemVideo";
 import { TelaRemocoesDeArtista } from "@/pages/TelaRemocoesDeArtista";
 import { TelaPedirArtista } from "@/pages/TelaPedirArtista";
 import { TelaArtistas } from "@/pages/TelaArtistas";
@@ -188,6 +189,11 @@ function App() {
                     <RotaProtegida>
                       <TelaFavoritos />
                     </RotaProtegida>
+                  </Route>
+                  {/* Pública: a letra é grátis (ADR 0002), e é pedindo ajuda
+                      que se recebe ajuda. Indicar é que exige conta. */}
+                  <Route path="/sem-video">
+                    <TelaSemVideo />
                   </Route>
                   <Route path="/novidades">
                     <TelaNovidades />

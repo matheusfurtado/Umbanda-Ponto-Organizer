@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { LINKS_DE_MODERACAO } from "@/componentes/linksDeModeracao";
-import { Heart, ArchiveX, BadgeCheck, SlidersHorizontal, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { Heart, ArchiveX, BadgeCheck, SlidersHorizontal, VideoOff, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { useApp } from "@/context";
 import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -91,6 +91,12 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
       </Link>
       <Link href="/giras-publicas" className={item(local.startsWith("/giras-publicas"))}>
         <Globe className="h-4 w-4" aria-hidden /> Playlists da comunidade
+      </Link>
+      {/* Aberta como Artistas, e pelo mesmo motivo somado a outro: é um pedido
+          de ajuda, e pedido escondido não é pedido. Quem só quiser ver o que
+          falta não precisa de conta; indicar precisa. */}
+      <Link href="/sem-video" className={item(local === "/sem-video")}>
+        <VideoOff className="h-4 w-4" aria-hidden /> Pontos sem vídeo
       </Link>
       {/* Artistas é aberto: quem ainda não tem conta descobre por aqui, e é
           isso que faz alguém querer uma. */}
