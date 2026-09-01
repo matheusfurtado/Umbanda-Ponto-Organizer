@@ -332,7 +332,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const pontos = dados.pontos.map((p) =>
         p.id === alvo.id ? { ...p, favorito: marcado } : p
       );
+      // CONTINUA passando por `atualizar`, e isso é uma escolha, não sobra.
+      //
+      // Tirar o `PUT /acervo` daqui era tentador — a curtida já tem rota
+      // própria desde a etapa 3 — mas curtir é hoje o ÚLTIMO gatilho de
+      // sincronização do app: sem ele, a fila de envio, a faixa de "mexeu e
+      // ainda não subiu" e o aviso de conflito ficam sem nada que os dispare.
+      // Oito testes disseram isso de uma vez.
+      //
+      // Amputar o sync é uma decisão de produto que ele não pediu; o que ele
+      // pediu foi a tela de organizar parar de mandar na navegação, e isso o
+      // catálogo já resolve.
       atualizar({ ...dados, pontos });
+      // E o catálogo acompanha na hora: sem isto a estrela some ao voltar para
+      // a tela inicial, porque lá o dado vem de outra fonte.
+      setCatalogo((c) => ({
+        ...c,
+        pontos: c.pontos.map((p) =>
+          p.id === alvo.id || p.id === (alvo.origemId ?? alvo.id)
+            ? { ...p, favorito: marcado }
+            : p,
+        ),
+      }));
 
       // E AVISA O SERVIDOR NA HORA, por rota própria.
       //

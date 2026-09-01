@@ -1,22 +1,27 @@
 /**
- * O editor do acervo — e o teatro que ele era sem plano.
+ * "Meu acervo" — a estante, e o que ela deixou de ser.
  *
- * Quem não paga recebe o acervo ACHATADO pelo portão: `subcategorias: []`,
- * `subcategoriaId` vazio. E `persistir` não enfileira envio para cópia reduzida,
- * de propósito — mandá-la de volta apagaria no servidor a organização que a
- * pessoa montou enquanto pagava.
+ * Esta tela era o EDITOR do acervo pessoal, sobre uma cópia do acervo inteiro.
+ * Era isso que produzia o defeito que ele relatou: *"eu apaguei do organizar
+ * acervo e no início não consigo acessar mais"* — a cópia não era uma seleção,
+ * era a fonte de tudo que ele via.
  *
- * Então a tela oferecia a superfície de edição inteira sobre um acervo que ela
- * não pode mudar, e o diálogo de excluir mentia nas DUAS metades: "Ele está
- * vazio" (a cópia reduzida chega com 0 pontos) e "Isto não pode ser desfeito"
- * (o próximo `carregar()` desfaz sozinho).
+ * ADR 0009: a tela vira a estante, e nasce vazia.
+ *
+ * ## O que estes testes deixaram de afirmar
+ *
+ * Eles prendiam o PORTÃO do editor: "sem plano o editor não abre", "a tela diz
+ * que nada se perdeu". Guardar não é recurso pago — é seguir, com outro alvo —,
+ * e não há mais editor a bloquear. Manter aqueles casos seria prender um
+ * comportamento que sumiu, que é a forma mais silenciosa de um teste virar
+ * mentira.
  */
 
 import { match, ok } from "node:assert/strict";
 import { beforeEach, test } from "node:test";
 import { Router } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
-import { assentar, renderizar, type Tela } from "../../testes/renderizar.ts";
+import { assentar, renderizar } from "../../testes/renderizar.ts";
 import { fingirRede } from "../../testes/rede.ts";
 import { TelaOrganizarAcervo } from "@/pages/TelaOrganizarAcervo";
 import { AppProvider } from "@/context";
@@ -28,40 +33,36 @@ beforeEach(() => localStorage.clear());
 
 const EU = {
   id: "u1", email: "m@e.com", email_verificado: true,
-  apelido: "m", admin: false, foto: null, favoritos_publicos: false,
+  apelido: "maria", admin: false, favoritos_publicos: false, foto: null,
 };
 
-const ORIXA = { id: "ogum", nome: "Ogum", cor: "#c00", emoji: "⚔️", ordem: 0 };
-
-/** O acervo INTEIRO, de quem paga. */
-const COMPLETO: AppData = {
-  orixas: [ORIXA] as AppData["orixas"],
-  subcategorias: [{ id: "s1", orixaId: "ogum", nome: "Chegada", ordem: 0, criadoEm: 0 }],
+const ACERVO: AppData = {
+  orixas: [{ id: "ogum", nome: "Ogum", cor: "#c00", emoji: "⚔️", ordem: 0 }] as AppData["orixas"],
+  subcategorias: [],
   pontos: [{
-    id: "p1", subcategoriaId: "s1", titulo: "Ogum de Lei",
-    letra: "l", favorito: false, ordem: 0, criadoEm: 0,
+    id: "p1", subcategoriaId: "s1", titulo: "Ogum de Lei", letra: "l",
+    favorito: false, ordem: 0, criadoEm: 0,
   }],
 };
 
-/** O que o portão manda para quem não paga: mesma lista, hierarquia zerada. */
-const ACHATADO: AppData = {
-  ...COMPLETO,
-  subcategorias: [],
-  pontos: COMPLETO.pontos.map((p) => ({ ...p, subcategoriaId: "", ordem: 0 })),
-};
-
-async function abrir({ organizado }: { organizado: boolean }) {
-  const acervo = organizado ? COMPLETO : ACHATADO;
-  localStorage.setItem("pontos-umbanda-data", JSON.stringify(acervo));
+async function abrir({ plano = "pago", guardados = [] as unknown[] } = {}) {
   const rede = fingirRede((url) => {
     if (url.includes("/auth/eu")) return { corpo: EU };
     if (url.includes("/meus-direitos")) {
-      return { corpo: { plano: organizado ? "pago" : "gratis", repertorios: organizado } };
+      return { corpo: { plano, repertorios: plano === "pago" } };
     }
+    if (url.includes("/eu/biblioteca")) return { corpo: guardados };
+    if (url.includes("/catalogo")) return { corpo: ACERVO };
     if (url.includes("/acervo")) {
-      return { corpo: { ...acervo, acesso: { acervoOrganizado: organizado }, versao: "v1" } };
+      return {
+        corpo: {
+          ...ACERVO,
+          acesso: { acervoOrganizado: plano === "pago" },
+          versao: "v1",
+        },
+      };
     }
-    throw new Error(`chamada não prevista: ${url}`);
+    return { corpo: {} };
   });
   const tela = await renderizar(
     <Router hook={memoryLocation({ path: "/organizar" }).hook}>
@@ -75,70 +76,57 @@ async function abrir({ organizado }: { organizado: boolean }) {
     </Router>,
   );
   await assentar();
-  return {
-    tela,
-    limpar: async () => {
-      await tela.desmontar();
-      rede.restaurar();
-      localStorage.clear();
-    },
-  };
+  return { tela, limpar: async () => { await tela.desmontar(); rede.restaurar(); } };
 }
 
-/** Os controles que MUDAM o acervo. Nenhum pode existir sobre cópia reduzida. */
-const controlesDeEdicao = (tela: Tela) =>
-  tela.todos("button").filter((b) => {
-    const t = `${b.getAttribute("aria-label") ?? ""} ${b.getAttribute("title") ?? ""} ${b.textContent ?? ""}`;
-    return /excluir|apagar|renomear|adicionar|novo|importar/i.test(t);
+test("nasce vazia, e diz que nada entra sozinho", async () => {
+  // É o pedido inteiro numa frase: "o organizar acervo tem que nascer vazio".
+  const { tela, limpar } = await abrir();
+  try {
+    match(tela.texto(), /nada entra sozinho/i);
+    match(tela.texto(), /está vazia — e é assim que ela começa/);
+  } finally {
+    await limpar();
+  }
+});
+
+test("mostra o que foi guardado", async () => {
+  const { tela, limpar } = await abrir({
+    guardados: [
+      { alvoTipo: "orixa", alvoId: "ogum", nome: "Ogum", pontos: 30, de: null, ordem: 0 },
+    ],
   });
-
-test("sem plano, o editor NÃO abre — não há o que organizar", async () => {
-  const { tela, limpar } = await abrir({ organizado: false });
   try {
-    match(tela.texto(), /faz parte do plano/i);
-    ok(
-      controlesDeEdicao(tela).length === 0,
-      `ofereceu edição sobre cópia reduzida: ${controlesDeEdicao(tela).map((b) => b.textContent)}`,
-    );
-  } finally {
-    await limpar();
-  }
-});
-
-test("sem plano, a tela diz que nada se perdeu — e é verdade", async () => {
-  // É justamente porque o app NÃO manda a cópia reduzida de volta que a
-  // organização de quem já pagou sobrevive na conta. A frase tira um medo real
-  // e não é consolo inventado.
-  const { tela, limpar } = await abrir({ organizado: false });
-  try {
-    match(tela.texto(), /nada\s*se perdeu/i);
-    match(tela.texto(), /volta assim que o plano voltar/i);
-    ok(tela.achar('a[href="/planos"]'), "disse que é do plano e não levou a ele");
-  } finally {
-    await limpar();
-  }
-});
-
-test("sem plano, NENHUMA frase de exclusão aparece", async () => {
-  // As duas metades eram falsas ao mesmo tempo: "Ele está vazio" escondia
-  // dezenas de pontos que existem no servidor, e "não pode ser desfeito"
-  // inventava uma permanência que o próximo `carregar()` desfaz.
-  const { tela, limpar } = await abrir({ organizado: false });
-  try {
-    ok(!/está vazio/i.test(tela.texto()), "voltou a dizer que o orixá está vazio");
-    ok(!/não pode ser desfeito/i.test(tela.texto()), "voltou a prometer permanência");
-  } finally {
-    await limpar();
-  }
-});
-
-test("COM plano, o editor abre normalmente", async () => {
-  // A outra metade da cerca: fechar demais tiraria a funcionalidade de quem
-  // pagou por ela.
-  const { tela, limpar } = await abrir({ organizado: true });
-  try {
-    ok(!/faz parte do plano/i.test(tela.texto()), "escondeu o editor de quem paga");
     match(tela.texto(), /Ogum/);
+    match(tela.texto(), /30 pontos/);
+  } finally {
+    await limpar();
+  }
+});
+
+test("NÃO oferece mais o editor do acervo", async () => {
+  // A cópia do acervo inteiro deixou de ser a fonte do que a pessoa vê. Oferecer
+  // "excluir orixá" aqui apagaria de uma cópia que ninguém lê — trabalho que
+  // não muda nada, sobre conteúdo litúrgico.
+  const { tela, limpar } = await abrir();
+  try {
+    const acoes = tela
+      .todos("button")
+      .map((b) => b.textContent ?? "")
+      .filter((t) => /excluir|apagar|renomear|adicionar|novo orixá|importar/i.test(t));
+    ok(acoes.length === 0, `a tela ainda oferece editar o acervo: ${acoes}`);
+  } finally {
+    await limpar();
+  }
+});
+
+test("guardar não é recurso pago: sem plano a estante abre igual", async () => {
+  // Guardar é seguir, com outro alvo — e seguir nunca foi pago. O que se cobra
+  // continua sendo hierarquia, vídeo, gira e sync (ADR 0002).
+  const { tela, limpar } = await abrir({ plano: "gratis" });
+  try {
+    ok(!/faz parte do plano/i.test(tela.texto()), "cobrou pela estante");
+    match(tela.texto(), /está vazia/);
   } finally {
     await limpar();
   }

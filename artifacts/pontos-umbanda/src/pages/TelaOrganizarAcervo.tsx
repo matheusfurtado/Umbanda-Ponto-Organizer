@@ -1,104 +1,46 @@
-import { useState } from "react";
-import { Link } from "wouter";
-import { Lock } from "lucide-react";
-import { TelaOrixas } from "@/pages/TelaOrixas";
-import { Estante } from "@/componentes/Estante";
-import { TelaSubcategorias } from "@/pages/TelaSubcategorias";
-import { useApp } from "@/context";
-import type { Orixa } from "@/types";
 
 /**
- * O acervo em modo de EDIÇÃO — arrastar, renomear, criar, excluir.
+ * Meu acervo — a estante do que eu guardei.
  *
- * Isto era a tela principal de quem pagava. Deixou de ser: a maior parte do
- * tempo a pessoa está procurando um ponto para cantar, não reorganizando a
- * gira. Misturar as duas coisas deixava a navegação cheia de botões que só
- * servem uma vez por mês.
+ * ## O que esta tela deixou de ser
  *
- * Nada foi jogado fora — só saiu do caminho de quem quer achar um ponto.
+ * Ela era o EDITOR do acervo pessoal: arrastar, renomear, criar e excluir
+ * orixá, seção e ponto sobre uma cópia do acervo inteiro. E era isso que
+ * produzia o defeito que ele descreveu em 02/09: *"eu apaguei do organizar
+ * acervo e no início não consigo acessar mais"*. A cópia não era uma seleção —
+ * era a fonte de tudo que ele via.
  *
- * ## Sem plano, o editor não edita nada — e mentia duas vezes
+ * ADR 0009, decidido por ele: *"o organizar acervo tem que nascer vazio, e
+ * assim que eu clicar seja em um orixá/playlist e em curtir, ele aparece em
+ * organizar acervo, seria uma biblioteca de playlist, algo parecido como o meus
+ * artistas, só que com playlist"*.
  *
- * Quem não paga recebe o acervo ACHATADO pelo portão (ADR 0002):
- * `subcategorias: []`, `subcategoriaId` vazio, `ordem` zerada. E `persistir`
- * não enfileira envio para cópia reduzida (`dados.parcial`), de propósito —
- * mandá-la de volta apagaria no servidor a organização que a pessoa montou
- * enquanto pagava.
+ * ## Nada foi apagado
  *
- * O resultado é que a tela oferecia a superfície de edição inteira sobre um
- * acervo que ela não pode mudar. E o diálogo de excluir orixá dizia, ao mesmo
- * tempo, duas coisas falsas:
+ * O acervo pessoal de quem já organizou continua no banco, intocado, e há uma
+ * exportação em `backups/`. O que mudou é que ele deixou de ser o que a pessoa
+ * lê: a descoberta vem do catálogo (`GET /catalogo`), e esta tela mostra a
+ * estante.
  *
- * - **"Ele está vazio."** — porque a cópia reduzida chega com 0 subcategorias
- *   e 0 pontos. O orixá tem dezenas de pontos no servidor.
- * - **"Isto não pode ser desfeito."** — a exclusão SE DESFAZ sozinha: o
- *   próximo `carregar()` grava o acervo do servidor por cima.
- *
- * As duas metades erram em direções opostas: uma esconde o que se perde, a
- * outra inventa uma permanência que não existe.
- *
- * Consertar as frases não bastaria — o editor continuaria sendo um teatro. A
- * tela passa a dizer o que é: aqui não há o que organizar sem plano, e o que
- * está na conta continua intacto.
+ * O editor continua no repositório (`TelaOrixas`, `TelaSubcategorias`) sem
+ * ninguém o alcançar. É dívida assumida e anotada: código de tela sem porta é o
+ * defeito que o `/organizar` teve por meses, e não pode virar permanente.
  */
+
+import { BookMarked } from "lucide-react";
+import { Estante } from "@/componentes/Estante";
+
 export function TelaOrganizarAcervo() {
-  const { dados } = useApp();
-  const [orixa, setOrixa] = useState<Orixa | null>(null);
-
-  if (dados.parcial) {
-    return (
-      <div className="max-w-2xl px-4 pb-24 pt-5 sm:px-8">
-        <h1 className="flex items-center gap-2 text-2xl font-black text-foreground sm:text-3xl">
-          <Lock className="h-6 w-6 text-primary" aria-hidden /> Organizar o acervo
-        </h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Organizar por orixá e seção faz parte do plano. Sem ele, o servidor
-          manda a lista corrida — e por isso não há hierarquia aqui para mexer.
-        </p>
-        {/* A frase que tira o medo, e que é verdade: a organização de quem já
-            pagou continua na conta, intocada. É justamente porque o app NÃO
-            manda a cópia reduzida de volta que ela sobrevive. */}
-        <p className="mt-2 text-sm text-muted-foreground">
-          Se você já organizou antes, <strong className="text-foreground">nada
-          se perdeu</strong>: está guardado na sua conta e volta assim que o
-          plano voltar.
-        </p>
-        <Link
-          href="/planos"
-          className="mt-4 inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground"
-        >
-          Ver planos
-        </Link>
-      </div>
-    );
-  }
-
-  // Dentro de um orixá, a tela é só o editor daquela seção — pôr a estante ali
-  // seria repetir a biblioteca inteira dentro de um item dela.
-  if (orixa) {
-    return <TelaSubcategorias orixa={orixa} onVoltar={() => setOrixa(null)} />;
-  }
-
   return (
-    <div className="space-y-8">
-      {/* A ESTANTE PRIMEIRO, e é a mudança do ADR 0009: "o organizar acervo tem
-          que nascer vazio, e assim que eu clicar seja em um orixá/playlist e em
-          curtir, ele aparece em organizar acervo".
-
-          O editor de hierarquia continua abaixo, e não some: quem já organizou
-          tem trabalho investido nele, e a etapa que troca o padrão para quem
-          chega novo é outra (ADR 0009, etapa 4). Tirar o editor agora seria
-          fazer a etapa 4 antes da 1. */}
-      <div className="px-4 pt-5 sm:px-8">
-        <Estante />
-      </div>
-
-      <div>
-        <h2 className="px-4 text-lg font-bold text-foreground sm:px-8">
-          Meu acervo
-        </h2>
-        <TelaOrixas onSelectOrixa={setOrixa} />
-      </div>
+    <div className="max-w-3xl px-4 pb-24 pt-5 sm:px-8">
+      <h1 className="flex items-center gap-2 text-2xl font-black text-foreground sm:text-3xl">
+        <BookMarked className="h-6 w-6 text-primary" aria-hidden /> Meu acervo
+      </h1>
+      <p className="mb-6 mt-1 text-sm text-muted-foreground">
+        O que você guardou. Orixás e playlists que você salvar do início
+        aparecem aqui — e nada entra sozinho.
+      </p>
+      <Estante />
     </div>
   );
 }
