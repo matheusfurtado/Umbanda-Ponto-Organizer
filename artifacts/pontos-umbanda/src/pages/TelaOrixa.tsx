@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { BotaoGuardar } from "@/componentes/BotaoGuardar";
 import { ArrowLeft, Search, X, Lock, Sparkles } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -140,6 +141,12 @@ export function TelaOrixa({
               {comVideo > 0 && ` · ${comVideo} com vídeo`}
               {secoes && ` · ${secoes.length} ${secoes.length === 1 ? "seção" : "seções"}`}
             </p>
+            {/* Guardar a entidade inteira na biblioteca (ADR 0009). É a metade
+                "orixá" do que ele pediu: "assim que eu clicar seja em um
+                orixá/playlist... ele aparece em organizar acervo". */}
+            <div className="mt-3">
+              <BotaoGuardar alvoTipo="orixa" alvoId={orixa.id} nome={orixa.nome} />
+            </div>
           </div>
         </div>
       </div>

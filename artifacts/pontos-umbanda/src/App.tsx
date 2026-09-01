@@ -1,9 +1,9 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Route, Switch, Redirect } from "wouter";
+import { Link, Redirect, Route, Switch, useLocation } from "wouter";
 import { AvisoAcervo } from "@/components/AvisoAcervo";
 import { AvisoTeste } from "@/components/AvisoTeste";
 import { InstallBanner } from "@/components/InstallBanner";
-import { AppProvider } from "@/context";
+import { AppProvider, useApp } from "@/context";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { GerenciadorMigracao } from "@/componentes/GerenciadorMigracao";
 import { EntitlementsProvider } from "@/billing/EntitlementsContext";
@@ -47,8 +47,50 @@ import { TelaRetornoPagamento } from "@/pages/TelaRetornoPagamento";
 import { TelaRepertorios } from "@/pages/TelaRepertorios";
 import { Orixa } from "@/types";
 
+/**
+ * O orixá aberto por URL.
+ *
+ * Ele abria só por estado, e por isso não tinha endereço: não dava para
+ * compartilhar "os pontos de Ogum", nem para a biblioteca (ADR 0009) levar a
+ * ele — um item de estante que não abre não é estante, é lista.
+ *
+ * A tela inicial passou a navegar para cá em vez de guardar estado próprio.
+ * Duas portas para a mesma sala é o que faz uma delas envelhecer sozinha.
+ */
+function OrixaPorId({ id }: { id: string }) {
+  const [, navegar] = useLocation();
+  const { dados } = useApp();
+  const { adicionar, sugerir, modais } = useAcoesDePonto();
+  const orixa = dados.orixas.find((o) => o.id === id);
+
+  if (!orixa) {
+    return (
+      <div className="max-w-2xl px-4 pb-24 pt-5 sm:px-8">
+        <p className="text-sm text-muted-foreground">
+          Não achei essa entidade no seu acervo.
+        </p>
+        <Link href="/" className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-primary underline underline-offset-2">
+          Voltar ao início
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <TelaOrixa
+        orixa={orixa}
+        onVoltar={() => navegar("/")}
+        onAdicionar={adicionar}
+        onSugerirAutor={sugerir}
+      />
+      {modais}
+    </>
+  );
+}
+
 function AppInner({ focarBusca = false }: { focarBusca?: boolean }) {
-  const [orixaAberto, setOrixaAberto] = useState<Orixa | null>(null);
+  const [, navegar] = useLocation();
   const { adicionar, sugerir, modais } = useAcoesDePonto();
 
   // A MESMA navegação para quem paga e para quem não paga. A diferença aparece
@@ -57,21 +99,12 @@ function AppInner({ focarBusca = false }: { focarBusca?: boolean }) {
   return (
     <>
       <AvisoTeste />
-      {orixaAberto ? (
-        <TelaOrixa
-          orixa={orixaAberto}
-          onVoltar={() => setOrixaAberto(null)}
-          onAdicionar={adicionar}
-          onSugerirAutor={sugerir}
-        />
-      ) : (
-        <TelaInicio
-          onAbrirOrixa={setOrixaAberto}
-          onAdicionar={adicionar}
-          onSugerirAutor={sugerir}
-          focarBusca={focarBusca}
-        />
-      )}
+      <TelaInicio
+        onAbrirOrixa={(o: Orixa) => navegar(`/orixa/${encodeURIComponent(o.id)}`)}
+        onAdicionar={adicionar}
+        onSugerirAutor={sugerir}
+        focarBusca={focarBusca}
+      />
       {modais}
     </>
   );
@@ -192,6 +225,10 @@ function App() {
                   </Route>
                   {/* Pública: a letra é grátis (ADR 0002), e é pedindo ajuda
                       que se recebe ajuda. Indicar é que exige conta. */}
+                  {/* O orixá ganhou endereço: ver ADR 0009 e `OrixaPorId`. */}
+                  <Route path="/orixa/:id">
+                    {(params) => <OrixaPorId id={decodeURIComponent(params.id)} />}
+                  </Route>
                   <Route path="/sem-video">
                     <TelaSemVideo />
                   </Route>

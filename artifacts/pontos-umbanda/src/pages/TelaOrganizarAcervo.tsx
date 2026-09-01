@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Lock } from "lucide-react";
 import { TelaOrixas } from "@/pages/TelaOrixas";
+import { Estante } from "@/componentes/Estante";
 import { TelaSubcategorias } from "@/pages/TelaSubcategorias";
 import { useApp } from "@/context";
 import type { Orixa } from "@/types";
@@ -72,9 +73,32 @@ export function TelaOrganizarAcervo() {
     );
   }
 
-  return orixa ? (
-    <TelaSubcategorias orixa={orixa} onVoltar={() => setOrixa(null)} />
-  ) : (
-    <TelaOrixas onSelectOrixa={setOrixa} />
+  // Dentro de um orixá, a tela é só o editor daquela seção — pôr a estante ali
+  // seria repetir a biblioteca inteira dentro de um item dela.
+  if (orixa) {
+    return <TelaSubcategorias orixa={orixa} onVoltar={() => setOrixa(null)} />;
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* A ESTANTE PRIMEIRO, e é a mudança do ADR 0009: "o organizar acervo tem
+          que nascer vazio, e assim que eu clicar seja em um orixá/playlist e em
+          curtir, ele aparece em organizar acervo".
+
+          O editor de hierarquia continua abaixo, e não some: quem já organizou
+          tem trabalho investido nele, e a etapa que troca o padrão para quem
+          chega novo é outra (ADR 0009, etapa 4). Tirar o editor agora seria
+          fazer a etapa 4 antes da 1. */}
+      <div className="px-4 pt-5 sm:px-8">
+        <Estante />
+      </div>
+
+      <div>
+        <h2 className="px-4 text-lg font-bold text-foreground sm:px-8">
+          Meu acervo
+        </h2>
+        <TelaOrixas onSelectOrixa={setOrixa} />
+      </div>
+    </div>
   );
 }

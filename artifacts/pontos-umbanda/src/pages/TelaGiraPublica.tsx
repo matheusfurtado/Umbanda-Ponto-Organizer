@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { mensagemDeErro } from "@/api/cliente";
 import { Link, useRoute } from "wouter";
+import { BotaoGuardar } from "@/componentes/BotaoGuardar";
 import { Compartilhar } from "@/componentes/Compartilhar";
 import { Denunciar } from "@/componentes/Denunciar";
 import { useAuth } from "@/auth/AuthContext";
@@ -114,6 +115,11 @@ export function TelaGiraPublica() {
                 tinha como circular: nem botão havia. Ver ADR 0006. */}
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <Compartilhar titulo={`${gira.nome} — Pontos de Umbanda`} caminho={`/gira/${gira.id}`} />
+              {/* GUARDAR, e não copiar (ADR 0009): a playlist continua sendo de
+                  quem montou, e o que entra na minha biblioteca é a referência.
+                  Copiar congelaria o estado de hoje e me daria uma segunda
+                  playlist com o mesmo nome. */}
+              <BotaoGuardar alvoTipo="playlist" alvoId={gira.id} nome={gira.nome} />
               {autenticado && (
                 <Denunciar alvoTipo="gira" alvoId={gira.id} oQueE="esta playlist" />
               )}
