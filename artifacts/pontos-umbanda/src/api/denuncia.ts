@@ -23,6 +23,7 @@ export type AcaoDeDenuncia =
   | "foto_removida"
   | "gira_despublicada"
   | "apelido_limpo"
+  | "ponto_retirado"
   | "bio_limpa";
 
 export interface DenunciaNaFila {

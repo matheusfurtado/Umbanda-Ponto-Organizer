@@ -49,9 +49,17 @@ export const ACOES_POR_ALVO: Record<AlvoDeDenuncia, OpcaoDeAcao[]> = {
     },
     NENHUMA,
   ],
-  // Tirar ponto do acervo canônico ainda não existe como ação: sumiria para
-  // todo mundo, e isso precisa ser desenhado, não improvisado num botão.
-  ponto: [NENHUMA],
+  // Tirar do acervo some para TODO MUNDO, e por isso o aviso é o mais duro da
+  // tela. A ação existe desde 02/09; antes disso denunciar letra com dono ou
+  // texto ofensivo dava "acolhida" e a letra ficava no ar.
+  ponto: [
+    {
+      valor: "ponto_retirado",
+      rotulo: "Tirar do acervo",
+      aviso: "some para todo mundo, e as cópias de quem organizou não voltam",
+    },
+    NENHUMA,
+  ],
   // Nenhuma delas apaga o artista. Apagar levaria junto os pontos e quem
   // seguia — castigo desproporcional a um texto ou a uma imagem.
   artista: [

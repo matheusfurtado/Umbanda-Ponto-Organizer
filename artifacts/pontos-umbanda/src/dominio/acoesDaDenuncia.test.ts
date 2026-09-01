@@ -44,13 +44,24 @@ test("tirar a foto avisa que não tem volta", () => {
   assert.match(foto.aviso ?? "", /não tem volta/);
 });
 
-test("ponto ainda não tem ação que mexa no acervo", () => {
-  // Tirar ponto do acervo canônico sumiria para todo mundo. Precisa ser
-  // desenhado, não improvisado num botão.
+test("ponto pode ser tirado do acervo, e o aviso diz o preço", () => {
+  // Este teste dizia o contrário — "ponto ainda não tem ação que mexa no
+  // acervo" — e prendia a FALTA: `ACOES_POR_ALVO["ponto"]` só aceitava
+  // `nenhuma`, então denunciar letra com dono ou texto ofensivo dava "acolhida"
+  // e a letra continuava no ar. A rota de retirar existia desde 29/08 e o fluxo
+  // nunca a chamou.
+  //
+  // O aviso importa mais aqui que em qualquer outra ação da lista: some para
+  // todo mundo, e as cópias de quem organizou o acervo não voltam nem
+  // desfazendo.
   assert.deepEqual(
     ACOES_POR_ALVO.ponto.map((o) => o.valor),
-    ["nenhuma"],
+    ["ponto_retirado", "nenhuma"],
   );
+  const retirar = ACOES_POR_ALVO.ponto.find((o) => o.valor === "ponto_retirado");
+  assert.ok(retirar, "a ação sumiu do mapa");
+  assert.match(retirar.aviso ?? "", /todo mundo/);
+  assert.match(retirar.aviso ?? "", /não voltam/);
 });
 
 test("alvo desconhecido não deixa a tela sem opção nenhuma", () => {
