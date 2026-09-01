@@ -17,19 +17,26 @@
  * seguindo a hierarquia. Uma fila ordenada pelo relógio responderia "o que saiu
  * por último", que ninguém perguntou.
  *
- * ## Sem botão de reativar
+ * ## O botão de aprovar, e por que ele não existia
  *
- * O caminho de volta é o ponto GANHAR uma gravação de artista — e aí
- * `desativar_sem_artista --reativar` devolve em bloco. Um botão aqui devolveria
- * o ponto ao app no mesmo estado mudo que o tirou de lá. O que a tela oferece é
- * o atalho para a fila de casamento, onde o palpite vira gravação.
+ * Para o ponto que saiu por não ter artista, o caminho de volta é GANHAR uma
+ * gravação — e um botão o devolveria ao app mudo do jeito que ele saiu. Por
+ * isso a tela nasceu sem.
+ *
+ * Os pontos TRAZIDOS DO YOUTUBE inverteram o argumento. Eles chegam com letra,
+ * vídeo e artista: o que falta não é material, é alguém olhar. Para esses o
+ * botão não fura a regra — ele é a conferência que a regra pede. Por isso a
+ * linha traz o vídeo ao lado da letra: decidir sem ver de onde a letra veio é
+ * carimbar, não conferir.
  */
 
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { ArchiveX, ScanSearch, Youtube } from "lucide-react";
+import { ArchiveX, BadgeCheck, ExternalLink, Loader2, ScanSearch, Youtube } from "lucide-react";
 import { mensagemDeErro } from "@/api/cliente";
-import { pontosDesativados, type PontoDesativado } from "@/api/desativados";
+import {
+  pontosDesativados, reativarPonto, type PontoDesativado,
+} from "@/api/desativados";
 
 /** Preserva a ordem que o servidor mandou — que é a ordem litúrgica. */
 function porOrixa(lista: PontoDesativado[]) {
@@ -45,6 +52,22 @@ function porOrixa(lista: PontoDesativado[]) {
 export function TelaDesativados() {
   const [lista, setLista] = useState<PontoDesativado[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [ocupado, setOcupado] = useState<string | null>(null);
+
+  async function aprovar(id: string) {
+    setOcupado(id);
+    setErro(null);
+    try {
+      await reativarPonto(id);
+      // Sai da lista na hora, sem recarregar tudo: são centenas, e recarregar
+      // a cada decisão faria quem confere esperar por decisão.
+      setLista((l) => (l === null ? l : l.filter((p) => p.id !== id)));
+    } catch (problema) {
+      setErro(mensagemDeErro(problema, "Não consegui agora."));
+    } finally {
+      setOcupado(null);
+    }
+  }
 
   useEffect(() => {
     pontosDesativados()
@@ -115,6 +138,39 @@ export function TelaDesativados() {
                       <pre className="mt-2 max-h-24 overflow-y-auto whitespace-pre-wrap rounded-lg bg-muted/40 p-2 font-sans text-xs text-muted-foreground">
                         {p.letra}
                       </pre>
+                    )}
+                    {p.doYoutube && (
+                      <div className="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/5 p-2">
+                        <p className="text-xs text-muted-foreground">
+                          Letra trazida da descrição deste vídeo
+                          {p.artistaNome && <> · {p.artistaNome}</>}
+                        </p>
+                        {p.videoUrl && (
+                          <a
+                            href={p.videoUrl}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="mt-1 inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-2"
+                          >
+                            <ExternalLink className="h-4 w-4" aria-hidden /> Abrir o vídeo
+                          </a>
+                        )}
+                        <div>
+                          <button
+                            type="button"
+                            onClick={() => void aprovar(p.id)}
+                            disabled={ocupado === p.id}
+                            className="mt-1 inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+                          >
+                            {ocupado === p.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                            ) : (
+                              <BadgeCheck className="h-4 w-4" aria-hidden />
+                            )}
+                            Pôr no app
+                          </button>
+                        </div>
+                      </div>
                     )}
                     <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                       {p.candidatas > 0 ? (

@@ -27,7 +27,18 @@ export interface PontoDesativado {
   candidatas: number;
   /** Tem vídeo principal, só não de canal curado. */
   temVideo: boolean;
+  /** De quem é a gravação, quando é de artista curado. */
+  artistaNome: string | null;
+  /** O vídeo, para conferir antes de aprovar. */
+  videoUrl: string | null;
+  /** `true` = veio do YouTube (letra extraída da descrição de um vídeo). */
+  doYoutube: boolean;
 }
 
 export const pontosDesativados = () =>
   chamarApi<PontoDesativado[]>("/admin/pontos-desativados");
+
+export const reativarPonto = (id: string) =>
+  chamarApi<void>(`/admin/pontos/${encodeURIComponent(id)}/reativar`, {
+    method: "POST",
+  });

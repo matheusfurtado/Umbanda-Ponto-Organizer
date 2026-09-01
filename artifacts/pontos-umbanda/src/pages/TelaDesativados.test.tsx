@@ -19,7 +19,8 @@ import { TelaDesativados } from "@/pages/TelaDesativados";
 function ponto(id: string, titulo: string, orixa: string, extra = {}) {
   return {
     id, titulo, letra: `letra de ${titulo}`, orixa,
-    subcategoria: "Descarrego", candidatas: 0, temVideo: false, ...extra,
+    subcategoria: "Descarrego", candidatas: 0, temVideo: false,
+    artistaNome: null, videoUrl: null, doYoutube: false, ...extra,
   };
 }
 
@@ -27,10 +28,17 @@ const LISTA = [
   ponto("p1", "Ponto de Omulu", "Omulu", { candidatas: 3 }),
   ponto("p2", "Outro de Omulu", "Omulu"),
   ponto("p3", "Ponto de Ogum", "Ogum", { temVideo: true }),
+  ponto("p4", "Trazido do YouTube", "Ogum", {
+    doYoutube: true, artistaNome: "Juliana D Passos",
+    videoUrl: "https://youtu.be/abc123",
+  }),
 ];
 
 async function abrir(resposta?: { status?: number; corpo?: unknown }) {
-  const rede = fingirRede((url) => {
+  const chamadas: string[] = [];
+  const rede = fingirRede((url, init) => {
+    chamadas.push(`${init?.method ?? "GET"} ${url}`);
+    if (url.includes("/reativar")) return { status: 204 };
     if (url.includes("/admin/pontos-desativados")) return resposta ?? { corpo: LISTA };
     throw new Error(`chamada não prevista: ${url}`);
   });
@@ -43,6 +51,7 @@ async function abrir(resposta?: { status?: number; corpo?: unknown }) {
   await assentar();
   return {
     tela,
+    chamadas,
     limpar: async () => {
       await tela.desmontar();
       rede.restaurar();
@@ -58,7 +67,7 @@ test("agrupa por orixá, na ordem em que o servidor mandou", async () => {
   // por data responderia "o que saiu por último", que ninguém perguntou.
   const { tela, limpar } = await abrir();
   try {
-    deepEqual(grupos(tela), ["Omulu · 2", "Ogum · 1"]);
+    deepEqual(grupos(tela), ["Omulu · 2", "Ogum · 2"]);
     match(tela.texto(), /Ponto de Omulu/);
     match(tela.texto(), /Ponto de Ogum/);
   } finally {
@@ -113,6 +122,60 @@ test("falha ao carregar é dita com as palavras do servidor", async () => {
     match(tela.texto(), /em manutenção/);
     ok(tela.naoTem('[aria-busy="true"]'), "mostrou o erro e continuou girando");
     ok(!/API 503/.test(tela.texto()), "vazou o status para a tela");
+  } finally {
+    await limpar();
+  }
+});
+
+test("o trazido do YouTube mostra o vídeo de onde a letra saiu", async () => {
+  // Decidir sem ver de onde a letra veio é carimbar, não conferir. É a razão
+  // de o botão existir só para esta metade da lista.
+  const { tela, limpar } = await abrir();
+  try {
+    ok(
+      tela.todos("a").some((a) => a.getAttribute("href") === "https://youtu.be/abc123"),
+      "sem link do vídeo, a aprovação seria às cegas",
+    );
+    match(tela.texto(), /Letra trazida da descrição deste vídeo/);
+    match(tela.texto(), /Juliana D Passos/);
+  } finally {
+    await limpar();
+  }
+});
+
+test("só o trazido do YouTube ganha o botão de pôr no app", async () => {
+  // O ponto que saiu por não ter artista continua sem botão: o caminho de
+  // volta dele é GANHAR uma gravação, e um botão o devolveria mudo.
+  const { tela, limpar } = await abrir();
+  try {
+    const botoes = tela
+      .todos("button")
+      .filter((b) => /Pôr no app/.test(b.textContent ?? ""));
+    ok(
+      botoes.length === 1,
+      `esperava 1 botão (só o trazido do YouTube), achei ${botoes.length}`,
+    );
+  } finally {
+    await limpar();
+  }
+});
+
+test("aprovar chama a rota e tira a linha da lista", async () => {
+  const { tela, chamadas, limpar } = await abrir();
+  try {
+    const botao = tela
+      .todos("button")
+      .find((b) => /Pôr no app/.test(b.textContent ?? ""));
+    ok(botao, "não achei o botão");
+    // `tela.clicar` e não `botao.click()`: o harness embrulha em `act`, e sem
+    // isso o React avisa que a atualização de estado ficou fora do teste.
+    await tela.clicar(botao!);
+    await assentar();
+    ok(
+      chamadas.some((c) => c.includes("POST") && c.includes("/admin/pontos/p4/reativar")),
+      `não chamou a rota de reativar: ${chamadas.join(", ")}`,
+    );
+    ok(!/Trazido do YouTube/.test(tela.texto()), "a linha continuou na lista");
   } finally {
     await limpar();
   }
