@@ -259,7 +259,7 @@ export function TelaPerfil() {
                   ) : (
                     <EyeOff className="h-4 w-4" />
                   )}
-                  {perfil.favoritos === null ? "Mostrar meus favoritos" : "Esconder meus favoritos"}
+                  {perfil.favoritos === null ? "Mostrar minhas curtidas" : "Esconder meus favoritos"}
                 </Button>
                 </>
               ) : autenticado ? (

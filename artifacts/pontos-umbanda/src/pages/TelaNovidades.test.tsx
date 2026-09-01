@@ -123,7 +123,7 @@ test("o favorito vem do ACERVO, não desta rota", async () => {
   const { tela, limpar } = await abrir();
   try {
     const marcados = tela
-      .todos("button[aria-label='Desfavoritar']")
+      .todos("button[aria-label='Descurtir']")
       .length;
     ok(marcados === 1, `esperava 1 ponto marcado pelo acervo, achei ${marcados}`);
   } finally {

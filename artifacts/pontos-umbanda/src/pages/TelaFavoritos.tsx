@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Star } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { Link } from "wouter";
 import { Capa } from "@/componentes/Capa";
 import { LinhaPonto } from "@/componentes/LinhaPonto";
@@ -59,7 +59,7 @@ export function TelaFavoritos() {
   return (
     <div className="max-w-4xl px-4 pb-24 pt-5 sm:px-8">
       <h1 className="flex items-center gap-2 text-2xl font-black text-foreground sm:text-3xl">
-        <Star className="h-6 w-6 fill-amber-400 text-amber-400" aria-hidden /> Seus favoritos
+        <Heart className="h-6 w-6 fill-primary text-primary" aria-hidden /> Curtidas
       </h1>
       <p className="mb-6 mt-1 text-sm text-muted-foreground">
         {total > 0
@@ -94,9 +94,9 @@ export function TelaFavoritos() {
         </p>
       ) : total === 0 ? (
         <div className="rounded-xl border border-dashed p-8 text-center">
-          <Star className="mx-auto mb-3 h-6 w-6 text-muted-foreground" aria-hidden />
+          <Heart className="mx-auto mb-3 h-6 w-6 text-muted-foreground" aria-hidden />
           <p className="mx-auto max-w-sm text-sm text-muted-foreground">
-            Nenhum ponto favoritado ainda. A estrela aparece em toda linha de ponto —
+            Nenhum ponto curtido ainda. O coração aparece em toda linha de ponto —
             marque os que você mais canta e eles ficam aqui, à mão.
           </p>
           <Link href="/" className="mt-4 inline-block text-sm font-medium text-primary underline">
@@ -115,7 +115,7 @@ export function TelaFavoritos() {
                   {orixa?.nome ?? "Sem orixá"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  {pontos.length} {pontos.length === 1 ? "favorito" : "favoritos"}
+                  {pontos.length} {pontos.length === 1 ? "curtido" : "curtidos"}
                 </p>
               </div>
             </div>

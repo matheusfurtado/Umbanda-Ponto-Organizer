@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { BadgeCheck, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { Heart, BadgeCheck, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { useApp } from "@/context";
 import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -63,7 +63,7 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
           uma lista sempre vazia é promessa quebrada em toda abertura. */}
       {autenticado && (
         <Link href="/favoritos" className={item(local === "/favoritos")}>
-          <Star className="h-4 w-4" aria-hidden /> Favoritos
+          <Heart className="h-4 w-4" aria-hidden /> Curtidas
           {favoritos > 0 && (
             <span className="ml-auto text-xs tabular-nums text-muted-foreground">{favoritos}</span>
           )}

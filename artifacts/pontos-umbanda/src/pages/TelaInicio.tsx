@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, X, ListMusic, Star } from "lucide-react";
+import { Heart, Search, X, ListMusic, Star } from "lucide-react";
 import { Link } from "wouter";
 import { useApp } from "@/context";
 import { useAuth } from "@/auth/AuthContext";
@@ -153,8 +153,8 @@ export function TelaInicio({
           {autenticado && favoritos.length > 0 && (
             <section className="mb-10">
               <h2 className="mb-2 flex items-center gap-2 px-2 text-lg font-bold text-foreground">
-                <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden />
-                Seus favoritos
+                <Heart className="h-4 w-4 fill-primary text-primary" aria-hidden />
+                Curtidas
                 {/* Só os oito primeiros cabem aqui. Sem esta saída, o nono
                     favorito simplesmente desaparecia do app. */}
                 <Link href="/favoritos" className="ml-auto text-xs font-medium text-primary underline">

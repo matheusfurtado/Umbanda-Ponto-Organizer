@@ -101,7 +101,7 @@ test("mas os favoritos continuam em primeiro — é o atalho de quem está na gi
   // Quem já separou os pontos não deve rolar por artista nenhum para achá-los.
   const { tela, limpar } = await abrir();
   try {
-    const primeiro = tela.texto().indexOf("Seus favoritos");
+    const primeiro = tela.texto().indexOf("Curtidas");
     const artistas = tela.texto().indexOf("Artistas");
     ok(primeiro >= 0 && primeiro < artistas, "os favoritos caíram abaixo dos artistas");
   } finally {
@@ -113,7 +113,7 @@ test("sem conta, a seção de favoritos não aparece", async () => {
   // Favoritar virou coisa de conta; a prateleira sem sessão seria sempre vazia.
   const { tela, limpar } = await abrir({ logado: false });
   try {
-    ok(!/Seus favoritos/.test(tela.texto()), "mostrou favoritos a quem não entrou");
+    ok(!/Curtidas/.test(tela.texto()), "mostrou favoritos a quem não entrou");
     // E o resto da tela continua inteiro — o portão é só nos favoritos.
     deepEqual(
       secoes(tela).filter((s) => s === "Artistas" || s === "Orixás"),

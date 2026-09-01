@@ -308,7 +308,7 @@ test("as ações de toque NÃO dependem de hover para existir", async () => {
     onSugerirAutor: () => {},
   }, { logado: true });
   try {
-    for (const rotulo of [/Adicionar .* a um repertório/, /Sugerir o autor/, /Favoritar/]) {
+    for (const rotulo of [/Adicionar .* a um repertório/, /Sugerir o autor/, /Curtir/]) {
       const botao = tela.todos("button").find((b) => rotulo.test(b.getAttribute("aria-label") ?? ""));
       ok(botao, `não achei o botão ${rotulo}`);
       const classe = botao.getAttribute("class") ?? "";
@@ -331,14 +331,14 @@ test("sem conta, a estrela LEVA AO LOGIN em vez de marcar de mentira", async () 
   const { tela, rede } = await linha(ponto({ favorito: true }));
   try {
     const estrela = tela.exigir('a[href="/login?motivo=favoritos"]');
-    equal(estrela.getAttribute("aria-label"), "Entrar para favoritar");
+    equal(estrela.getAttribute("aria-label"), "Entrar para curtir");
     // E NUNCA cheia: mostrar marcado seria afirmar um favorito que não existe.
     ok(
       !(estrela.querySelector("svg")?.getAttribute("class") ?? "").includes("fill-current"),
       "a estrela apareceu cheia para quem não tem onde guardar favorito",
     );
     ok(
-      tela.todos("button").every((b) => !/avoritar/.test(b.getAttribute("aria-label") ?? "")),
+      tela.todos("button").every((b) => !/urtir/.test(b.getAttribute("aria-label") ?? "")),
       "sobrou um botão de favoritar que não leva a lugar nenhum",
     );
   } finally {
@@ -350,7 +350,7 @@ test("sem conta, a estrela LEVA AO LOGIN em vez de marcar de mentira", async () 
 test("com conta, a estrela volta a ser botão e marca de verdade", async () => {
   const { tela, rede } = await linha(ponto({ favorito: true }), {}, { logado: true });
   try {
-    const botao = tela.todos("button").find((b) => /Desfavoritar/.test(b.getAttribute("aria-label") ?? ""));
+    const botao = tela.todos("button").find((b) => /Descurtir/.test(b.getAttribute("aria-label") ?? ""));
     ok(botao, "quem tem conta perdeu o botão de favoritar");
     ok(tela.naoTem('a[href="/login?motivo=favoritos"]'), "mandou entrar quem já entrou");
   } finally {

@@ -101,7 +101,7 @@ export function ModalMigracao({ aberto, onFechar }: Props) {
             </div>
             {totalFavoritos > 0 && (
               <p className="text-sm text-muted-foreground text-center">
-                Incluindo {totalFavoritos} favorito{totalFavoritos > 1 ? "s" : ""}.
+                Incluindo {totalFavoritos} curtido{totalFavoritos > 1 ? "s" : ""}.
               </p>
             )}
             {erro && <p className="text-sm text-destructive text-center">{erro}</p>}
@@ -118,7 +118,7 @@ export function ModalMigracao({ aberto, onFechar }: Props) {
                 {resumo.pontosCanonicos + resumo.pontosCriados} pontos na conta ({resumo.pontosCriados} seus,{" "}
                 {resumo.pontosCanonicos} do acervo).
               </li>
-              <li>{resumo.favoritos} favoritos preservados.</li>
+              <li>{resumo.favoritos} curtidos preservados.</li>
             </ul>
           </div>
         )}

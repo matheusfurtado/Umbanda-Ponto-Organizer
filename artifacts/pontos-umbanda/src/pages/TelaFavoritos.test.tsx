@@ -153,7 +153,7 @@ test("sem favorito nenhum, convida — e não diz que algo deu errado", async ()
   const semNada: AppData = { ...ACERVO, pontos: [ponto("p9", "Nada marcado")] };
   const { tela, limpar } = await abrir(semNada, { plano: "mensal", sync: true });
   try {
-    match(tela.texto(), /Nenhum ponto favoritado ainda/);
+    match(tela.texto(), /Nenhum ponto curtido ainda/);
     ok(tela.todos("a").some((a) => a.getAttribute("href") === "/"), "sem caminho de volta ao acervo");
     ok(tela.naoTem('[role="alert"]'), "tratou lista vazia como erro");
   } finally {

@@ -71,7 +71,7 @@ test("mostra o que vai subir, e conta os favoritos", async () => {
   const { tela, limpar } = await abrir();
   try {
     match(tela.textoNaPagina(), /Orixás/);
-    match(tela.textoNaPagina(), /Incluindo 1 favorito\./);
+    match(tela.textoNaPagina(), /Incluindo 1 curtido\./);
     // "Nada é apagado" é a frase que responde ao medo de quem clica.
     match(tela.textoNaPagina(), /salvos neste aparelho/);
   } finally {
@@ -102,7 +102,7 @@ test("enviado, o resumo separa o que a PESSOA escreveu do que é do acervo", asy
     await tela.clicar(botao(tela, /Enviar para minha conta/)!);
     await assentar();
     match(tela.textoNaPagina(), /7 pontos na conta \(2 seus, 5 do acervo\)/);
-    match(tela.textoNaPagina(), /3 favoritos preservados/);
+    match(tela.textoNaPagina(), /3 curtidos preservados/);
   } finally {
     await limpar();
   }

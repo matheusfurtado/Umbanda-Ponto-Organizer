@@ -195,7 +195,7 @@ test("favoritar da barra NÃO fecha a letra que a pessoa acabou de abrir", async
   const { tela, limpar } = await cartao(PONTO, false, { logado: true });
   try {
     await tela.clicar("button[aria-expanded]");
-    const favoritar = tela.todos("button").find((b) => /Favoritar/.test(b.textContent ?? ""));
+    const favoritar = tela.todos("button").find((b) => /Curtir/.test(b.textContent ?? ""));
     ok(favoritar, "não achei o botão de favoritar");
     await tela.clicar(favoritar);
     equal(
@@ -259,8 +259,8 @@ test("sem conta, a estrela do cartão leva ao login", async () => {
   try {
     await tela.clicar("button[aria-expanded]");
     const estrela = tela.exigir('a[href="/login?motivo=favoritos"]');
-    equal(estrela.getAttribute("aria-label"), "Entrar para favoritar");
-    match(estrela.textContent ?? "", /Favoritar/);
+    equal(estrela.getAttribute("aria-label"), "Entrar para curtir");
+    match(estrela.textContent ?? "", /Curtir/);
   } finally {
     await limpar();
   }

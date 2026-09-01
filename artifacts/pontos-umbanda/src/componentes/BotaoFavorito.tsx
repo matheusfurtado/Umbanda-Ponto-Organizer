@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/auth/AuthContext";
 import { useApp } from "@/context";
@@ -52,8 +52,8 @@ export function BotaoFavorito({
   const marcada = autenticado && favorito;
   const conteudo = (
     <>
-      <Star className={`h-4 w-4 ${marcada ? "fill-current" : ""}`} />
-      {comRotulo && (marcada ? "Favorito" : "Favoritar")}
+      <Heart className={`h-4 w-4 ${marcada ? "fill-current" : ""}`} />
+      {comRotulo && (marcada ? "Curtido" : "Curtir")}
     </>
   );
 
@@ -67,8 +67,8 @@ export function BotaoFavorito({
     return (
       <Link
         href="/login?motivo=favoritos"
-        title="Entrar para favoritar"
-        aria-label="Entrar para favoritar"
+        title="Entrar para curtir"
+        aria-label="Entrar para curtir"
         className={className}
       >
         {conteudo}
@@ -80,8 +80,8 @@ export function BotaoFavorito({
     <button
       type="button"
       onClick={() => toggleFavorito(id)}
-      title={favorito ? "Desfavoritar" : "Favoritar"}
-      aria-label={favorito ? "Desfavoritar" : "Favoritar"}
+      title={favorito ? "Descurtir" : "Curtir"}
+      aria-label={favorito ? "Descurtir" : "Curtir"}
       className={className}
     >
       {conteudo}

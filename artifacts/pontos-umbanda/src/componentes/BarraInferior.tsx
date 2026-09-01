@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Search, ListMusic, Palette, Star } from "lucide-react";
+import { Heart, Home, Search, ListMusic, Palette, Star } from "lucide-react";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { useAuth } from "@/auth/AuthContext";
 
@@ -35,7 +35,7 @@ export function BarraInferior({ onTrocarPaleta }: { onTrocarPaleta: () => void }
           um item de barra que não leva a nada custa um quinto da navegação. */}
       {autenticado && (
         <Link href="/favoritos" className={item(local === "/favoritos")}>
-          <Star className="h-5 w-5" aria-hidden /> Favoritos
+          <Heart className="h-5 w-5" aria-hidden /> Curtidas
         </Link>
       )}
       <Link
