@@ -23,6 +23,7 @@
 
 import {
   ArchiveX, BadgeCheck, BarChart3, EyeOff, Flag, Mic2, ScanSearch, ShieldCheck,
+  Wand2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -63,6 +64,14 @@ export const LINKS_DE_MODERACAO: LinkDeModeracao[] = [
     rotulo: "Verificar casamento",
     icone: ScanSearch,
     oQueDecide: "o vídeo é mesmo deste ponto?",
+  },
+  // Logo depois da de casamento: é para cá que vai quem recusou o primeiro
+  // palpite e quer ver os outros daquele ponto.
+  {
+    href: "/moderacao/palpites",
+    rotulo: "Outros palpites",
+    icone: Wand2,
+    oQueDecide: "nenhum dos dois? escolher outro vídeo",
   },
   // Logo abaixo da de casamento porque as duas contam a mesma história pelas
   // duas pontas: aqui o acervo que saiu do app, lá o palpite que o traria.

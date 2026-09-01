@@ -25,6 +25,7 @@ import { TelaModerarArtistas } from "@/pages/TelaModerarArtistas";
 import { TelaSugestoesDeArtista } from "@/pages/TelaSugestoesDeArtista";
 import { TelaCasamentos } from "@/pages/TelaCasamentos";
 import { TelaDesativados } from "@/pages/TelaDesativados";
+import { TelaPalpites } from "@/pages/TelaPalpites";
 import { TelaRemocoesDeArtista } from "@/pages/TelaRemocoesDeArtista";
 import { TelaPedirArtista } from "@/pages/TelaPedirArtista";
 import { TelaArtistas } from "@/pages/TelaArtistas";
@@ -266,6 +267,14 @@ function App() {
                   {/* Mesma proteção das outras filas. Esta é a única que não
                       DECIDE nada — só mostra o que saiu do app —, e por isso
                       mesmo precisa existir: ninguém confere o que não lista. */}
+                  {/* A fila que a de casamento não cobre: lá só cabe sim ou
+                      não ao primeiro palpite, e ela nem enxerga os
+                      `nao_encontrado`. */}
+                  <Route path="/moderacao/palpites">
+                    <RotaProtegida>
+                      <TelaPalpites />
+                    </RotaProtegida>
+                  </Route>
                   <Route path="/moderacao/desativados">
                     <RotaProtegida>
                       <TelaDesativados />
