@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { useApp } from "@/context";
 import { useAuth } from "@/auth/AuthContext";
 import { ArtistasEmDestaque } from "@/componentes/ArtistasEmDestaque";
+import { PlaylistsEmDestaque } from "@/componentes/PlaylistsEmDestaque";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { MenuUsuario } from "@/components/MenuUsuario";
 import { Capa } from "@/componentes/Capa";
@@ -180,6 +181,11 @@ export function TelaInicio({
               vem buscar — e é por isso que a seção é uma prateleira horizontal
               de altura fixa, e não um grid que cresce. */}
           <ArtistasEmDestaque />
+
+          {/* As playlists logo abaixo dos artistas: é o caminho que ele
+              descreveu — "do início acesso playlist e salvo elas pra aparecer
+              em organizar acervo". Achar e guardar no mesmo lugar. */}
+          <PlaylistsEmDestaque />
 
           <section aria-label="Orixás">
             <h2 className="mb-3 px-2 text-lg font-bold text-foreground">Orixás</h2>

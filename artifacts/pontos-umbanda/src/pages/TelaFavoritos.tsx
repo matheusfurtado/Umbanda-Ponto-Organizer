@@ -29,7 +29,13 @@ import type { Ponto } from "@/types";
  * para todo mundo.
  */
 export function TelaFavoritos() {
-  const { dados, estado } = useApp();
+  // O CATÁLOGO, e não o acervo dela.
+  //
+  // Lendo `dados`, uma curtida sumia da tela no dia em que a pessoa tirasse o
+  // ponto do acervo dela — e a curtida não vive mais lá desde o ADR 0009 (etapa
+  // 3): ela é uma linha ligando pessoa e ponto canônico. A tela mostrava menos
+  // do que o banco guardava, sem avisar.
+  const { catalogo: dados, estado } = useApp();
   const { ent } = useEntitlements();
   const { adicionar, sugerir, modais } = useAcoesDePonto();
 
