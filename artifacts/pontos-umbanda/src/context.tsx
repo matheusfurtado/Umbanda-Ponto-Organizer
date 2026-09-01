@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { curtirPonto, descurtirPonto } from "@/api/curtida";
 import type { AppData, EstadoAcervo, FonteAcervo, Orixa, Subcategoria, Ponto } from "./types";
 import { carregarDados, gerarId } from "./storage";
 import { useAuth } from "./auth/AuthContext";
@@ -288,10 +289,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // vez de cada uma lembrar de traduzir o id.
       const alvo = dados.pontos.find((p) => p.id === id || p.origemId === id);
       if (!alvo) return;
+      const marcado = !alvo.favorito;
       const pontos = dados.pontos.map((p) =>
-        p.id === alvo.id ? { ...p, favorito: !p.favorito } : p
+        p.id === alvo.id ? { ...p, favorito: marcado } : p
       );
       atualizar({ ...dados, pontos });
+
+      // E AVISA O SERVIDOR NA HORA, por rota própria.
+      //
+      // Antes a curtida só chegava lá pelo `PUT /acervo` — o retrato inteiro —,
+      // e isso tinha dois preços: quem não paga recebe 402 no PUT e nunca
+      // conseguia curtir, e quem paga só curtia depois de o app copiar o acervo
+      // inteiro por ela (ADR 0009).
+      //
+      // O erro é engolido de propósito: a marca já está na tela e no
+      // `localStorage`, o `PUT /acervo` ainda reconcilia quando houver, e
+      // transformar uma estrela em mensagem de erro no meio da gira é pior que
+      // a curtida chegar um minuto depois.
+      void (marcado ? curtirPonto(alvo.id) : descurtirPonto(alvo.id)).catch(
+        () => undefined,
+      );
     },
     [dados, atualizar]
   );
