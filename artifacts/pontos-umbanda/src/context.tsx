@@ -122,16 +122,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setDados(novosDados);
   }, []);
 
-  const selecionarOrixa = useCallback(
-    (orixa: Orixa | null) => {
-      setOrixaSelecionado(orixa);
-      setSubcategoriaSelecionada(null);
-      if (orixa) {
-        atualizar({ ...dados, ultimoOrixaId: orixa.id });
-      }
-    },
-    [dados, atualizar]
-  );
+  /**
+   * Seleciona sem SINCRONIZAR.
+   *
+   * Ele gravava `ultimoOrixaId` pelo mesmo `atualizar` que persiste o acervo —
+   * e `persistir` manda o `AppData` inteiro ao servidor. O efeito era o que o
+   * ADR 0009 mede como o defeito de fundo do acervo pessoal: **bastava abrir um
+   * orixá para copiar 519 pontos**, sem a pessoa ter pedido nada.
+   *
+   * Qual orixá estava aberto é estado de TELA. Desde que o orixá ganhou URL
+   * (`/orixa/:id`), o endereço já guarda isso — e endereço não sincroniza
+   * acervo nenhum.
+   */
+  const selecionarOrixa = useCallback((orixa: Orixa | null) => {
+    setOrixaSelecionado(orixa);
+    setSubcategoriaSelecionada(null);
+  }, []);
 
   const selecionarSubcategoria = useCallback((sub: Subcategoria | null) => {
     setSubcategoriaSelecionada(sub);
