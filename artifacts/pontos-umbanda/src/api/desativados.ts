@@ -35,8 +35,59 @@ export interface PontoDesativado {
   doYoutube: boolean;
 }
 
-export const pontosDesativados = () =>
-  chamarApi<PontoDesativado[]>("/admin/pontos-desativados");
+/** Quantos há em cada pilha, e de quem são as trazidas do YouTube. */
+export interface ArtistaComPendentes {
+  id: string;
+  nome: string;
+  quantos: number;
+}
+
+export interface QuantosForaDoApp {
+  total: number;
+  /** Trazidos do YouTube: têm letra, vídeo e artista, e esperam alguém olhar. */
+  youtube: number;
+  /** Saíram do acervo por não ter gravação de artista conferida. */
+  acervo: number;
+  artistas: ArtistaComPendentes[];
+}
+
+export interface FiltroForaDoApp {
+  desde?: number;
+  origem?: "youtube" | "acervo";
+  artista?: string;
+  busca?: string;
+}
+
+/** Quantos a rota manda por vez — a tela usa para saber se ainda há mais. */
+export const POR_VEZ = 50;
+
+export function pontosDesativados(filtro: FiltroForaDoApp = {}) {
+  const q = new URLSearchParams();
+  if (filtro.desde) q.set("desde", String(filtro.desde));
+  if (filtro.origem) q.set("origem", filtro.origem);
+  if (filtro.artista) q.set("artista", filtro.artista);
+  if (filtro.busca?.trim()) q.set("busca", filtro.busca.trim());
+  // Sempre com `?`, mesmo vazio: a cerca `test_front_chama_rota_que_existe`
+  // lê estes caminhos por texto, e o ternário com crase dentro de crase a
+  // cegava — ela relatava a rota como inexistente. Caminho legível de fora vale
+  // mais que a query string mais bonita.
+  return chamarApi<PontoDesativado[]>(`/admin/pontos-desativados?${q.toString()}`);
+}
+
+export const quantosForaDoApp = () =>
+  chamarApi<QuantosForaDoApp>("/admin/pontos-desativados/quantos");
+
+export const descartarPonto = (id: string) =>
+  chamarApi<void>(`/admin/pontos/${encodeURIComponent(id)}/descartar`, {
+    method: "POST",
+  });
+
+/** A mesma decisão para vários. Devolve quantos foram — pode ser menos. */
+export const acaoEmLote = (ids: string[], acao: "reativar" | "descartar") =>
+  chamarApi<{ feitos: number; pedidos: number }>("/admin/pontos/em-lote", {
+    method: "POST",
+    body: JSON.stringify({ ids, acao }),
+  });
 
 export const reativarPonto = (id: string) =>
   chamarApi<void>(`/admin/pontos/${encodeURIComponent(id)}/reativar`, {

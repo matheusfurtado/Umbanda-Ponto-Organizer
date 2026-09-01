@@ -68,6 +68,15 @@ export interface Tela {
    */
   naoTem: (seletor: string) => boolean;
   clicar: (alvo: Element | string) => Promise<void>;
+  /**
+   * Troca o valor de um `<select>` ou `<input>` e dispara o `change`.
+   *
+   * Existe porque fazer isso na mão (`el.value = x; el.dispatchEvent(...)`)
+   * deixa a atualização de estado FORA do `act`, e o React avisa que o teste
+   * está medindo uma renderização que ainda não aconteceu — o aviso que
+   * ninguém lê até virar teste intermitente.
+   */
+  mudar: (alvo: Element | string, valor: string) => Promise<void>;
   /** Igual a `todos`, mas na PÁGINA inteira: pega portal de diálogo. */
   todosNaPagina: (seletor: string) => Element[];
   /** O texto da página inteira, portais incluídos. */
@@ -109,6 +118,21 @@ export async function renderizar(no: ReactNode): Promise<Tela> {
       const el = typeof alvo === "string" ? exigir(alvo) : alvo;
       await act(async () => {
         el.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
+      });
+    },
+    mudar: async (alvo, valor) => {
+      const el = (typeof alvo === "string" ? exigir(alvo) : alvo) as
+        HTMLInputElement | HTMLSelectElement;
+      await act(async () => {
+        // O setter do protótipo, e não `el.value = ...`: o React sobrescreve a
+        // propriedade na instância para saber quando ela muda, e escrever
+        // direto no elemento pula esse aviso — o `change` sai com o valor
+        // antigo e o teste parece não fazer nada.
+        const proto = Object.getPrototypeOf(el);
+        const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+        if (setter) setter.call(el, valor);
+        else el.value = valor;
+        el.dispatchEvent(new window.Event("change", { bubbles: true }));
       });
     },
     todosNaPagina: (seletor) => [...document.body.querySelectorAll(seletor)],

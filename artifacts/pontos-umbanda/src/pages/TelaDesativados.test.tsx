@@ -1,11 +1,11 @@
 /**
- * "Fora do app" — o que saiu por não ter gravação de artista.
+ * "Fora do app" — duas pilhas com problemas opostos.
  *
- * O que se prende aqui é o que a tela promete a quem modera: que ela LISTA (a
- * desativação sem lista é perda silenciosa — ninguém confere o que não vê), que
- * ela agrupa pelo lugar no acervo, e que ela diz, na cara, que nada foi
- * apagado. A marca é reversível; uma tela que sugerisse exclusão faria quem
- * modera tratar um acervo litúrgico como perdido.
+ * Trazidos do YouTube TÊM letra, vídeo e artista, e esperam alguém olhar. Do
+ * acervo, não têm gravação nenhuma e esperam um vídeo aparecer. A tela dizia
+ * "Pontos sem nenhuma gravação de artista" para os dois — falso para 809 das
+ * 1.031 linhas —, mandava tudo numa lista só, sem filtro, sem descarte e com a
+ * letra cortada em 240 caracteres.
  */
 
 import { deepEqual, match, ok } from "node:assert/strict";
@@ -24,24 +24,60 @@ function ponto(id: string, titulo: string, orixa: string, extra = {}) {
   };
 }
 
+const DO_YT = (id: string, titulo: string, artista = "Juliana D Passos") =>
+  ponto(id, titulo, "Ogum", {
+    doYoutube: true, artistaNome: artista,
+    videoUrl: `https://youtu.be/${id}`,
+  });
+
+const CONTAS = {
+  total: 4, youtube: 2, acervo: 2,
+  artistas: [{ id: "juliana", nome: "Juliana D Passos", quantos: 2 }],
+};
+
 const LISTA = [
-  ponto("p1", "Ponto de Omulu", "Omulu", { candidatas: 3 }),
-  ponto("p2", "Outro de Omulu", "Omulu"),
-  ponto("p3", "Ponto de Ogum", "Ogum", { temVideo: true }),
-  ponto("p4", "Trazido do YouTube", "Ogum", {
-    doYoutube: true, artistaNome: "Juliana D Passos",
-    videoUrl: "https://youtu.be/abc123",
-  }),
+  ponto("p1", "Ponto de Omulu", "Omulu"),
+  ponto("p2", "Outro de Omulu", "Omulu", { candidatas: 3 }),
+  DO_YT("yt:a", "Trazido A"),
+  DO_YT("yt:b", "Trazido B"),
 ];
 
-async function abrir(resposta?: { status?: number; corpo?: unknown }) {
-  const chamadas: string[] = [];
+/** Um servidor que respeita filtro, deslocamento e as decisões tomadas. */
+function servidor(itens = LISTA, contas: unknown = CONTAS) {
+  const fora = new Set<string>();
+  const pedidos: string[] = [];
   const rede = fingirRede((url, init) => {
-    chamadas.push(`${init?.method ?? "GET"} ${url}`);
-    if (url.includes("/reativar")) return { status: 204 };
-    if (url.includes("/admin/pontos-desativados")) return resposta ?? { corpo: LISTA };
+    if (url.includes("/pontos-desativados/quantos")) return { corpo: contas };
+    if (url.includes("/em-lote")) {
+      const corpo = JSON.parse(String(init?.body ?? "{}"));
+      const validos = (corpo.ids as string[]).filter((i) => !fora.has(i));
+      validos.forEach((i) => fora.add(i));
+      return { corpo: { feitos: validos.length, pedidos: corpo.ids.length } };
+    }
+    const decisao = /\/admin\/pontos\/([^/]+)\/(reativar|descartar)$/.exec(url);
+    if (decisao) {
+      fora.add(decodeURIComponent(decisao[1]));
+      return { status: 204 };
+    }
+    if (url.includes("/admin/pontos-desativados")) {
+      pedidos.push(url);
+      const q = new URL(url, "http://t").searchParams;
+      const desde = Number(q.get("desde") ?? 0);
+      let vivos = itens.filter((p) => !fora.has(p.id));
+      if (q.get("origem") === "youtube") vivos = vivos.filter((p) => p.doYoutube);
+      if (q.get("origem") === "acervo") vivos = vivos.filter((p) => !p.doYoutube);
+      if (q.get("artista")) vivos = vivos.filter((p) => p.artistaNome !== null);
+      const busca = q.get("busca");
+      if (busca) vivos = vivos.filter((p) => p.titulo.includes(busca));
+      return { corpo: vivos.slice(desde, desde + 50) };
+    }
     throw new Error(`chamada não prevista: ${url}`);
   });
+  return { rede, pedidos };
+}
+
+async function abrir(itens = LISTA, contas: unknown = CONTAS) {
+  const { rede, pedidos } = servidor(itens, contas);
   const { hook } = memoryLocation({ path: "/moderacao/desativados" });
   const tela = await renderizar(
     <Router hook={hook}>
@@ -50,132 +86,118 @@ async function abrir(resposta?: { status?: number; corpo?: unknown }) {
   );
   await assentar();
   return {
-    tela,
-    chamadas,
-    limpar: async () => {
-      await tela.desmontar();
-      rede.restaurar();
-    },
+    tela, pedidos,
+    limpar: async () => { await tela.desmontar(); rede.restaurar(); },
   };
 }
 
-const grupos = (tela: Tela) => tela.todos("h2").map((h) => h.textContent?.trim());
+const botao = (tela: Tela, texto: RegExp) =>
+  tela.todos("button").filter((b) => texto.test(b.textContent ?? ""));
 
-test("agrupa por orixá, na ordem em que o servidor mandou", async () => {
-  // A ordem do servidor é a litúrgica. A pergunta que se faz aqui é *que
-  // pedaço do acervo está fora*, e isso se lê seguindo a hierarquia — uma fila
-  // por data responderia "o que saiu por último", que ninguém perguntou.
+test("o cabeçalho não afirma mais que ninguém tem gravação", async () => {
+  // Dizia "Pontos sem nenhuma gravação de artista" para a lista inteira, e era
+  // falso para 809 das 1.031 linhas: as trazidas TÊM artista, e é por isso que
+  // estão esperando conferência.
   const { tela, limpar } = await abrir();
   try {
-    deepEqual(grupos(tela), ["Omulu · 2", "Ogum · 2"]);
-    match(tela.texto(), /Ponto de Omulu/);
-    match(tela.texto(), /Ponto de Ogum/);
-  } finally {
-    await limpar();
-  }
-});
-
-test("diz que nada foi apagado", async () => {
-  // Não é decoração: a marca é reversível e o `--recriar` da semente já apagou
-  // ponto aprovado pela comunidade neste projeto. Quem modera precisa saber
-  // que está olhando uma lista de suspensos, não de perdidos.
-  const { tela, limpar } = await abrir();
-  try {
-    match(tela.texto(), /não foram apagados/i);
-  } finally {
-    await limpar();
-  }
-});
-
-test("aponta o caminho de volta para os que já têm palpite", async () => {
-  // O que transforma a lista em trabalho: 1 dos 3 tem candidata esperando na
-  // fila de casamento, e é de lá que sai a gravação que o traz de volta.
-  const { tela, limpar } = await abrir();
-  try {
-    match(tela.texto(), /1 já têm palpite/);
     ok(
-      tela.todos("a").some((a) => a.getAttribute("href") === "/moderacao/casamentos"),
-      "sem link para a fila, a lista é um beco sem saída",
+      !/sem nenhuma gravação de artista/i.test(tela.texto()),
+      "o cabeçalho voltou a afirmar isso da lista inteira",
     );
-    match(tela.texto(), /3 palpites de vídeo/);
-    match(tela.texto(), /nenhum palpite de vídeo ainda/);
+    match(tela.texto(), /Trazidos do YouTube \(2\)/);
+    match(tela.texto(), /Do acervo, sem artista \(2\)/);
   } finally {
     await limpar();
   }
 });
 
-test("sem nada fora do app, a tela diz isso em vez de ficar em branco", async () => {
-  const { tela, limpar } = await abrir({ corpo: [] });
+test("dá para trabalhar um artista por vez, e trocar de filtro recomeça", async () => {
+  const { tela, pedidos, limpar } = await abrir();
   try {
-    match(tela.texto(), /Nenhum ponto fora do app/);
-    ok(tela.naoTem('[aria-busy="true"]'), "ficou carregando sobre resposta vazia");
-  } finally {
-    await limpar();
-  }
-});
-
-test("falha ao carregar é dita com as palavras do servidor", async () => {
-  const { tela, limpar } = await abrir({
-    status: 503, corpo: { detail: "O acervo está em manutenção." },
-  });
-  try {
-    match(tela.texto(), /em manutenção/);
-    ok(tela.naoTem('[aria-busy="true"]'), "mostrou o erro e continuou girando");
-    ok(!/API 503/.test(tela.texto()), "vazou o status para a tela");
-  } finally {
-    await limpar();
-  }
-});
-
-test("o trazido do YouTube mostra o vídeo de onde a letra saiu", async () => {
-  // Decidir sem ver de onde a letra veio é carimbar, não conferir. É a razão
-  // de o botão existir só para esta metade da lista.
-  const { tela, limpar } = await abrir();
-  try {
+    const seletor = tela.todos("select")[0];
+    ok(seletor, "sem seletor de artista não dá para conferir canal a canal");
+    await tela.mudar(seletor, "juliana");
     ok(
-      tela.todos("a").some((a) => a.getAttribute("href") === "https://youtu.be/abc123"),
-      "sem link do vídeo, a aprovação seria às cegas",
+      pedidos.some((u) => u.includes("artista=juliana")),
+      `não pediu filtrado por artista: ${pedidos.join(" | ")}`,
     );
-    match(tela.texto(), /Letra trazida da descrição deste vídeo/);
-    match(tela.texto(), /Juliana D Passos/);
-  } finally {
-    await limpar();
-  }
-});
-
-test("só o trazido do YouTube ganha o botão de pôr no app", async () => {
-  // O ponto que saiu por não ter artista continua sem botão: o caminho de
-  // volta dele é GANHAR uma gravação, e um botão o devolveria mudo.
-  const { tela, limpar } = await abrir();
-  try {
-    const botoes = tela
-      .todos("button")
-      .filter((b) => /Pôr no app/.test(b.textContent ?? ""));
+    // E recomeça do zero: pedir com `desde` de uma lista antiga traria o
+    // pedaço errado do resultado novo.
     ok(
-      botoes.length === 1,
-      `esperava 1 botão (só o trazido do YouTube), achei ${botoes.length}`,
+      pedidos.some((u) => u.includes("artista=juliana") && !u.includes("desde=")),
+      "o filtro novo não recomeçou a lista",
     );
   } finally {
     await limpar();
   }
 });
 
-test("aprovar chama a rota e tira a linha da lista", async () => {
-  const { tela, chamadas, limpar } = await abrir();
+test("só o trazido do YouTube tem 'Pôr no app' e 'Descartar'", async () => {
+  // O ponto do acervo não tem os dois: devolvê-lo mudo reporia o que o tirou de
+  // lá, e descartá-lo seria usar esta tela para apagar acervo litúrgico.
+  const { tela, limpar } = await abrir();
   try {
-    const botao = tela
-      .todos("button")
-      .find((b) => /Pôr no app/.test(b.textContent ?? ""));
-    ok(botao, "não achei o botão");
-    // `tela.clicar` e não `botao.click()`: o harness embrulha em `act`, e sem
-    // isso o React avisa que a atualização de estado ficou fora do teste.
-    await tela.clicar(botao!);
+    deepEqual(botao(tela, /Pôr no app/).length, 2);
+    deepEqual(botao(tela, /Descartar/).length, 2);
+    deepEqual(tela.todos("input[type=checkbox]").length, 2);
+  } finally {
+    await limpar();
+  }
+});
+
+test("descartar tira da lista — é o que faltava para a fila andar", async () => {
+  // O extrator acerta 89%: cerca de um em nove é crédito ou recado no lugar do
+  // verso. Sem descarte esse item ficava na lista para sempre.
+  const { tela, limpar } = await abrir();
+  try {
+    await tela.clicar(botao(tela, /Descartar/)[0]);
     await assentar();
-    ok(
-      chamadas.some((c) => c.includes("POST") && c.includes("/admin/pontos/p4/reativar")),
-      `não chamou a rota de reativar: ${chamadas.join(", ")}`,
-    );
-    ok(!/Trazido do YouTube/.test(tela.texto()), "a linha continuou na lista");
+    ok(!/Trazido A/.test(tela.texto()), "o descartado continuou na tela");
+    match(tela.texto(), /Trazido B/);
+  } finally {
+    await limpar();
+  }
+});
+
+test("marcar vários e decidir de uma vez", async () => {
+  const { tela, limpar } = await abrir();
+  try {
+    for (const caixa of tela.todos("input[type=checkbox]")) {
+      await tela.clicar(caixa);
+    }
+    await assentar();
+    match(tela.texto(), /2 marcados/);
+    const emLote = botao(tela, /Pôr no app/).at(0);
+    ok(emLote, "sem ação em lote");
+    await tela.clicar(emLote!);
+    await assentar();
+    ok(!/Trazido A/.test(tela.texto()) && !/Trazido B/.test(tela.texto()),
+       "o lote não tirou os marcados da lista");
+  } finally {
+    await limpar();
+  }
+});
+
+test("a letra vem inteira, não cortada", async () => {
+  // Vinha em 240 caracteres e 493 das 692 são maiores — 71% das aprovações
+  // eram feitas vendo um pedaço, sendo que o entulho do extrator costuma estar
+  // justamente no fim do bloco.
+  const longa = "verso ".repeat(80).trim();
+  const { tela, limpar } = await abrir([DO_YT("yt:c", "Longa")].map(
+    (p) => ({ ...p, letra: longa }),
+  ));
+  try {
+    ok(tela.texto().includes(longa), "a letra chegou cortada à tela");
+  } finally {
+    await limpar();
+  }
+});
+
+test("sem nada com o filtro, diz isso em vez de ficar carregando", async () => {
+  const { tela, limpar } = await abrir([], { total: 0, youtube: 0, acervo: 0, artistas: [] });
+  try {
+    match(tela.texto(), /Nada aqui com esse filtro/);
+    ok(tela.naoTem('[aria-busy="true"]'), "ficou carregando sobre lista vazia");
   } finally {
     await limpar();
   }
