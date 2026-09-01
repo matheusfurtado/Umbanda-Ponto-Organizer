@@ -24,6 +24,7 @@ import { TelaArtista } from "@/pages/TelaArtista";
 import { TelaModerarArtistas } from "@/pages/TelaModerarArtistas";
 import { TelaSugestoesDeArtista } from "@/pages/TelaSugestoesDeArtista";
 import { TelaCasamentos } from "@/pages/TelaCasamentos";
+import { TelaDesativados } from "@/pages/TelaDesativados";
 import { TelaRemocoesDeArtista } from "@/pages/TelaRemocoesDeArtista";
 import { TelaPedirArtista } from "@/pages/TelaPedirArtista";
 import { TelaArtistas } from "@/pages/TelaArtistas";
@@ -260,6 +261,14 @@ function App() {
                   <Route path="/moderacao/casamentos">
                     <RotaProtegida>
                       <TelaCasamentos />
+                    </RotaProtegida>
+                  </Route>
+                  {/* Mesma proteção das outras filas. Esta é a única que não
+                      DECIDE nada — só mostra o que saiu do app —, e por isso
+                      mesmo precisa existir: ninguém confere o que não lista. */}
+                  <Route path="/moderacao/desativados">
+                    <RotaProtegida>
+                      <TelaDesativados />
                     </RotaProtegida>
                   </Route>
                   <Route path="/moderacao/sugestoes">

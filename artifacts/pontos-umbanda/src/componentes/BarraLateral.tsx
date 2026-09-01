@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Heart, BadgeCheck, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { Heart, ArchiveX, BadgeCheck, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { useApp } from "@/context";
 import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -140,6 +140,15 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
                 className={item(local === "/moderacao/casamentos")}
               >
                 <ScanSearch className="h-4 w-4" aria-hidden /> Verificar casamento
+              </Link>
+              {/* Logo abaixo da fila de casamento porque as duas contam a
+                  mesma história pelas duas pontas: aqui está o acervo que saiu
+                  do app, e lá o palpite que o traria de volta. */}
+              <Link
+                href="/moderacao/desativados"
+                className={item(local === "/moderacao/desativados")}
+              >
+                <ArchiveX className="h-4 w-4" aria-hidden /> Fora do app
               </Link>
               <Link
                 href="/moderacao/sugestoes"
