@@ -34,7 +34,9 @@ export function TelaOrixa({
   onAdicionar?: (p: Ponto) => void;
   onSugerirAutor?: (p: Ponto) => void;
 }) {
-  const { dados } = useApp();
+  // O CATÁLOGO, pelo mesmo motivo da tela inicial: abrir um orixá é procurar o
+  // que existe, não conferir o que eu escolhi.
+  const { catalogo: dados } = useApp();
   const { ent } = useEntitlements();
   const [busca, setBusca] = useState("");
 

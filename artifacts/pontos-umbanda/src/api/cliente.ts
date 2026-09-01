@@ -177,6 +177,24 @@ export function chamarApi<T>(caminho: string, init?: RequestInit): Promise<T> {
  * distingue "este é o acervo dela" de "esta é a visão reduzida do portão" —
  * sem ele, o cliente tratava as duas como a mesma coisa.
  */
+/**
+ * O CATÁLOGO — o que existe, para qualquer um.
+ *
+ * Separado de `baixarAcervo` porque são duas perguntas diferentes: "o que
+ * existe?" e "o que eu escolhi?". Uma função só respondia as duas com o mesmo
+ * dado, e o efeito foi o que ele relatou em 02/09: *"eu apaguei do acervo e
+ * sumiu da principal também, isso tá errado"*.
+ *
+ * O portão vale igual aqui (ADR 0002) — sem plano, a hierarquia vem achatada.
+ */
+export async function baixarCatalogo(): Promise<AppData & { acesso?: AcessoDoAcervo }> {
+  const resposta = await requisitar<AppData & { acesso?: AcessoDoAcervo }>("/catalogo");
+  if (resposta === null) return resposta as never;
+  // A MESMA marca do acervo: `parcial` diz "esta é a visão reduzida do
+  // portão", e sem ela o app trata catálogo achatado como acervo de verdade.
+  return { ...resposta, parcial: resposta.acesso?.acervoOrganizado === false };
+}
+
 export async function baixarAcervo(): Promise<AppData & { acesso?: AcessoDoAcervo }> {
   const resposta = await requisitar<AppData & { acesso?: AcessoDoAcervo }>("/acervo");
   if (resposta === null) return resposta as never;

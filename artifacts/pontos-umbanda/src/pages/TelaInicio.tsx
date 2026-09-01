@@ -54,7 +54,12 @@ export function TelaInicio({
   /** Ligado quando se chega por "Buscar": o campo já vem pronto para digitar. */
   focarBusca?: boolean;
 }) {
-  const { dados, estado } = useApp();
+  // O CATÁLOGO, e não o acervo dela: esta tela responde "o que existe?".
+  //
+  // Lendo `dados`, apagar um ponto do acervo pessoal o apagava daqui — *"eu
+  // apaguei do acervo e sumiu da principal também, isso tá errado"* (02/09).
+  // Tirar da minha gira não pode sumir do catálogo.
+  const { catalogo: dados, estado } = useApp();
   const { autenticado } = useAuth();
   const { ent } = useEntitlements();
   const [busca, setBusca] = useState("");

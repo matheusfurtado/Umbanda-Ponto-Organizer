@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { curtirPonto, descurtirPonto } from "@/api/curtida";
+import { baixarCatalogo } from "@/api/cliente";
 import type { AppData, EstadoAcervo, FonteAcervo, Orixa, Subcategoria, Ponto } from "./types";
 import { carregarDados, gerarId } from "./storage";
 import { useAuth } from "./auth/AuthContext";
@@ -30,6 +31,21 @@ interface AppContextType {
 
   orixaSelecionado: Orixa | null;
   subcategoriaSelecionada: Subcategoria | null;
+  /**
+   * O CATÁLOGO — o que existe, para qualquer um.
+   *
+   * Separado de `dados` porque são duas perguntas: "o que existe?" e "o que eu
+   * escolhi?". As telas de DESCOBERTA (início, orixá, busca) leem daqui; as de
+   * EDIÇÃO (organizar) leem de `dados`.
+   *
+   * Sem essa separação, apagar um ponto do acervo pessoal o apagava da tela
+   * principal — *"eu apaguei do acervo e sumiu da principal também, isso tá
+   * errado"* (02/09). Tirar da minha gira não pode sumir do catálogo.
+   *
+   * Cai para `dados` quando a rede falha: é o que mantém o app usável offline
+   * sem um segundo cache.
+   */
+  catalogo: AppData;
   selecionarOrixa: (orixa: Orixa | null) => void;
   selecionarSubcategoria: (sub: Subcategoria | null) => void;
   substituirDados: (dados: AppData) => void;
@@ -117,6 +133,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Grava no cache na hora (UI instantânea, funciona offline) e empurra para o
   // servidor depois. A assinatura não mudou, então os 23 métodos abaixo e as
   // telas que os usam seguem exatamente como estavam.
+  // O catálogo começa como o acervo em cache — assim a primeira pintura não
+  // fica vazia — e é substituído pelo canônico assim que a rede responde.
+  const [catalogo, setCatalogo] = useState<AppData>(dados);
+  useEffect(() => {
+    baixarCatalogo()
+      // Só aceita catálogo COM lista de pontos.
+      //
+      // `c && setCatalogo(c)` aceitava qualquer objeto — e uma resposta
+      // malformada (ou um `{}` de um cliente antigo) viraria um catálogo sem
+      // `pontos`, apagando a tela inicial de quem abriu o app. O acervo em
+      // cache é uma resposta pior, mas é uma resposta.
+      .then((c) => {
+        if (c && Array.isArray(c.pontos)) setCatalogo(c);
+      })
+      .catch(() => undefined);
+  }, []);
+
   const atualizar = useCallback((novosDados: AppData) => {
     persistir(novosDados);
     setDados(novosDados);
@@ -428,6 +461,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         recarregar: () => void buscarDoServidor(),
         orixaSelecionado,
         subcategoriaSelecionada,
+        catalogo,
         selecionarOrixa,
         selecionarSubcategoria,
         substituirDados,
