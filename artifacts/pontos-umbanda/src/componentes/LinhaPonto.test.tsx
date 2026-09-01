@@ -358,3 +358,62 @@ test("com conta, a estrela volta a ser botão e marca de verdade", async () => {
     rede.restaurar();
   }
 });
+
+test("ponto sem vídeo oferece INDICAR a quem entrou", async () => {
+  // Pedido dele: "na playlist dos orixás, caso algum não tenha vídeo, ter uma
+  // opção de indicar... ou seja, pra eles não aparecerem só ali".
+  //
+  // Quem sabe a gravação quase nunca chegou pela página "pontos sem vídeo":
+  // chegou procurando o ponto no orixá dele, para cantar. O momento em que
+  // reconhece a letra é o momento em que lembra do vídeo.
+  const { tela, rede } = await linha(ponto({ videoUrl: null }), {}, { logado: true });
+  try {
+    const botao = tela
+      .todos("button")
+      .find((b) => /Indicar o vídeo/.test(b.getAttribute("aria-label") ?? ""));
+    ok(botao, "a linha não oferece indicar o vídeo");
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});
+
+test("sem conta, o lugar do vídeo continua sendo informação e não convite", async () => {
+  // Indicar exige conta — não para cobrar, mas para haver alguém do outro lado
+  // quando a indicação estiver errada. Oferecer o botão e mandar para o login
+  // depois do clique seria pedir duas vezes.
+  const { tela, rede } = await linha(ponto({ videoUrl: null }), {}, { logado: false });
+  try {
+    ok(
+      !tela.todos("button").some((b) =>
+        /Indicar o vídeo/.test(b.getAttribute("aria-label") ?? "")),
+      "ofereceu indicar a quem não entrou",
+    );
+    ok(
+      tela.todos("span").some((s) =>
+        /sem vídeo ainda/i.test(s.getAttribute("aria-label") ?? "")),
+      "sumiu o aviso de que o ponto não tem vídeo",
+    );
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});
+
+test("ponto COM vídeo continua levando ao YouTube, e não a indicar", async () => {
+  const { tela, rede } = await linha(
+    ponto({ videoUrl: "https://youtu.be/x", videoStatus: "encontrado" }),
+    {}, { logado: true },
+  );
+  try {
+    ok(
+      !tela.todos("button").some((b) =>
+        /Indicar o vídeo/.test(b.getAttribute("aria-label") ?? "")),
+      "ofereceu indicar num ponto que já tem vídeo",
+    );
+    ok(tela.todos("a").some((a) => a.getAttribute("href") === "https://youtu.be/x"));
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});

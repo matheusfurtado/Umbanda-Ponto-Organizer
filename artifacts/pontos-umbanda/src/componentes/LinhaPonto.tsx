@@ -7,6 +7,8 @@ import { duracao } from "@/lib/duracao";
 import type { Ponto } from "@/types";
 import { registrarCliqueNoPonto } from "@/api/metricas";
 import { CreditoDoArtista } from "@/componentes/CreditoDoArtista";
+import { IndicarVideo } from "@/componentes/IndicarVideo";
+import { useAuth } from "@/auth/AuthContext";
 
 /**
  * Um ponto como LINHA de lista — no formato de faixa.
@@ -54,6 +56,7 @@ export function LinhaPonto({
   onAdicionar?: (p: Ponto) => void;
   onSugerirAutor?: (p: Ponto) => void;
 }) {
+  const { autenticado } = useAuth();
   const [aberto, setAberto] = useState(false);
 
   const incerto = ponto.videoStatus === "revisar";
@@ -182,23 +185,32 @@ export function LinhaPonto({
             >
               {incerto ? <AlertTriangle className="h-4 w-4" /> : <Youtube className="h-4 w-4" />}
             </a>
+          ) : autenticado ? (
+            // Sem vídeo virou CONVITE, não só informação.
+            //
+            // Quem sabe a gravação de um ponto quase nunca chegou por uma
+            // página chamada "pontos sem vídeo": chegou procurando o ponto no
+            // orixá dele, para cantar. O momento em que a pessoa reconhece a
+            // letra é o momento em que lembra do vídeo, e é aqui que o pedido
+            // tem de estar.
+            <IndicarVideo ponto={ponto} />
           ) : (
-            // Sem vídeo é uma informação, não um vazio.
+            // Sem conta, continua sendo informação — e informação que importa.
             //
             // Antes isto era um espaço em branco, só para as linhas não
-            // desalinharem — e "não tem gravação" ficava indistinguível de "o
+            // desalinharem, e "não tem gravação" ficava indistinguível de "o
             // ícone não carregou". Quem procura um ponto para ensaiar quer ver
             // de longe onde tem áudio.
             //
             // NÃO é o triângulo: aquele já significa "achei um vídeo, mas posso
-            // ter errado", e são 157 pontos assim. Dois sentidos no mesmo
-            // desenho tornariam os dois inúteis.
+            // ter errado". Dois sentidos no mesmo desenho tornariam os dois
+            // inúteis.
             <span
               title="Sem vídeo ainda"
               aria-label={`${ponto.titulo}: sem vídeo ainda`}
               className="block rounded-md p-2 text-muted-foreground/35"
             >
-              <VideoOff className="h-4 w-4" />
+              <VideoOff className="h-4 w-4" aria-hidden />
             </span>
           )}
 
