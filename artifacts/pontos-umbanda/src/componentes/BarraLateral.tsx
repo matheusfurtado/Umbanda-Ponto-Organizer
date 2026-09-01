@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { BadgeCheck, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { BadgeCheck, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { useApp } from "@/context";
 import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -132,6 +132,15 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
                   respondem perguntas diferentes: "esta pessoa é quem diz ser?"
                   (tem código de prova) e "este canal merece uma página?" (não
                   tem o que provar — quem sugeriu não controla o canal). */}
+              {/* A fila mais pesada em número: são centenas de casamentos que
+                  a heurística não confirmou, e cada "sim" devolve um link ao
+                  acervo. */}
+              <Link
+                href="/moderacao/casamentos"
+                className={item(local === "/moderacao/casamentos")}
+              >
+                <ScanSearch className="h-4 w-4" aria-hidden /> Verificar casamento
+              </Link>
               <Link
                 href="/moderacao/sugestoes"
                 className={item(local === "/moderacao/sugestoes")}
