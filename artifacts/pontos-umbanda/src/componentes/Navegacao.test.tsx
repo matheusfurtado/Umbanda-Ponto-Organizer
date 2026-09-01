@@ -177,3 +177,172 @@ test("sem conta, /organizar não é oferecido", async () => {
     await semConta.limpar();
   }
 });
+
+/**
+ * As filas de moderação chegam nos DOIS lugares — e é a mesma lista.
+ *
+ * Elas eram mantidas à mão em cada lugar, e divergiram: a barra lateral tinha
+ * oito links e o recuo do celular (`TelaConta`) tinha três. Faltavam
+ * casamentos, "Fora do app", sugestões e perfis de artista, e pedidos para
+ * sair — e as duas MAIORES em volume estavam entre as que faltavam: 395
+ * casamentos e 1.031 pontos fora do app.
+ *
+ * Num app cujo próprio código anota que "quem modera é uma pessoa só, e o
+ * aparelho dela é o celular", a barra lateral é `lg:` para cima.
+ */
+
+import { LINKS_DE_MODERACAO } from "@/componentes/linksDeModeracao";
+import { TelaConta } from "@/pages/TelaConta";
+
+const ADMIN = { ...EU, admin: true };
+
+async function abrirConta(logado = true) {
+  const rede = fingirRede((url) => {
+    if (url.includes("/auth/eu")) return logado ? { corpo: ADMIN } : { status: 401, corpo: {} };
+    if (url.includes("/meus-direitos")) return { corpo: { plano: "gratis", repertorios: false } };
+    if (url.includes("/acervo")) return { corpo: { ...ACERVO, acesso: {}, versao: "v1" } };
+    if (url.includes("/assinatura")) return { status: 404, corpo: {} };
+    return { corpo: {} };
+  });
+  const tela = await renderizar(
+    <Router hook={memoryLocation({ path: "/conta" }).hook}>
+      <AuthProvider>
+        <EntitlementsProvider>
+          <AppProvider>
+            <TelaConta />
+          </AppProvider>
+        </EntitlementsProvider>
+      </AuthProvider>
+    </Router>,
+  );
+  await assentar();
+  return { tela, limpar: async () => { await tela.desmontar(); rede.restaurar(); } };
+}
+
+const hrefs = (tela: Tela) =>
+  new Set(tela.todos("a").map((a) => a.getAttribute("href")));
+
+test("o celular leva a TODAS as filas de moderação, não a três delas", async () => {
+  const { tela, limpar } = await abrirConta();
+  try {
+    const na_tela = hrefs(tela);
+    const faltando = LINKS_DE_MODERACAO
+      .map((l) => l.href)
+      .filter((href) => !na_tela.has(href));
+    ok(
+      faltando.length === 0,
+      `quem modera pelo celular não alcança: ${faltando.join(", ")}`,
+    );
+  } finally {
+    await limpar();
+  }
+});
+
+test("quem não é admin não vê as filas no celular", async () => {
+  // O link só some por conveniência: a defesa é a rota, que responde 404.
+  const rede = fingirRede((url) => {
+    if (url.includes("/auth/eu")) return { corpo: EU };
+    if (url.includes("/meus-direitos")) return { corpo: { plano: "gratis", repertorios: false } };
+    if (url.includes("/acervo")) return { corpo: { ...ACERVO, acesso: {}, versao: "v1" } };
+    return { corpo: {} };
+  });
+  const tela = await renderizar(
+    <Router hook={memoryLocation({ path: "/conta" }).hook}>
+      <AuthProvider>
+        <EntitlementsProvider>
+          <AppProvider>
+            <TelaConta />
+          </AppProvider>
+        </EntitlementsProvider>
+      </AuthProvider>
+    </Router>,
+  );
+  await assentar();
+  try {
+    const na_tela = hrefs(tela);
+    ok(!na_tela.has("/moderacao/casamentos"), "ofereceu fila a quem não modera");
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});
+
+async function abrirLateralComoAdmin() {
+  const rede = fingirRede((url) => {
+    if (url.includes("/auth/eu")) return { corpo: ADMIN };
+    if (url.includes("/meus-direitos")) return { corpo: { plano: "gratis", repertorios: false } };
+    if (url.includes("/acervo")) return { corpo: { ...ACERVO, acesso: {}, versao: "v1" } };
+    return { corpo: {} };
+  });
+  const tela = await renderizar(
+    <Router hook={memoryLocation({ path: "/" }).hook}>
+      <AuthProvider>
+        <EntitlementsProvider>
+          <AppProvider>
+            <BarraLateral onTrocarPaleta={() => {}} />
+          </AppProvider>
+        </EntitlementsProvider>
+      </AuthProvider>
+    </Router>,
+  );
+  await assentar();
+  return { tela, limpar: async () => { await tela.desmontar(); rede.restaurar(); } };
+}
+
+test("a barra lateral mostra a MESMA lista que o celular", async () => {
+  // As duas eram mantidas à mão, e divergiram: oito links aqui, três lá. Se
+  // uma das duas ganhar um link solto, volta a ser mantida à mão — e este
+  // teste é o que impede.
+  const { tela, limpar } = await abrirLateralComoAdmin();
+  try {
+    const na_tela = hrefs(tela);
+    const faltando = LINKS_DE_MODERACAO
+      .map((l) => l.href)
+      .filter((href) => !na_tela.has(href));
+    ok(faltando.length === 0, `a lateral não leva a: ${faltando.join(", ")}`);
+  } finally {
+    await limpar();
+  }
+});
+
+test("sem conta de moderação, a lateral não oferece fila nenhuma", async () => {
+  const comConta = await abrir(BarraLateral, true);
+  try {
+    const na_tela = hrefs(comConta.tela);
+    const oferecidas = LINKS_DE_MODERACAO
+      .map((l) => l.href)
+      .filter((href) => na_tela.has(href));
+    ok(oferecidas.length === 0, `ofereceu a quem não modera: ${oferecidas.join(", ")}`);
+  } finally {
+    await comConta.limpar();
+  }
+});
+
+test("toda rota de moderação registrada tem link em algum lugar", async () => {
+  // GUARDA DE COMPLETUDE, e ela é o que separa esta lista de decoração.
+  //
+  // Os dois testes acima conferem que a lateral e o celular mostram A MESMA
+  // lista — e continuam passando se alguém apagar uma fila DA lista: os dois
+  // ficam coerentes e sem o link. Foi exatamente esse o defeito do
+  // `/organizar`, que existiu como rota por meses sem um único link no front.
+  //
+  // Aqui a conferência é contra o que o App REGISTRA. Rota de moderação que
+  // ninguém alcança é trabalho que ninguém faz.
+  const { readFileSync } = await import("node:fs");
+  const app = readFileSync(
+    new URL("../App.tsx", import.meta.url),
+    "utf8",
+  );
+  const registradas = [
+    ...app.matchAll(/<Route path="(\/moderacao[^"]*|\/denuncias|\/painel)">/g),
+  ].map((m) => m[1]);
+
+  ok(registradas.length >= 5, `li ${registradas.length} rotas — o extrator cegou`);
+
+  const comLink = new Set(LINKS_DE_MODERACAO.map((l) => l.href));
+  const orfas = registradas.filter((r) => !comLink.has(r));
+  ok(
+    orfas.length === 0,
+    `rotas de moderação sem link em lugar nenhum: ${orfas.join(", ")}`,
+  );
+});

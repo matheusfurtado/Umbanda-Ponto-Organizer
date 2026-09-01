@@ -17,6 +17,7 @@ import {
   SlidersHorizontal,
   Sparkles,
 } from "lucide-react";
+import { LINKS_DE_MODERACAO } from "@/componentes/linksDeModeracao";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/AuthContext";
 import { apelido, inicial } from "@/auth/apelido";
@@ -201,33 +202,45 @@ export function TelaConta() {
           </div>
         </div>
 
+        {/* As filas de moderação no celular.
+ 
+            Eram três aqui e oito na barra lateral — faltavam casamentos,
+            "Fora do app", sugestões e perfis de artista, e pedidos para sair. As
+            duas MAIORES em volume estavam entre as que faltavam: 395 casamentos
+            e 1.031 pontos fora do app.
+
+            A lista agora é a mesma dos dois lados (`linksDeModeracao.ts`), e um
+            teste confere que os dois a mostram inteira — lista mantida à mão em
+            dois lugares é lista que diverge, e foi o que aconteceu.
+
+            Entra aqui, e não como aba nova na barra de baixo: os cinco lugares
+            de lá são de quem canta, não de quem modera. `lg:hidden` porque no
+            desktop a barra lateral já leva. */}
         {user?.admin && (
           <div className="mb-6 rounded-xl border p-4 lg:hidden">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Administração
             </p>
             <div className="mt-3 flex flex-col gap-1">
-              <Link
-                href="/moderacao"
-                className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-foreground"
-              >
-                <ShieldCheck className="h-4 w-4 text-primary" aria-hidden />
-                Fila de moderação
-              </Link>
-              <Link
-                href="/denuncias"
-                className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-foreground"
-              >
-                <Flag className="h-4 w-4 text-primary" aria-hidden />
-                Denúncias
-              </Link>
-              <Link
-                href="/painel"
-                className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-foreground"
-              >
-                <BarChart3 className="h-4 w-4 text-primary" aria-hidden />
-                Painel
-              </Link>
+              {LINKS_DE_MODERACAO.map(({ href, rotulo, icone: Icone, oQueDecide }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="flex min-h-11 items-start gap-2 py-1 text-sm font-medium text-foreground"
+                >
+                  <Icone className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                  <span>
+                    {rotulo}
+                    {/* O que cada fila decide, só aqui: no celular a pessoa
+                        chega sem a coluna inteira à vista para se situar. */}
+                    {oQueDecide && (
+                      <span className="block text-xs font-normal text-muted-foreground">
+                        {oQueDecide}
+                      </span>
+                    )}
+                  </span>
+                </Link>
+              ))}
             </div>
           </div>
         )}

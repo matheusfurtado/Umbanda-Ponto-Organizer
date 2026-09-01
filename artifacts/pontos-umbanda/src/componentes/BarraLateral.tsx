@@ -1,4 +1,5 @@
 import { Link, useLocation } from "wouter";
+import { LINKS_DE_MODERACAO } from "@/componentes/linksDeModeracao";
 import { Heart, ArchiveX, BadgeCheck, SlidersHorizontal, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { useApp } from "@/context";
 import { Avatar } from "@/componentes/Avatar";
@@ -131,62 +132,20 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
             <ListMusic className="h-4 w-4" aria-hidden /> Meus envios
           </Link>
           {/* O link só aparece para admin por conveniência. A defesa está na
-              rota, que responde 404 a quem não for. */}
+              rota, que responde 404 a quem não for.
+
+              A lista vive em `linksDeModeracao.ts` e é a MESMA que a TelaConta
+              mostra no celular. Mantida à mão nos dois lugares, ela divergiu:
+              aqui eram oito e lá três, e as duas filas maiores em volume
+              (casamentos e "Fora do app") estavam justamente entre as que
+              faltavam no aparelho de quem modera. */}
           {user?.admin && (
             <>
-              <Link href="/moderacao" className={item(local === "/moderacao")}>
-                <ShieldCheck className="h-4 w-4" aria-hidden /> Moderação
-              </Link>
-              <Link
-                href="/moderacao/artistas"
-                className={item(local === "/moderacao/artistas")}
-              >
-                <BadgeCheck className="h-4 w-4" aria-hidden /> Perfis de artista
-              </Link>
-              {/* Fila SEPARADA da de cima, e não a mesma com um filtro. As duas
-                  respondem perguntas diferentes: "esta pessoa é quem diz ser?"
-                  (tem código de prova) e "este canal merece uma página?" (não
-                  tem o que provar — quem sugeriu não controla o canal). */}
-              {/* A fila mais pesada em número: são centenas de casamentos que
-                  a heurística não confirmou, e cada "sim" devolve um link ao
-                  acervo. */}
-              <Link
-                href="/moderacao/casamentos"
-                className={item(local === "/moderacao/casamentos")}
-              >
-                <ScanSearch className="h-4 w-4" aria-hidden /> Verificar casamento
-              </Link>
-              {/* Logo abaixo da fila de casamento porque as duas contam a
-                  mesma história pelas duas pontas: aqui está o acervo que saiu
-                  do app, e lá o palpite que o traria de volta. */}
-              <Link
-                href="/moderacao/desativados"
-                className={item(local === "/moderacao/desativados")}
-              >
-                <ArchiveX className="h-4 w-4" aria-hidden /> Fora do app
-              </Link>
-              <Link
-                href="/moderacao/sugestoes"
-                className={item(local === "/moderacao/sugestoes")}
-              >
-                <Mic2 className="h-4 w-4" aria-hidden /> Sugestões de artista
-              </Link>
-              {/* Separado de "Denúncias" de propósito: denúncia é alguém
-                  apontando conteúdo de terceiro; isto é a pessoa da página
-                  pedindo para sair dela. Misturar os dois faria o segundo
-                  esperar na fila do primeiro. */}
-              <Link
-                href="/moderacao/remocoes"
-                className={item(local === "/moderacao/remocoes")}
-              >
-                <EyeOff className="h-4 w-4" aria-hidden /> Pedidos para sair
-              </Link>
-              <Link href="/denuncias" className={item(local === "/denuncias")}>
-                <Flag className="h-4 w-4" aria-hidden /> Denúncias
-              </Link>
-              <Link href="/painel" className={item(local === "/painel")}>
-                <BarChart3 className="h-4 w-4" aria-hidden /> Painel
-              </Link>
+              {LINKS_DE_MODERACAO.map(({ href, rotulo, icone: Icone }) => (
+                <Link key={href} href={href} className={item(local === href)}>
+                  <Icone className="h-4 w-4" aria-hidden /> {rotulo}
+                </Link>
+              ))}
             </>
           )}
         </div>
