@@ -61,7 +61,11 @@ const GRATIS: AppData = {
   pontos: PAGO.pontos.map((p) => ({ ...p, subcategoriaId: "", ordem: 0, videoUrl: null })),
 };
 
-async function abrir(acervo: AppData, direitos: Record<string, unknown>) {
+async function abrir(
+  acervo: AppData,
+  direitos: Record<string, unknown>,
+  topo: Orixa = OGUM,
+) {
   localStorage.setItem("pontos-umbanda-data", JSON.stringify(acervo));
   const rede = fingirRede((url) => {
     if (url.includes("/auth/eu")) return { corpo: { id: "u1", email: "m@e.com", email_verificado: true, apelido: "m", admin: false, foto: null, favoritos_publicos: false } };
@@ -77,7 +81,7 @@ async function abrir(acervo: AppData, direitos: Record<string, unknown>) {
       <AuthProvider>
         <EntitlementsProvider>
           <AppProvider>
-            <TelaOrixa orixa={OGUM} onVoltar={() => {}} />
+            <TelaOrixa orixa={topo} onVoltar={() => {}} />
           </AppProvider>
         </EntitlementsProvider>
       </AuthProvider>
@@ -318,6 +322,43 @@ test("as seções da gira também seguem a ordem arrastada", async () => {
       ["Louvação", "Chegada"],
       "a seção arrastada não mudou de lugar na tela de cantar",
     );
+  } finally {
+    await limpar();
+  }
+});
+
+test("o topo vazio é chamado pelo que ele É, não de orixá", async () => {
+  // Seis dos dezenove topos NÃO são orixás: Preto Velho, Boiadeiro, Malandro,
+  // Cigano, Marujo e Pombo Gira são linhas; Defumação e Início são momentos da
+  // gira. A frase de lista vazia dizia "neste orixá" para todos.
+  //
+  // Num acervo litúrgico o nome da coisa é requisito funcional, não estilo — e
+  // é justamente o topo VAZIO que mostra a frase, ou seja, o erro aparecia na
+  // Pombo Gira recém-criada, que nasce sem ponto no app.
+  const vazio: AppData = { ...GRATIS, pontos: [] };
+  const linha = { ...OGUM, id: "pombo-gira", nome: "Pombo Gira", tipo: "linha" } as Orixa;
+  const { tela, limpar } = await abrir(
+    vazio, { plano: "gratis", acervoOrganizado: false }, linha,
+  );
+  try {
+    match(tela.texto(), /Nenhum ponto nesta linha ainda/);
+    ok(
+      !/neste orixá/.test(tela.texto()),
+      "chamou a linha de orixá — é o erro que o campo `tipo` existe para não deixar acontecer",
+    );
+  } finally {
+    await limpar();
+  }
+});
+
+test("o momento da gira também não é orixá", async () => {
+  const vazio: AppData = { ...GRATIS, pontos: [] };
+  const momento = { ...OGUM, id: "defumacao", nome: "Defumação", tipo: "momento" } as Orixa;
+  const { tela, limpar } = await abrir(
+    vazio, { plano: "gratis", acervoOrganizado: false }, momento,
+  );
+  try {
+    match(tela.texto(), /Nenhum ponto neste momento da gira ainda/);
   } finally {
     await limpar();
   }

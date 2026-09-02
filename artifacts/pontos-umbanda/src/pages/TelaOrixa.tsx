@@ -193,7 +193,21 @@ export function TelaOrixa({
 
         {filtrados.length === 0 && (
           <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-            {busca ? "Nenhum ponto com esse trecho aqui." : "Nenhum ponto neste orixá ainda."}
+            {busca
+              ? "Nenhum ponto com esse trecho aqui."
+              // "neste orixá" era falso para seis dos dezenove topos: Preto
+              // Velho, Boiadeiro, Malandro, Cigano, Marujo e Pombo Gira são
+              // LINHAS, e Defumação e Início são momentos da gira. O campo
+              // `tipo` existe exatamente porque chamar tudo de orixá na tela
+              // foi um erro — e num acervo litúrgico o nome da coisa é
+              // requisito, não estilo.
+              : `Nenhum ponto ${
+                  orixa.tipo === "linha"
+                    ? "nesta linha"
+                    : orixa.tipo === "momento"
+                      ? "neste momento da gira"
+                      : "neste orixá"
+                } ainda.`}
           </p>
         )}
 
