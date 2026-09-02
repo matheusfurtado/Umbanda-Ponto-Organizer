@@ -111,12 +111,27 @@ test("o cabeçalho não afirma mais que ninguém tem gravação", async () => {
   }
 });
 
-test("dá para trabalhar um artista por vez, e trocar de filtro recomeça", async () => {
+test("o canal é a porta de entrada, não um filtro escondido", async () => {
+  // "quero escolher pontos do canal x ou y". Trabalhar um canal por vez não é
+  // preferência: os erros do extrator se repetem DENTRO do mesmo canal, e quem
+  // acabou de reprovar três frases motivacionais do mesmo lugar reconhece a
+  // quarta num instante. Misturados, os mesmos itens chegam embaralhados pela
+  // ordem litúrgica e cada um exige recomeçar o julgamento.
+  //
+  // Era um `select` no meio dos filtros, e um `select` não se lê: não mostra a
+  // contagem de cada canal sem abrir, e não deixa comparar.
   const { tela, pedidos, limpar } = await abrir();
   try {
-    const seletor = tela.todos("select")[0];
-    ok(seletor, "sem seletor de artista não dá para conferir canal a canal");
-    await tela.mudar(seletor, "juliana");
+    const escolha = botao(tela, /Juliana D Passos/)[0];
+    ok(escolha, "o canal não aparece como escolha — só dentro de um select");
+    // A contagem em elemento PRÓPRIO, e não no texto colado: é ela que deixa
+    // comparar os canais antes de entrar em um, que é a razão de a escolha ser
+    // uma lista e não um `select`.
+    ok(
+      [...escolha.querySelectorAll("*")].some((e) => e.textContent?.trim() === "2"),
+      `a escolha não diz quantos esperam nele: ${escolha.textContent}`,
+    );
+    await tela.clicar(escolha);
     ok(
       pedidos.some((u) => u.includes("artista=juliana")),
       `não pediu filtrado por artista: ${pedidos.join(" | ")}`,
@@ -198,6 +213,60 @@ test("sem nada com o filtro, diz isso em vez de ficar carregando", async () => {
   try {
     match(tela.texto(), /Nada aqui com esse filtro/);
     ok(tela.naoTem('[aria-busy="true"]'), "ficou carregando sobre lista vazia");
+  } finally {
+    await limpar();
+  }
+});
+
+
+test("a página SUBSTITUI, e a próxima não pula o que foi decidido", async () => {
+  // "cria uma paginação nessa página tbm, pra não ficar muito longo". Era um
+  // "Ver mais" que ACRESCENTAVA: quem trabalha um canal de 400 termina com 400
+  // linhas na tela.
+  //
+  // E o pulo é a parte que não é óbvia: cada decisão tira a linha também no
+  // SERVIDOR. Avançar de 50 em 50 pularia tantos quantos foram decididos aqui,
+  // e ninguém veria os pulados nunca mais. Por isso a próxima página começa
+  // depois do que AINDA está na lista.
+  const muitos = Array.from({ length: 60 }, (_, i) =>
+    DO_YT(`yt:${String(i).padStart(2, "0")}`, `Trazido ${i}`));
+  const { tela, pedidos, limpar } = await abrir(muitos, {
+    total: 60, youtube: 60, acervo: 0,
+    artistas: [{ id: "juliana", nome: "Juliana D Passos", quantos: 60 }],
+  });
+  try {
+    deepEqual(tela.todos("li").length, 50, "não veio uma página de 50");
+
+    // Uma decisão tira a linha da lista E do servidor.
+    await tela.clicar(botao(tela, /Descartar/)[0]);
+    deepEqual(tela.todos("li").length, 49, "a decisão não tirou a linha");
+
+    await tela.clicar(botao(tela, /Próxima/)[0]);
+    ok(
+      pedidos.some((u) => u.includes("desde=49")),
+      `a próxima página pediu do lugar errado — pularia o que foi decidido: ${pedidos.join(" | ")}`,
+    );
+    // E SUBSTITUIU: as 50 antigas não continuam na tela.
+    ok(
+      tela.todos("li").length <= 50,
+      `a página acrescentou em vez de substituir: ${tela.todos("li").length} na tela`,
+    );
+  } finally {
+    await limpar();
+  }
+});
+
+
+test("dentro de um canal dá para voltar à escolha", async () => {
+  const { tela, limpar } = await abrir();
+  try {
+    await tela.clicar(botao(tela, /Juliana D Passos/)[0]);
+    ok(botao(tela, /Trocar de canal/)[0], "entrou no canal e não dá para sair");
+    await tela.clicar(botao(tela, /Trocar de canal/)[0]);
+    ok(
+      botao(tela, /Juliana D Passos/)[0],
+      "voltou e a lista de canais sumiu — o caminho de volta é um beco",
+    );
   } finally {
     await limpar();
   }

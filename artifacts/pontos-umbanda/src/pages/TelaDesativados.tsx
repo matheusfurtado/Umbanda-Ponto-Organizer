@@ -63,6 +63,10 @@ export function TelaDesativados() {
   const [erro, setErro] = useState<string | null>(null);
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [temMais, setTemMais] = useState(false);
+  // Deslocamento da PÁGINA atual no servidor. A lista é substituída, não
+  // acrescentada: acumulando, quem trabalha um canal de 400 termina com 400
+  // linhas na tela e o navegador engasga muito antes de a fila acabar.
+  const [deslocamento, setDeslocamento] = useState(0);
   const [buscando, setBuscando] = useState(false);
   const [marcados, setMarcados] = useState<Set<string>>(new Set());
 
@@ -78,13 +82,12 @@ export function TelaDesativados() {
    * pedisse a "página 1" pularia 10 que nunca viu.
    */
   const trazer = useCallback(
-    async (atual: PontoDesativado[], filtro: FiltroForaDoApp) => {
+    async (desde: number, filtro: FiltroForaDoApp) => {
       setBuscando(true);
       try {
-        const novos = await pontosDesativados({ ...filtro, desde: atual.length });
+        const novos = await pontosDesativados({ ...filtro, desde });
         setTemMais(novos.length === POR_VEZ);
-        const vistos = new Set(atual.map((p) => p.id));
-        setLista([...atual, ...novos.filter((p) => !vistos.has(p.id))]);
+        setLista(novos);
       } catch (problema) {
         setErro(mensagemDeErro(problema, "Falha ao carregar."));
         setLista((l) => l ?? []);
@@ -101,7 +104,8 @@ export function TelaDesativados() {
   useEffect(() => {
     setMarcados(new Set());
     setLista(null);
-    void trazer([], { origem, artista: artista || undefined, busca });
+    setDeslocamento(0);
+    void trazer(0, { origem, artista: artista || undefined, busca });
   }, [origem, artista, busca, trazer]);
 
   useEffect(() => {
@@ -199,6 +203,57 @@ export function TelaDesativados() {
         </div>
       )}
 
+      {/*
+        A ESCOLHA DO CANAL vem primeiro, e não escondida num `select`.
+
+        "quero escolher pontos do canal x ou y". Trabalhar um canal por vez não
+        é preferência: o ouvido calibra no estilo de quem gravou, e os erros do
+        extrator se repetem DENTRO do mesmo canal — quem acabou de reprovar
+        três frases motivacionais do mesmo lugar reconhece a quarta num
+        instante. Misturados, os mesmos itens chegam embaralhados pela ordem
+        litúrgica e cada um exige recomeçar o julgamento.
+
+        Some quando um canal está escolhido: aí o que interessa é a fila dele.
+      */}
+      {contas && contas.artistas.length > 0 && !artista && (
+        <section className="mb-4" aria-labelledby="escolha-canal">
+          <h2 id="escolha-canal" className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Escolha um canal
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {contas.artistas.map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                onClick={() => setArtista(a.id)}
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border px-3 text-sm hover:bg-muted"
+              >
+                <span className="font-medium text-foreground">{a.nome.trim()}</span>
+                <span className="rounded-full bg-muted px-2 text-xs tabular-nums text-muted-foreground">
+                  {a.quantos}
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {artista && contas && (
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <span className="text-sm text-muted-foreground">Trabalhando em</span>
+          <strong className="text-foreground">
+            {contas.artistas.find((a) => a.id === artista)?.nome.trim() ?? artista}
+          </strong>
+          <button
+            type="button"
+            onClick={() => setArtista("")}
+            className="inline-flex min-h-11 items-center rounded-md border px-3 text-sm font-medium hover:bg-muted"
+          >
+            Trocar de canal
+          </button>
+        </div>
+      )}
+
       <div className="mb-4 flex flex-wrap gap-2">
         <label className="flex-1">
           <span className="sr-only">Procurar por título ou letra</span>
@@ -210,7 +265,7 @@ export function TelaDesativados() {
             className="min-h-11 w-full rounded-md border bg-background px-3 text-sm"
           />
         </label>
-        {contas && contas.artistas.length > 0 && (
+        {contas && contas.artistas.length > 0 && artista && (
           <label>
             <span className="sr-only">Filtrar por artista</span>
             <select
@@ -374,16 +429,49 @@ export function TelaDesativados() {
         </div>
       )}
 
-      {lista !== null && lista.length > 0 && temMais && (
-        <button
-          type="button"
-          onClick={() => void trazer(lista, filtroAtual)}
-          disabled={buscando}
-          className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-md border px-4 text-sm font-medium disabled:opacity-60"
+      {lista !== null && lista.length > 0 && (deslocamento > 0 || temMais) && (
+        <nav
+          aria-label="Páginas da fila"
+          className="mt-4 flex flex-wrap items-center gap-3"
         >
-          {buscando && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-          Ver mais
-        </button>
+          <button
+            type="button"
+            onClick={() => {
+              const anterior = Math.max(0, deslocamento - POR_VEZ);
+              setDeslocamento(anterior);
+              setMarcados(new Set());
+              void trazer(anterior, filtroAtual);
+            }}
+            disabled={buscando || deslocamento === 0}
+            className="inline-flex min-h-11 items-center gap-2 rounded-md border px-4 text-sm font-medium disabled:opacity-40"
+          >
+            Anterior
+          </button>
+          <span className="text-sm text-muted-foreground" aria-live="polite">
+            {deslocamento + 1}–{deslocamento + lista.length}
+            {contas ? ` de ${filtroAtual.artista
+              ? contas.artistas.find((a) => a.id === filtroAtual.artista)?.quantos ?? contas.total
+              : contas.total}` : ""}
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              // O próximo pedaço começa depois do que AINDA está na lista, e
+              // não em `deslocamento + 50`: cada decisão tira a linha também no
+              // servidor, então avançar 50 pularia tantos quantos foram
+              // decididos aqui — e ninguém veria os pulados nunca mais.
+              const proximo = deslocamento + lista.length;
+              setDeslocamento(proximo);
+              setMarcados(new Set());
+              void trazer(proximo, filtroAtual);
+            }}
+            disabled={buscando || !temMais}
+            className="inline-flex min-h-11 items-center gap-2 rounded-md border px-4 text-sm font-medium disabled:opacity-40"
+          >
+            {buscando && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+            Próxima
+          </button>
+        </nav>
       )}
 
       {contas && contas.acervo > 0 && (
