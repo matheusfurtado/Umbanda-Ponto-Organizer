@@ -57,17 +57,26 @@ import { Orixa } from "@/types";
  * A tela inicial passou a navegar para cá em vez de guardar estado próprio.
  * Duas portas para a mesma sala é o que faz uma delas envelhecer sozinha.
  */
-function OrixaPorId({ id }: { id: string }) {
+export function OrixaPorId({ id }: { id: string }) {
   const [, navegar] = useLocation();
-  const { dados } = useApp();
+  // NO CATÁLOGO, e não no acervo dela.
+  //
+  // A tela inicial lista os orixás do catálogo (ids canônicos: "ogum"), e quem
+  // organizou o acervo tem ids PREFIXADOS ("276b070d:ogum"). Procurando em
+  // `dados`, o clique em qualquer orixá caía no "não achei" — *"por que no
+  // início as playlist tão vazias? só aparece voltar ao início"* (02/09).
+  //
+  // Regressão minha, do mesmo dia: troquei a fonte da LISTA e esqueci a fonte
+  // do DESTINO. As duas têm de vir do mesmo lugar.
+  const { catalogo } = useApp();
   const { adicionar, sugerir, modais } = useAcoesDePonto();
-  const orixa = dados.orixas.find((o) => o.id === id);
+  const orixa = catalogo.orixas.find((o) => o.id === id);
 
   if (!orixa) {
     return (
       <div className="max-w-2xl px-4 pb-24 pt-5 sm:px-8">
         <p className="text-sm text-muted-foreground">
-          Não achei essa entidade no seu acervo.
+          Não achei essa entidade no acervo.
         </p>
         <Link href="/" className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-primary underline underline-offset-2">
           Voltar ao início
