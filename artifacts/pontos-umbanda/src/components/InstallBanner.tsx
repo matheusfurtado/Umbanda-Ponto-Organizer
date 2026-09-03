@@ -57,20 +57,21 @@ export function InstallBanner() {
           <Smartphone className="w-5 h-5 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium">Instalar o app</p>
-            {/* NÃO promete offline aqui.
+            {/* A PROMESSA DE OFFLINE VOLTOU — decidido em 03/09/2026, opção (A).
                 
-                Dizia "Acesse offline, sem precisar do navegador" — para todo
-                mundo, inclusive para quem não tem conta. E a `TelaPlanos`
-                VENDE "Usar offline, sem depender de sinal" como vantagem da
-                assinatura. O mesmo app oferecia de graça, na faixa, o que
-                cobrava na outra tela.
+                Ela tinha saído em 31/08 porque o app fazia duas coisas
+                contraditórias: prometia offline aqui, de graça, e vendia
+                offline na `TelaPlanos` como vantagem paga. Naquele dia não dava
+                para escolher um lado — era decisão dele, e o ADR 0002 a deixou
+                aberta.
                 
-                Qual das duas linhas é a mentira é decisão do Matheus e está
-                aberta no ADR 0002 — não dá para consertar escolhendo um lado.
-                O que dá é parar de prometer: esta frase agora diz só o que
-                instalar faz de fato, e vale igual nas duas saídas do ADR. Se a
-                decisão for "(A) offline é grátis", a promessa volta para cá. */}
-            <p className="text-xs opacity-80 truncate">Abre direto da tela inicial, sem a barra do navegador</p>
+                Ele decidiu que **offline é de todo mundo**. O que o plano muda
+                é O QUE você leva offline: o grátis leva a lista alfabética que
+                já recebeu, e quem paga leva a gira inteira, com seções e
+                repertórios. O portão continua no sync — o aparelho de quem não
+                paga nunca recebeu o que é pago, então guardá-lo para sempre não
+                burla nada. */}
+            <p className="text-xs opacity-80 truncate">Abre direto da tela inicial e funciona sem sinal</p>
           </div>
           {isInstallable ? (
             <Button

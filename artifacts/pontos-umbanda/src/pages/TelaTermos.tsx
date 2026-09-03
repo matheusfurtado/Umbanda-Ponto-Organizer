@@ -63,7 +63,6 @@ export function TelaTermos() {
           <li>reordenar os pontos do seu jeito;</li>
           <li>montar playlists de gira;</li>
           <li>sincronizar entre aparelhos;</li>
-          <li>usar sem internet.</li>
         </ul>
       </Secao>
 
@@ -110,7 +109,9 @@ export function TelaTermos() {
           letras continuam ali, os pontos que você escreveu continuam ali, os
           seus favoritos continuam ali — e os vídeos também, que desde 03/09/2026
           não dependem de plano. O que sai é a organização por orixá, os
-          repertórios, a sincronização e o uso sem internet.
+          repertórios e a sincronização. O app{" "}
+          <strong>continua funcionando sem sinal para todo mundo</strong> — o que
+          muda é o que você leva: a lista alfabética ou a gira inteira.
         </p>
       </Secao>
 

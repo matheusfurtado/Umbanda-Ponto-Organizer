@@ -44,19 +44,21 @@ test("no iPad a faixa APARECE — é o aparelho onde ela é a única forma de in
   }
 });
 
-test("a faixa NÃO promete offline — isso é o que o plano pago vende", async () => {
-  // "Acesse offline, sem precisar do navegador" aparecia para todo mundo,
-  // inclusive para quem não tem conta, enquanto a `TelaPlanos` lista "Usar
-  // offline, sem depender de sinal" entre as vantagens da assinatura.
+test("a faixa promete que funciona sem sinal — e agora isso é verdade", async () => {
+  // A promessa tinha SAÍDO em 31/08, porque o app se contradizia: oferecia
+  // offline de graça aqui e o vendia como pago na `TelaPlanos`. Naquele dia não
+  // dava para escolher um lado — era decisão dele.
   //
-  // Qual das duas linhas é a mentira é decisão do Matheus (ADR 0002, em
-  // aberto). Este teste não escolhe lado: prende só que a faixa parou de
-  // prometer o que o app cobra na outra tela.
+  // Ele decidiu em 03/09, opção (A): **offline é de todo mundo**. O que o plano
+  // muda é O QUE se leva offline — a lista alfabética ou a gira inteira. Então
+  // a promessa voltou, e este teste é a prova de que ela pode estar aqui.
   const { tela, limpar } = await abrir();
   try {
-    ok(
-      !/offline/i.test(tela.texto()),
-      `a faixa voltou a prometer offline de graça: ${tela.texto()}`,
+    match(
+      tela.texto(),
+      /sem sinal|offline/i,
+      "a faixa deixou de dizer que o app funciona sem sinal, que é verdade e é "
+      + "o que mais importa para quem abre isto no terreiro",
     );
     match(tela.texto(), /tela inicial/, "ficou sem dizer o que instalar faz");
   } finally {

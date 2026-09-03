@@ -286,7 +286,7 @@ export function TelaConta() {
               </span>
               <span className="block text-sm text-muted-foreground">
                 As letras continuam grátis. O plano traz o acervo por orixá na ordem
-                da gira, o repertório e o uso offline. Ver
+                da gira e o repertório. Ver
                 planos →
               </span>
             </button>

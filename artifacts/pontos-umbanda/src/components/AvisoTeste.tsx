@@ -78,15 +78,15 @@ export function AvisoTeste() {
         {pessoal ? (
           <>
             Seus <strong className="font-medium">{curtidos} pontos curtidos</strong>{" "}
-            continuam aqui, e os vídeos também — o que para de funcionar é abri-los{" "}
-            <strong className="font-medium">sem internet</strong>, junto com a
-            organização por orixá e seus repertórios.
+            continuam aqui, e os vídeos também — o app segue funcionando sem
+            internet. O que sai é a <strong className="font-medium">ordem da gira</strong>{" "}
+            e seus repertórios.
           </>
         ) : (
           <>
-            Depois, suas letras e os vídeos continuam aqui — o que sai é a
-            organização por orixá, seus repertórios, e o app funcionando sem
-            internet.
+            Depois, suas letras e os vídeos continuam aqui, e o app segue
+            funcionando sem internet — o que sai é a organização por orixá e
+            seus repertórios.
           </>
         )}
       </span>

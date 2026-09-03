@@ -285,8 +285,7 @@ export function TelaInicio({
               <h3 className="font-semibold text-foreground">Monte a sua playlist</h3>
               <p className="mt-1 max-w-lg text-sm text-muted-foreground">
                 Com o plano você cria repertórios na ordem em que vai cantar e leva
-                tudo no celular — inclusive sem sinal, que é o que importa no
-                terreiro.
+                a sequência pronta para o terreiro.
               </p>
               <Link
                 href="/planos"

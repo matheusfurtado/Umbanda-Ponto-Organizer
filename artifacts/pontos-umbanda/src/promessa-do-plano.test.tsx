@@ -38,6 +38,16 @@ const FORA_DO_PLANO: Array<{ o_que: string; padrao: RegExp; desde: string }> = [
     desde: "03/09/2026 — ADR 0002, ele protegia 10 de 1.134 pontos",
   },
   {
+    o_que: "o uso sem internet",
+    // "usar offline" / "uso sem internet" / "sem depender de sinal" oferecidos
+    // como vantagem. Não casa "continua funcionando sem internet", que diz o
+    // contrário — por isso a exigência de vir perto de "plano" ou de uma lista
+    // de vantagens é feita pelo filtro de arquivos, e aqui só a OFERTA.
+    padrao: /(usar (o app )?(offline|sem internet)|uso (offline|sem internet)|sem depender de sinal)/i,
+    desde: "03/09/2026 — ADR 0002 opção (A). O app SEMPRE funcionou offline "
+      + "para todos; o que o plano muda é O QUE se leva",
+  },
+  {
     o_que: "a letra do ponto",
     padrao: /(com o plano[^.]{0,40}\bletras?\b|letras? (é|são) do plano)/i,
     desde: "sempre — a letra é grátis, cobra-se a ferramenta",

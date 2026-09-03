@@ -29,7 +29,7 @@ const O_QUE_VEM = [
   "Acervo organizado por orixá, na ordem da gira",
   "Reordenar e montar seu repertório",
   "Sincronizar entre seus aparelhos",
-  "Usar offline, sem depender de sinal",
+  "Levar a gira inteira no bolso, com ou sem sinal",
 ];
 
 function periodo(p: Plano): string {

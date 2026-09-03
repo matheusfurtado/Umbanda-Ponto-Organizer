@@ -243,8 +243,8 @@ export function TelaOrixa({
             <p className="mx-auto max-w-md text-sm text-muted-foreground">
               Estes {meus.length} pontos estão em ordem alfabética. Com o plano,{" "}
               <strong className="font-medium text-foreground">{orixa.nome}</strong> abre nas seções
-              da gira, com seus repertórios — e tudo funcionando offline, que é o
-              que importa no terreiro, onde o sinal falha.
+              da gira, com seus repertórios — e é essa ordem que você leva para o
+              terreiro, onde o sinal falha.
             </p>
             <Link href="/planos">
               <Button size="sm" className="mt-4">Ver planos</Button>
