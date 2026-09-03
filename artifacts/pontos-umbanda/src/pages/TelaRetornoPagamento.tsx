@@ -109,7 +109,8 @@ export function TelaRetornoPagamento() {
             <h1 className="text-2xl font-bold text-foreground">Tudo certo</h1>
             <p className="mt-2 text-sm text-muted-foreground">
               Seu plano está ativo. O acervo já aparece organizado por orixá,
-              com o vídeo de cada ponto, e funciona offline.
+              na ordem da gira, e as playlists e os artistas que você seguir
+              agora são seus.
             </p>
             <Link href="/">
               <Button className="mt-8 w-full">Ir para o acervo</Button>

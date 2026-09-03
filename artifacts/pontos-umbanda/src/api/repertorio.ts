@@ -28,8 +28,15 @@ export interface Repertorio {
   id: string;
   nome: string;
   ordem: number;
-  /** Visível para outras pessoas. Falso por padrão, sempre. */
+  /** Na vitrine, achável por qualquer um. Falso por padrão, sempre. */
   publico?: boolean;
+  /**
+   * O segredo do link, quando a gira tem um. Só vem na resposta do DONO.
+   *
+   * Com `publico`, são três estados e não dois: sem token e não-pública é
+   * privada; com token é "por link"; `publico` é a vitrine.
+   */
+  token?: string | null;
   itens: ItemRepertorio[];
   /** Muda quando a sequência muda. Devolvida no `PUT` para o servidor recusar
    *  gravação sobre mudança que este aparelho não viu. */
@@ -168,9 +175,48 @@ export async function publicas(): Promise<GiraNaVitrine[]> {
   return (await r.json()) as GiraNaVitrine[];
 }
 
+/**
+ * Abrir a gira da vitrine. **Pede conta desde 03/09** — daí o `chamar`, que
+ * manda o cookie, no lugar do `fetch` cru que estava aqui.
+ */
 export async function giraPublica(id: string): Promise<GiraPublica> {
-  const r = await fetch(`${BASE}/publicos/${id}`);
-  if (r.status === 404) throw new ErroApi(404, "Esta playlist não existe ou não é pública.");
-  if (!r.ok) throw new ErroApi(r.status, "Não consegui carregar a playlist.");
-  return (await r.json()) as GiraPublica;
+  return (await chamar<GiraPublica>(`/publicos/${encodeURIComponent(id)}`)) as GiraPublica;
+}
+
+/**
+ * Abrir a gira pelo link que o dono mandou — o terceiro estado de visibilidade.
+ *
+ * O token não é o id da gira: é segredo próprio, revogável, e o servidor
+ * responde o mesmo 404 para "não existe" e "foi revogada", para não contar a
+ * quem guardou o endereço antigo que a gira continua lá.
+ */
+export async function giraPorLink(token: string): Promise<GiraPublica> {
+  return (await chamar<GiraPublica>(`/por-link/${encodeURIComponent(token)}`)) as GiraPublica;
+}
+
+/** O endereço de compartilhar. `token` nulo = a gira não tem link. */
+export interface LinkDaGira {
+  token: string | null;
+  url: string | null;
+}
+
+/** Idempotente: chamar duas vezes devolve o MESMO link. Trocar é `trocarLink`. */
+export function criarLink(id: string): Promise<LinkDaGira> {
+  return chamar<LinkDaGira>(`/${encodeURIComponent(id)}/link`, {
+    method: "POST",
+  }) as Promise<LinkDaGira>;
+}
+
+/** Sorteia outro segredo — o endereço antigo para de abrir na hora. */
+export function trocarLink(id: string): Promise<LinkDaGira> {
+  return chamar<LinkDaGira>(`/${encodeURIComponent(id)}/link/trocar`, {
+    method: "POST",
+  }) as Promise<LinkDaGira>;
+}
+
+/** Desfaz o link. Não despublica: sair da vitrine é outra decisão. */
+export function revogarLink(id: string): Promise<LinkDaGira> {
+  return chamar<LinkDaGira>(`/${encodeURIComponent(id)}/link`, {
+    method: "DELETE",
+  }) as Promise<LinkDaGira>;
 }

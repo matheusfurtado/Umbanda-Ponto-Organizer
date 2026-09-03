@@ -32,7 +32,7 @@ function fingirStorage(inicial: Record<string, string> = {}) {
 
 test("o plano volta como foi guardado", () => {
   fingirStorage();
-  lembrarPlano({ plano: "mensal", sync: true, offline: true });
+  lembrarPlano({ plano: "mensal", sync: true, seguirArtistas: true });
   assert.equal(planoLembrado()?.plano, "mensal");
   assert.equal(planoLembrado()?.sync, true);
 });

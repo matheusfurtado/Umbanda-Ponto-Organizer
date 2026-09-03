@@ -162,6 +162,9 @@ test("quem já tem apelido não é perguntado de novo", async () => {
 });
 
 test("desistir NÃO deixa o nome abandonado pronto para virar público", async () => {
+  // O botão chamava-se "Cancelar" e virou "Pronto" em 03/09, quando a caixa
+  // passou a criar o link de compartilhar antes de fechar: "cancelar" sugeria
+  // desfazer um link que já existia. O que este teste protege não mudou.
   // O diálogo fica MONTADO com `gira=null` — some da tela e guarda o estado.
   // Quem digitava um apelido, cancelava e reabria encontrava o campo cheio e
   // "Publicar" aceso. Um toque e aquele nome abandonado vira o nome público da
@@ -169,7 +172,7 @@ test("desistir NÃO deixa o nome abandonado pronto para virar público", async (
   const { tela, apelidos, limpar } = await abrir(EU_SEM_APELIDO);
   try {
     await digitar(tela, "Nome que desisti");
-    await tela.clicar(botao(tela, /^Cancelar$/)!);
+    await tela.clicar(botao(tela, /^Pronto$/)!);
     await assentar();
 
     // Reabre — é o que o pai faz ao pôr uma gira de novo em `publicando`.
@@ -216,7 +219,7 @@ test("o erro de uma tentativa não persegue a próxima", async () => {
     // inventado que passa é teste que prende a própria invenção.
     match(tela.textoNaPagina(), /Montar playlists faz parte do plano pago/);
 
-    await tela.clicar(botao(tela, /^Cancelar$/)!);
+    await tela.clicar(botao(tela, /^Pronto$/)!);
     await assentar();
     await tela.reRenderizar(
       <AuthProvider>

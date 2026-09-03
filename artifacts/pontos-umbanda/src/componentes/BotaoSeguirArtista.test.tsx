@@ -13,12 +13,23 @@ import { beforeEach, test } from "node:test";
 import { assentar, renderizar, type Tela } from "../../testes/renderizar.ts";
 import { fingirRede } from "../../testes/rede.ts";
 import { BotaoSeguirArtista } from "@/componentes/BotaoSeguirArtista";
+import { AuthProvider } from "@/auth/AuthContext";
+import { EntitlementsProvider } from "@/billing/EntitlementsContext";
 
 beforeEach(() => localStorage.clear());
 
 async function abrir(
   seguindo: boolean | null,
   resposta: { status?: number; corpo?: unknown } = { status: 204 },
+  /**
+   * O plano de quem está olhando.
+   *
+   * Seguir artista entrou no plano pago em 03/09 (ADR 0012), então o botão só é
+   * BOTÃO para quem tem o direito. Os cenários de clique abaixo passam um
+   * assinante — é o único jeito de exercitar o clique — e o caso sem plano
+   * ganhou teste próprio no fim do arquivo.
+   */
+  direitos: Record<string, unknown> = { plano: "mensal", seguirArtistas: true },
 ) {
   const mudancas: boolean[] = [];
   // Mutável: um teste precisa FALHAR e depois dar certo, para ver se a
@@ -26,15 +37,33 @@ async function abrir(
   let proxima = resposta;
   const rede = fingirRede((url) => {
     if (url.includes("/seguir")) return proxima;
+    if (url.includes("/meus-direitos")) return { corpo: direitos };
+    // Precisa vir uma sessão: o `EntitlementsProvider` só BUSCA os direitos de
+    // quem está logado, e sem isto todo cenário caía em grátis — inclusive os
+    // que testam o clique, que então não achavam botão nenhum.
+    if (url.includes("/auth/eu")) {
+      return { corpo: {
+        id: "u1", email: "m@e.com", email_verificado: true,
+        apelido: "maria", admin: false, favoritos_publicos: false, foto: null,
+      } };
+    }
     throw new Error(`chamada não prevista: ${url}`);
   });
   const tela = await renderizar(
-    <BotaoSeguirArtista
-      artistaId="a1"
-      seguindo={seguindo}
-      onMudou={(s) => mudancas.push(s)}
-    />,
+    <AuthProvider>
+      <EntitlementsProvider>
+        <BotaoSeguirArtista
+          artistaId="a1"
+          seguindo={seguindo}
+          onMudou={(s) => mudancas.push(s)}
+        />
+      </EntitlementsProvider>
+    </AuthProvider>,
   );
+  await assentar();
+  // DUAS voltas, e não uma: a sessão chega na primeira, e é só então que o
+  // provider vai buscar os direitos. Com uma volta só, todo cenário lia
+  // "grátis" e os testes de clique não achavam botão nenhum.
   await assentar();
   return {
     tela,
@@ -49,6 +78,18 @@ async function abrir(
 }
 
 const oBotao = (tela: Tela) => tela.achar("button");
+
+/**
+ * Os métodos das chamadas ao SEGUIR, e não de todas.
+ *
+ * Desde que o botão passou a ler os direitos (03/09), montá-lo dispara dois
+ * `GET` — sessão e plano — antes de qualquer clique. Comparar a lista inteira
+ * com `["PUT"]` passou a falhar por causa de ruído de provider, e afrouxar para
+ * "contém PUT" perderia o que este trecho existe para provar: que seguir manda
+ * **um** PUT, e desseguir manda **um** DELETE.
+ */
+const metodosDoSeguir = (rede: { chamadas: { url: string; metodo: string }[] }) =>
+  rede.chamadas.filter((c) => c.url.includes("/seguir")).map((c) => c.metodo);
 
 test("visitante não vê botão — vê o caminho de entrar", async () => {
   // `seguindo === null` é "não sei quem é você". Um botão que não pode
@@ -78,7 +119,7 @@ test("seguir muda o botão na hora, sem esperar a ida e volta", async () => {
     await assentar();
     deepEqual(mudancas, [true], "avisou duas vezes a mesma coisa");
     // E o SENTIDO chega ao servidor: seguir é PUT.
-    deepEqual(rede.chamadas.map((c) => c.metodo), ["PUT"]);
+    deepEqual(metodosDoSeguir(rede), ["PUT"]);
   } finally {
     await limpar();
   }
@@ -91,7 +132,7 @@ test("deixar de seguir também é otimista, e no sentido certo", async () => {
     await tela.clicar("button");
     await assentar();
     deepEqual(mudancas, [false]);
-    deepEqual(rede.chamadas.map((c) => c.metodo), ["DELETE"]);
+    deepEqual(metodosDoSeguir(rede), ["DELETE"]);
   } finally {
     await limpar();
   }
@@ -154,12 +195,36 @@ test("no cartão do diretório o convite cabe: vira botão, não parágrafo", as
   const { tela, limpar } = await abrir(null);
   try {
     await tela.reRenderizar(
-      <BotaoSeguirArtista artistaId="a1" seguindo={null} compacto onMudou={() => {}} />,
+      <AuthProvider>
+        <EntitlementsProvider>
+          <BotaoSeguirArtista artistaId="a1" seguindo={null} compacto onMudou={() => {}} />
+        </EntitlementsProvider>
+      </AuthProvider>,
     );
     const convite = tela.exigir('a[href="/login?motivo=seguir-artista"]');
     match(convite.textContent ?? "", /Seguir/);
     equal(convite.getAttribute("aria-label"), "Entrar para seguir este artista");
     ok(tela.naoTem("p"), "sobrou o parágrafo da versão grande dentro do cartão");
+  } finally {
+    await limpar();
+  }
+});
+
+
+test("logado e SEM plano: o botão vira convite para assinar, não erro", async () => {
+  // O terceiro estado. Sem ele, quem tem conta e não assina clicaria "Seguir",
+  // levaria 402 do servidor e leria uma mensagem de erro onde devia ler um
+  // convite — a pior forma de descobrir que algo é pago.
+  const { tela, limpar } = await abrir(false, { status: 204 },
+    { plano: "gratis", seguirArtistas: false });
+  try {
+    ok(tela.naoTem("button"), "ofereceu um botão que o servidor vai recusar");
+    const convite = tela.todos("a").find((a) => a.getAttribute("href") === "/planos");
+    ok(convite, "não há caminho para assinar");
+    // E a descoberta continua dita como aberta: fechar a página do artista é o
+    // que o ADR 0007 escolheu NÃO fazer, e a frase é o que impede alguém de
+    // achar que fechou.
+    match(tela.texto(), /p[áa]gina dele.*abert|abert.*p[áa]gina/i);
   } finally {
     await limpar();
   }

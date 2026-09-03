@@ -6,10 +6,9 @@ import { esquecerPlano, lembrarPlano, planoLembrado } from "@/billing/ultimoPlan
 export const ENTITLEMENTS_GRATIS: Entitlements = {
   plano: "gratis",
   acervoOrganizado: false,
-  linksDeVideo: false,
   repertorios: false,
   sync: false,
-  offline: false,
+  seguirArtistas: false,
 };
 
 interface Ctx {

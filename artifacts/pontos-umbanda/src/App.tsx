@@ -165,10 +165,24 @@ export function Moldura({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * O DESTINO SOBREVIVE AO LOGIN.
+ *
+ * Antes daqui saía um `<Redirect to="/login" />` seco, e o endereço de origem
+ * morria. Quem recebesse o link de uma gira do pai de santo caía no login,
+ * criasse conta, e aterrissava na tela inicial — sem a gira que veio ver.
+ *
+ * É o jeito mais comum de matar um funil de convite: a pessoa faz tudo certo e
+ * o app perde o motivo dela ter vindo. Com `?voltar=`, o login sabe para onde
+ * devolver, e `entrarDepois()` é quem lê.
+ */
 function RotaProtegida({ children }: { children: ReactNode }) {
   const { autenticado, isPending } = useAuth();
+  const [aqui] = useLocation();
   if (isPending) return null;
-  if (!autenticado) return <Redirect to="/login" />;
+  if (!autenticado) {
+    return <Redirect to={`/login?voltar=${encodeURIComponent(aqui)}`} />;
+  }
   return <>{children}</>;
 }
 
@@ -248,9 +262,11 @@ function App() {
                   <Route path="/novidades">
                     <TelaNovidades />
                   </Route>
-                  {/* Sem RotaProtegida de propósito: a vitrine e o link de uma
-                      gira precisam abrir para quem NÃO tem conta — é por eles
-                      que o app circula no boca a boca do terreiro. */}
+                  {/* A VITRINE (`/giras-publicas`) abre sem conta: é por ela que
+                      o app circula no boca a boca do terreiro, e a lista só tem
+                      nome e tamanho das giras. ABRIR uma gira, não — desde
+                      03/09 pede conta, que é onde há algo a ganhar em
+                      atravessar a barreira. */}
                   {/* Sem RotaProtegida: um link de perfil precisa abrir para
                       quem não tem conta, pelo mesmo motivo da vitrine. */}
                   <Route path="/perfil/:apelido">
@@ -274,7 +290,18 @@ function App() {
                     <TelaGirasPublicas />
                   </Route>
                   <Route path="/gira/:id">
-                    <TelaGiraPublica />
+                    <RotaProtegida>
+                      <TelaGiraPublica />
+                    </RotaProtegida>
+                  </Route>
+                  {/* O link que se compartilha. `RotaProtegida` de propósito:
+                      *"acho que o link a pessoa precisa estar logada também"*.
+                      A conta é grátis — a barreira é conta, nunca plano, senão
+                      ninguém compartilha e o link morre na mão de quem recebeu. */}
+                  <Route path="/g/:token">
+                    <RotaProtegida>
+                      <TelaGiraPublica />
+                    </RotaProtegida>
                   </Route>
                   <Route path="/enviar-ponto">
                     <RotaProtegida>

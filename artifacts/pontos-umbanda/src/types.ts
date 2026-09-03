@@ -135,9 +135,9 @@ export interface AppData {
 export interface AcessoDoAcervo {
   plano?: string;
   acervoOrganizado?: boolean;
-  linksDeVideo?: boolean;
   podeSincronizar?: boolean;
-  podeUsarOffline?: boolean;
+  /** Seguir artista e a estante "Meus artistas" (ADR 0012). */
+  seguirArtistas?: boolean;
 }
 
 /** Em que pé está a carga do acervo. Antes disto o app só tinha "pronto". */

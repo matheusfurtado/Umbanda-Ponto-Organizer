@@ -54,7 +54,38 @@ const FORA_DO_PLANO: Array<{ o_que: string; padrao: RegExp; desde: string }> = [
   },
 ];
 
-/** Onde se fala de plano. Só estes arquivos são varridos. */
+/**
+ * O que o plano TEM, e que a tela de venda precisa dizer.
+ *
+ * A varredura acima só proíbe. Faltava o outro lado, e o cabeçalho deste
+ * arquivo já prometia um `NO_PLANO` que nunca foi escrito: uma tela de venda
+ * pode perder o argumento principal em silêncio, e nada quebra — que é o mesmo
+ * defeito de cima, só que ao contrário.
+ *
+ * Em 03/09 o plano ficou com "hierarquia, ordem litúrgica e sync" depois que
+ * vídeo e offline saíram, e o dono resumiu assim: *"tô achando muito pobre e
+ * sem nenhuma vantagem o plano pago"*. Playlists e artistas entraram (ADR
+ * 0012), e é isso que a tela precisa continuar dizendo.
+ */
+const NO_PLANO: Array<{ o_que: string; padrao: RegExp }> = [
+  { o_que: "montar playlists", padrao: /playlists?/i },
+  { o_que: "seguir artistas", padrao: /artistas?/i },
+  { o_que: "compartilhar por link", padrao: /\blink\b/i },
+];
+
+/**
+ * TODO arquivo de código que a pessoa lê. **Sem filtro de assunto.**
+ *
+ * A primeira versão varria só quem mencionasse `/planos`, "Com o plano" ou "do
+ * plano". Parecia esperto e era um buraco: `TelaPlanos.tsx` — a TELA DE VENDA —
+ * não contém nenhuma das três, e ficava de fora. `TelaRetornoPagamento` também.
+ * Uma mutação minha devolvendo "Usar offline, sem depender de sinal" à lista de
+ * vantagens **passou**, e eu li o verde como prova.
+ *
+ * Cerca que decide sozinha o que vale a pena olhar não é cerca. O custo de
+ * varrer tudo é ter de reescrever a frase honesta que casa por acidente — foi o
+ * que aconteceu com `TelaTermos`, e reescrever custou uma linha.
+ */
 function telasQueVendem(): string[] {
   const achados: string[] = [];
   const visitar = (dir: string) => {
@@ -63,8 +94,7 @@ function telasQueVendem(): string[] {
       if (item.isDirectory()) {
         visitar(caminho);
       } else if (/\.tsx?$/.test(item.name) && !/\.test\./.test(item.name)) {
-        const fonte = readFileSync(caminho, "utf8");
-        if (/\/planos|Com o plano|do plano\b/i.test(fonte)) achados.push(caminho);
+        achados.push(caminho);
       }
     }
   };
@@ -74,7 +104,13 @@ function telasQueVendem(): string[] {
 
 test("nenhuma tela vende o que NÃO é do plano", () => {
   const telas = telasQueVendem();
-  ok(telas.length > 0, "a varredura não achou tela nenhuma que fale de plano");
+  // Guarda de completude: uma varredura que não achou nada passa em silêncio, e
+  // "0 mentiras em 0 arquivos" é o verde mais perigoso que existe. O número é
+  // baixo de propósito — prende a ordem de grandeza, não a contagem do dia.
+  ok(telas.length > 100,
+     `a varredura só achou ${telas.length} arquivos — o caminho quebrou`);
+  ok(telas.some((c) => c.endsWith("TelaPlanos.tsx")),
+     "a TELA DE VENDA ficou de fora da varredura — foi o buraco de 03/09");
 
   const mentiras: string[] = [];
   for (const caminho of telas) {
@@ -93,4 +129,23 @@ test("nenhuma tela vende o que NÃO é do plano", () => {
     }
   }
   ok(mentiras.length === 0, `\n  ${mentiras.join("\n  ")}\n`);
+});
+
+
+test("a TELA DE VENDA diz o que o plano tem", () => {
+  // O contrapeso da varredura de cima. Sem ele, a lista de vantagens podia
+  // perder as playlists numa refatoração e o app continuaria verde, vendendo um
+  // plano cujo argumento principal ficou de fora.
+  const fonte = readFileSync(join(RAIZ, "pages/TelaPlanos.tsx"), "utf8")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "");
+
+  const faltando = NO_PLANO
+    .filter(({ padrao }) => !padrao.test(fonte))
+    .map(({ o_que }) => o_que);
+
+  ok(
+    faltando.length === 0,
+    `a tela de planos não fala de: ${faltando.join(", ")} — ver ADR 0012`,
+  );
 });

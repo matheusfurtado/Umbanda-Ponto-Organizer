@@ -8,22 +8,40 @@ import { useAuth } from "@/auth/AuthContext";
 import { ArrowLeft, Globe, Youtube, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CapaGira } from "@/componentes/CapaGira";
-import { giraPublica, type GiraPublica } from "@/api/repertorio";
+import { giraPorLink, giraPublica, type GiraPublica } from "@/api/repertorio";
 import { registrarCliqueNoPonto } from "@/api/metricas";
 import { duracao } from "@/lib/duracao";
+import { ConviteParaAssinar } from "@/componentes/ConviteParaAssinar";
 
 /**
- * Uma gira pública, aberta por link — é assim que ela se compartilha.
+ * Uma gira de outra pessoa — pela vitrine (`/gira/:id`) ou pelo link que o dono
+ * mandou (`/g/:token`).
  *
- * Abre sem conta. O portão continua valendo para QUEM OLHA: a letra e a
- * sequência vão, o link do vídeo só se quem está vendo tiver plano. Sem isso,
- * publicar uma gira seria caminho para entregar de graça o que o plano cobra.
+ * ## Duas portas, uma tela
+ *
+ * A gira da vitrine é achável por qualquer um; a do link não aparece em lista
+ * nenhuma e só abre para quem tem o endereço. O que a pessoa VÊ é idêntico, e
+ * por isso é a mesma tela: duplicá-la faria as duas envelhecerem separadas.
+ *
+ * ## O que mudou em 03/09
+ *
+ * - **Pede conta.** Antes abria para anônimo. Decisão dele: *"acho que o link a
+ *   pessoa precisa estar logada também"*. É conta, não plano — a gira
+ *   compartilhada é o ANÚNCIO do produto, e anúncio que só o cliente vê não
+ *   anuncia nada.
+ * - **O vídeo vai para todo mundo.** Este arquivo dizia que o link do vídeo
+ *   dependia do plano de quem olha; deixou de depender no mesmo dia (ADR 0002).
  */
 export function TelaGiraPublica() {
   // Denunciar exige conta: denúncia anônima não tem como ser contida.
   const { user } = useAuth();
   const autenticado = Boolean(user);
-  const [, params] = useRoute("/gira/:id");
+  // As duas portas. `useRoute` devolve nulo para a que não casou, então a
+  // ordem aqui não é preferência — é só qual delas existe nesta URL.
+  const [, porId] = useRoute("/gira/:id");
+  const [, porLink] = useRoute("/g/:token");
+  const token = porLink?.token ?? null;
+  const chave = token ?? porId?.id ?? null;
   const [gira, setGira] = useState<GiraPublica | null>(null);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -32,11 +50,11 @@ export function TelaGiraPublica() {
   // deixava a anterior na tela até a nova chegar, e a resposta atrasada da
   // primeira podia vencer a da segunda. É o mesmo desenho do `TelaArtista`.
   useEffect(() => {
-    if (!params?.id) return;
+    if (!chave) return;
     setGira(null);
     setErro(null);
     let atual = true;
-    giraPublica(params.id)
+    (token ? giraPorLink(token) : giraPublica(chave))
       .then((g) => {
         if (atual) setGira(g);
       })
@@ -46,7 +64,7 @@ export function TelaGiraPublica() {
     return () => {
       atual = false;
     };
-  }, [params?.id]);
+  }, [chave, token]);
 
   if (erro) {
     return (
@@ -166,6 +184,18 @@ export function TelaGiraPublica() {
             </div>
           );
         })}
+      </div>
+
+      {/* O CONVITE VAI AQUI, e não no topo.
+          Quem abriu esta tela acabou de ver a gira de outra pessoa montada —
+          com seções, ordem e duração. É o único lugar do app onde a pessoa já
+          entendeu o que o plano faz antes de alguém lhe dizer. Pôr a faixa
+          antes da lista invertia isso: vendia a ferramenta para quem ainda não
+          tinha visto o que ela produz. */}
+      <div className="mt-8">
+        <ConviteParaAssinar
+          motivo={`${gira.de} montou esta playlist no app. Monte a sua.`}
+        />
       </div>
     </div>
   );

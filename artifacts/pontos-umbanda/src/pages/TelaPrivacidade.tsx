@@ -158,7 +158,7 @@ export function TelaPrivacidade() {
 
       <Secao titulo="Sobre os vídeos do YouTube">
         <p>
-          Os pontos do acervo trazem o link do vídeo no YouTube. Nós não
+          Os pontos do acervo trazem o endereço do vídeo no YouTube. Nós não
           hospedamos vídeo nenhum e não incorporamos o player: ao clicar em
           “Ouvir”, você sai daqui e vai para o YouTube, onde valem os termos e a
           política de privacidade deles. Enquanto você não clicar, o YouTube não

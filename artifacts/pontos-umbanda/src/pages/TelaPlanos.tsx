@@ -25,11 +25,25 @@ const DESCRICOES: Record<string, string> = {
   vitalicio: "Paga uma vez e nunca mais. Você sustenta a preservação do acervo.",
 };
 
+/**
+ * O que o plano dá, na ordem em que convence.
+ *
+ * As playlists vêm primeiro porque são a coisa que a pessoa CONSTRÓI — e o que
+ * ela constrói é o que ela não abandona. A hierarquia do acervo, que já esteve
+ * em cima desta lista, é a última: é verdadeira e é boa, mas ninguém sente
+ * falta dela antes de ter.
+ *
+ * Cuidado ao editar: esta lista é varrida por `promessa-do-plano.test.tsx`.
+ * Prometer aqui a letra, o link do vídeo ou o app funcionar sem sinal reprova,
+ * porque as três são de todo mundo (ADR 0002).
+ */
 const O_QUE_VEM = [
+  "Monte suas playlists, com as seções da sua casa",
+  "Leve a gira inteira no bolso, para o terreiro sem sinal",
+  "Compartilhe por um link só seu — ou publique na vitrine",
+  "Siga seus artistas e tenha todos numa estante",
   "Acervo organizado por orixá, na ordem da gira",
-  "Reordenar e montar seu repertório",
   "Sincronizar entre seus aparelhos",
-  "Levar a gira inteira no bolso, com ou sem sinal",
 ];
 
 function periodo(p: Plano): string {

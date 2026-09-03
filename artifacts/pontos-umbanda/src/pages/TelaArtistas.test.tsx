@@ -15,6 +15,7 @@ import { assentar, renderizar, type Tela } from "../../testes/renderizar.ts";
 import { fingirRede } from "../../testes/rede.ts";
 import { TelaArtistas } from "@/pages/TelaArtistas";
 import { AuthProvider } from "@/auth/AuthContext";
+import { EntitlementsProvider } from "@/billing/EntitlementsContext";
 
 beforeEach(() => localStorage.clear());
 
@@ -30,21 +31,51 @@ const EU = {
 
 async function abrir(
   resposta: { status?: number; corpo?: unknown },
-  { logado = false, sugeridos = [] as unknown[] } = {},
+  {
+    logado = false,
+    sugeridos = [] as unknown[],
+    /**
+     * O plano de quem está olhando.
+     *
+     * Seguir artista entrou no plano pago em 03/09 (ADR 0012), e cada cartão do
+     * diretório pergunta os direitos antes de decidir o que oferecer: botão
+     * para quem tem o direito, convite para assinar para quem tem conta e não
+     * tem, e convite para entrar para quem nem conta tem. O padrão é assinante
+     * porque é o único cenário em que o BOTÃO existe — quando o plano importa
+     * para o que está sendo medido, o teste diz qual é.
+     *
+     * Só chega a ser consultado com sessão: sem ela o provider rebaixa para
+     * grátis sem ir à rede.
+     */
+    direitos = { plano: "mensal", seguirArtistas: true } as Record<string, unknown>,
+  } = {},
 ) {
   const rede = fingirRede((url) => {
     if (url.includes("/auth/eu")) return logado ? { corpo: EU } : { status: 401, corpo: {} };
     if (url.includes("/recomendados")) return { corpo: sugeridos };
+    // Sem esta rota o dublê estoura em "chamada não prevista" assim que houver
+    // sessão: o `EntitlementsProvider` busca o plano logo depois dela.
+    if (url.includes("/meus-direitos")) return { corpo: direitos };
     if (url.includes("/artistas")) return resposta;
     throw new Error(`chamada não prevista: ${url}`);
   });
   const tela = await renderizar(
     <Router hook={memoryLocation({ path: "/artistas" }).hook}>
       <AuthProvider>
-        <TelaArtistas />
+        {/* O provider é obrigatório desde 03/09: o botão de seguir dentro de
+            cada cartão lê os direitos, e sem ele a tela inteira estoura. Vem
+            por DENTRO do `AuthProvider` porque só busca o plano de quem tem
+            sessão. */}
+        <EntitlementsProvider>
+          <TelaArtistas />
+        </EntitlementsProvider>
       </AuthProvider>
     </Router>,
   );
+  await assentar();
+  // DUAS voltas, e não uma: a sessão chega na primeira, e é só então que o
+  // provider vai buscar os direitos. Com uma volta só, todo cartão lia "grátis"
+  // e os testes do botão não achavam botão nenhum.
   await assentar();
   return {
     tela,
@@ -195,7 +226,14 @@ test("o botão de seguir NÃO está dentro do link do cartão", async () => {
   // Botão dentro de link é HTML inválido: o navegador desfaz o aninhamento e o
   // de dentro deixa de funcionar, sem erro nenhum. Mesma armadilha do
   // `CartaoGira` — e aqui o que morreria é justamente a ação nova.
-  const { tela, limpar } = await abrir({ corpo: [artista({ seguindo: false })] });
+  //
+  // Assinante logado de propósito: desde 03/09 (ADR 0012) só quem tem o direito
+  // vê um `<button>`. Para os outros o controle vira link, e o aninhamento que
+  // este teste persegue — botão dentro de link — deixaria de ser exercitado.
+  const { tela, limpar } = await abrir(
+    { corpo: [artista({ seguindo: false })] },
+    { logado: true, direitos: { plano: "mensal", seguirArtistas: true } },
+  );
   try {
     ok(tela.naoTem("a a"), "o convite de seguir voltou para dentro do link do cartão");
     ok(tela.naoTem("a button"), "o botão de seguir voltou para dentro do link do cartão");
@@ -209,7 +247,13 @@ test("o botão de seguir fica ACIMA da camada que cobre o cartão", async () => 
   // vez de seguir. Não dá para prender isso pelo DOM — happy-dom não tem motor
   // de layout —, então a checagem é sobre a ordem das camadas na fonte, e o
   // teste de ausência de aninhamento acima cobre a outra metade.
-  const { tela, limpar } = await abrir({ corpo: [artista({ seguindo: false })] });
+  //
+  // Assinante, pelo mesmo motivo do teste acima: o clique que a camada precisa
+  // proteger é o do botão de seguir, que só existe para quem tem o direito.
+  const { tela, limpar } = await abrir(
+    { corpo: [artista({ seguindo: false })] },
+    { logado: true, direitos: { plano: "mensal", seguirArtistas: true } },
+  );
   try {
     const cobre = tela.exigir('a[href="/artista/a1"]').getAttribute("class") ?? "";
     ok(/\babsolute\b/.test(cobre) && /\bz-0\b/.test(cobre), `a camada mudou: ${cobre}`);

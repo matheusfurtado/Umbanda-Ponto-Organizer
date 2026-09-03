@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Globe, Loader2, Lock } from "lucide-react";
+import { Globe, Loader2, Lock, Share2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,9 +7,19 @@ import { useAuth } from "@/auth/AuthContext";
 import { escolherApelido } from "@/api/conta";
 import { definirVisibilidade, type Repertorio } from "@/api/repertorio";
 import { mensagemDeErro } from "@/api/cliente";
+import { LinkDaPlaylist } from "@/componentes/CompartilharGira";
 
 /**
- * Tornar uma gira pública — ou voltar a fechá-la.
+ * Compartilhar uma gira: **por link**, ou na vitrine.
+ *
+ * ## Três estados, e a ordem entre eles não é acidental
+ *
+ * O link vem PRIMEIRO na tela porque é o que as pessoas querem quase sempre —
+ * mandar a gira para a casa, não publicá-la para o mundo. Deixar a vitrine em
+ * cima fazia "publicar" parecer o único jeito de compartilhar, e era: até
+ * 03/09 não existia meio-termo.
+ *
+ * O resto deste comentário é sobre a vitrine, que continua como estava.
  *
  * ## O aviso não é formalidade
  *
@@ -89,13 +99,25 @@ export function PublicarGira({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base">
-            {jaPublica
-              ? <><Lock className="h-4 w-4" /> Fechar esta playlist</>
-              : <><Globe className="h-4 w-4" /> Tornar pública</>}
+            <Share2 className="h-4 w-4" aria-hidden /> Compartilhar playlist
           </DialogTitle>
         </DialogHeader>
 
         <p className="-mt-1 truncate text-sm text-muted-foreground">{gira.nome}</p>
+
+        {/* O que a maioria quer: mandar para a casa, sem publicar. */}
+        <LinkDaPlaylist
+          gira={gira}
+          onMudou={(mudanca) => onMudou({ ...gira, ...mudanca })}
+        />
+
+        <div className="flex items-center gap-2 pt-1">
+          {jaPublica
+            ? <><Lock className="h-4 w-4 text-muted-foreground" aria-hidden />
+                <p className="text-sm font-medium text-foreground">Fechar esta playlist</p></>
+            : <><Globe className="h-4 w-4 text-muted-foreground" aria-hidden />
+                <p className="text-sm font-medium text-foreground">Pôr na vitrine</p></>}
+        </div>
 
         {jaPublica ? (
           <p className="text-sm text-muted-foreground">
@@ -155,7 +177,7 @@ export function PublicarGira({
             {salvando && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {jaPublica ? "Fechar playlist" : "Publicar"}
           </Button>
-          <Button variant="ghost" onClick={fechar}>Cancelar</Button>
+          <Button variant="ghost" onClick={fechar}>Pronto</Button>
         </div>
       </DialogContent>
     </Dialog>

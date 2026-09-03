@@ -19,12 +19,16 @@ export interface Entitlements {
   diasRestantes?: number | null;
   /** Hierarquia Orixá → Subcategoria, na ordem litúrgica. */
   acervoOrganizado?: boolean;
-  /** Link do vídeo casado com o ponto. */
-  linksDeVideo?: boolean;
+  /** Montar playlists — e compartilhá-las por link. */
   repertorios?: boolean;
   sync?: boolean;
-  offline?: boolean;
+  /** Seguir artista e a estante "Meus artistas" (ADR 0012). */
+  seguirArtistas?: boolean;
 }
+
+// `linksDeVideo` e `offline` saíram em 03/09: o vídeo e o uso sem sinal são de
+// todo mundo, e booleano que nunca é falso é portão morto esperando alguém
+// religá-lo por engano (ADR 0002).
 
 export interface Plano {
   id: string;

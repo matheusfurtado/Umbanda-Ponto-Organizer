@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { mensagemDeErro } from "@/api/cliente";
+import { useEntitlements } from "@/billing/EntitlementsContext";
 import { Link } from "wouter";
 import { Library, Mic2, Music2, Users } from "lucide-react";
 import { Avatar } from "@/componentes/Avatar";
@@ -31,6 +32,7 @@ import { minhaBiblioteca, type ArtistaResumo } from "@/api/artista";
  * seguir gente depende de a comunidade existir.
  */
 export function TelaSeguindo() {
+  const { ent } = useEntitlements();
   const [gente, setGente] = useState<PerfilResumo[] | null>(null);
   const [artistas, setArtistas] = useState<ArtistaResumo[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -74,14 +76,27 @@ export function TelaSeguindo() {
         <div className="mb-8 rounded-xl border border-dashed p-8 text-center">
           <Mic2 className="mx-auto mb-3 h-6 w-6 text-muted-foreground" aria-hidden />
           <p className="mx-auto max-w-sm text-sm text-muted-foreground">
-            Você ainda não segue nenhum artista.
+            {ent.seguirArtistas
+              ? "Você ainda não segue nenhum artista."
+              : "Seguir artista faz parte do plano — a estante guarda quem você ouve."}
           </p>
           <Link
-            href="/artistas"
+            href={ent.seguirArtistas ? "/artistas" : "/planos"}
             className="mt-4 inline-block text-sm font-medium text-primary underline"
           >
-            Ver os artistas do acervo
+            {ent.seguirArtistas ? "Ver os artistas do acervo" : "Ver planos"}
           </Link>
+          {/* A saída de graça continua na tela: a página do artista é aberta, e
+              mandar quem não assina para um beco seria fechar a descoberta —
+              exatamente o que o ADR 0007 escolheu não fazer. */}
+          {!ent.seguirArtistas && (
+            <Link
+              href="/artistas"
+              className="mt-2 block text-xs text-muted-foreground underline"
+            >
+              Ou veja os artistas do acervo, que é aberto
+            </Link>
+          )}
         </div>
       ) : (
         <div className="mb-8 space-y-2">

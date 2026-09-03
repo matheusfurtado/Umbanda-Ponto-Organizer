@@ -43,7 +43,23 @@ export function TelaLogin() {
    * Só um motivo por enquanto, e é de propósito — cada frase aqui é uma
    * promessa sobre o que a conta faz, e promessa genérica não ajuda ninguém.
    */
-  const motivo = new URLSearchParams(useSearch()).get("motivo");
+  const busca = new URLSearchParams(useSearch());
+  const motivo = busca.get("motivo");
+  /**
+   * Para onde devolver depois de entrar.
+   *
+   * Vem de `RotaProtegida`, que carimba `?voltar=` com o endereço que a pessoa
+   * tentou abrir. Sem isto, quem recebe o link de uma gira cria a conta e cai
+   * na tela inicial, sem a gira — e o convite que a trouxe se perde no caminho.
+   *
+   * **Só caminho interno.** `voltar` vem da URL, que qualquer um monta: um
+   * `//outro.site` ou `https://…` viraria redirecionamento aberto, e um link
+   * do nosso domínio levaria a pessoa para fora logo depois do login. A
+   * exigência de começar com uma barra e não com duas é o que fecha isso.
+   */
+  const voltarCru = busca.get("voltar");
+  const voltar =
+    voltarCru && /^\/[^/]/.test(voltarCru) ? voltarCru : "/";
   const { entrar, cadastrar } = useAuth();
   const [modo, setModo] = useState<Modo>("entrar");
   const [email, setEmail] = useState("");
@@ -89,7 +105,7 @@ export function TelaLogin() {
         return;
       }
       await entrar(email.trim(), senha);
-      navegar("/");
+      navegar(voltar);
     } catch (problema) {
       setErro(traduzir(problema));
     } finally {

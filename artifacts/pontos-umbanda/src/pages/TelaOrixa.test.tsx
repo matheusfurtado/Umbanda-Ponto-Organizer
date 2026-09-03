@@ -103,7 +103,7 @@ const secoes = (tela: { todos: (s: string) => Element[] }) =>
 
 test("quem paga vê as seções da gira, na ordem", async () => {
   const { tela, limpar } = await abrir(PAGO, {
-    plano: "mensal", acervoOrganizado: true, linksDeVideo: true,
+    plano: "mensal", acervoOrganizado: true, seguirArtistas: true,
   });
   try {
     deepEqual(secoes(tela), ["Chegada", "Louvação"]);
@@ -118,7 +118,7 @@ test("quem não paga vê lista única — sem seção e sem 'Outros'", async () 
   // seções, e também não pode rotular a lista inteira de "Outros" — "Outros"
   // em relação a quê?
   const { tela, limpar } = await abrir(GRATIS, {
-    plano: "gratis", acervoOrganizado: false, linksDeVideo: false,
+    plano: "gratis", acervoOrganizado: false, seguirArtistas: false,
   });
   try {
     deepEqual(secoes(tela), [], `apareceu cabeçalho de seção: ${secoes(tela)}`);

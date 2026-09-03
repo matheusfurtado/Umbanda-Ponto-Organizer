@@ -26,7 +26,7 @@ import {
   UploadCloud,
   Tag,
   Globe,
-  Lock,
+  Link2, Lock,
   Youtube,
 } from "lucide-react";
 import {
@@ -473,14 +473,18 @@ export function TelaRepertorios() {
               <button
                 onClick={() => setPublicando(aberto)}
                 className={`mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition ${
-                  aberto.publico
+                  aberto.publico || aberto.token
                     ? "bg-primary/15 text-primary hover:bg-primary/25"
                     : "bg-muted text-muted-foreground hover:bg-accent"
                 }`}
               >
+                {/* Três estados desde 03/09. "Só minha" com um link criado
+                    era mentira: a gira abria para quem tivesse o endereço. */}
                 {aberto.publico
-                  ? <><Globe className="h-3.5 w-3.5" /> Pública</>
-                  : <><Lock className="h-3.5 w-3.5" /> Só minha</>}
+                  ? <><Globe className="h-3.5 w-3.5" /> Na vitrine</>
+                  : aberto.token
+                    ? <><Link2 className="h-3.5 w-3.5" /> Por link</>
+                    : <><Lock className="h-3.5 w-3.5" /> Só minha</>}
               </button>
             </div>
           </div>
@@ -500,10 +504,10 @@ export function TelaRepertorios() {
             onFechar={() => setPublicando(null)}
             onMudou={(r) => {
               const atualizada = (lista ?? []).map((x) =>
-                x.id === r.id ? { ...x, publico: r.publico } : x);
+                x.id === r.id ? { ...x, publico: r.publico, token: r.token } : x);
               setLista(atualizada);
               guardar(atualizada);
-              setAberto({ ...aberto, publico: r.publico });
+              setAberto({ ...aberto, publico: r.publico, token: r.token });
             }}
           />
 

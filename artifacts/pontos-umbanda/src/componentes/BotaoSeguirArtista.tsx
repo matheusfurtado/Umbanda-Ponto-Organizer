@@ -8,6 +8,17 @@
  * armadilha e ela está escrita no `PROGRESSO.md` — toda ação de rede num
  * clique precisa de estado de envio e de erro visível.
  *
+ * ## TRÊS estados, e não dois
+ *
+ * `seguindo` sozinho só sabe dizer "anônimo" (`null`) ou "segue / não segue".
+ * Desde 03/09 existe um terceiro: **logado e sem plano** — seguir artista
+ * entrou no plano pago (ADR 0012). Sem distingui-lo, a pessoa com conta
+ * clicaria "Seguir", levaria 402 do servidor e leria uma mensagem de erro onde
+ * devia ler um convite.
+ *
+ * A DESCOBERTA continua aberta: a página do artista, os pontos e os vídeos são
+ * de todo mundo (ADR 0007). O que se cobra é a estante.
+ *
  * ## Otimista, mas com volta
  *
  * O botão muda na hora, porque esperar a ida e volta faz o clique parecer
@@ -19,6 +30,7 @@ import { useState } from "react";
 import { Check, Loader2, Plus } from "lucide-react";
 import { deixarDeSeguirArtista, seguirArtista } from "@/api/artista";
 import { mensagemDeErro } from "@/api/cliente";
+import { useEntitlements } from "@/billing/EntitlementsContext";
 
 export function BotaoSeguirArtista({
   artistaId,
@@ -42,6 +54,34 @@ export function BotaoSeguirArtista({
 }) {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const { ent } = useEntitlements();
+
+  // Logado, mas sem o direito. Vem ANTES do ramo de anônimo não por gosto: quem
+  // não tem conta tem de ser convidado a entrar (grátis) e não a assinar —
+  // pedir dinheiro a quem nem se cadastrou perde as duas coisas.
+  if (seguindo !== null && !ent.seguirArtistas) {
+    if (compacto) {
+      return (
+        <a
+          href="/planos"
+          aria-label="Seguir artistas faz parte do plano"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-dashed px-3 text-xs font-semibold text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+        >
+          <Plus className="h-3.5 w-3.5" aria-hidden />
+          Seguir
+        </a>
+      );
+    }
+    return (
+      <p className="text-sm text-muted-foreground">
+        <a href="/planos" className="font-medium text-primary underline">
+          Assine
+        </a>{" "}
+        para seguir e ter este artista na sua biblioteca. A página dele, os
+        pontos e os vídeos continuam abertos.
+      </p>
+    );
+  }
 
   if (seguindo === null) {
     // LINK, e não botão: para quem não entrou isto não marca nada, vai para
