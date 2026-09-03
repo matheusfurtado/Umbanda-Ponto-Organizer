@@ -233,3 +233,31 @@ export async function apagarConta(senha: string): Promise<void> {
   }
 }
 
+
+/**
+ * Completa o cadastro de quem voltou do Google e ainda não tem conta.
+ *
+ * ## Por que existe um passo aqui, se "entrar com Google" costuma ser um clique
+ *
+ * A existência de uma conta neste app revela convicção religiosa — dado
+ * sensível pela LGPD, e é por isso que o cadastro por e-mail já pede
+ * consentimento específico e destacado (ADR 0010).
+ *
+ * Criar a conta no retorno do provedor e perguntar depois seria colher o dado
+ * antes de pedir permissão. Então o servidor não cria nada no retorno: guarda
+ * um cadastro pendente de vida curta e manda a pessoa para cá.
+ *
+ * O `token` vem na URL, do redirecionamento do servidor. Ele é de uso único e
+ * expira em 20 minutos.
+ */
+export interface ConsentimentoDoProvedor {
+  token: string;
+  consinto_dado_religioso: boolean;
+  consinto_comunicacao: boolean;
+}
+
+export const consentirEntradaGoogle = (dados: ConsentimentoDoProvedor) =>
+  chamar<{ ok: boolean }>("/google/consentir", {
+    method: "POST",
+    body: JSON.stringify(dados),
+  });

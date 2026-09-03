@@ -33,6 +33,7 @@ import { TelaArtistas } from "@/pages/TelaArtistas";
 import { TelaGirasPublicas } from "@/pages/TelaGirasPublicas";
 import { TelaGiraPublica } from "@/pages/TelaGiraPublica";
 import { TelaLogin } from "@/pages/TelaLogin";
+import { TelaConsentimentoGoogle } from "@/pages/TelaConsentimentoGoogle";
 import { TelaPrivacidade } from "@/pages/TelaPrivacidade";
 import { TelaRecuperar } from "@/pages/TelaRecuperar";
 import { TelaTermos } from "@/pages/TelaTermos";
@@ -188,6 +189,9 @@ function App() {
             </Route>
             <Route path="/termos">
               <TelaTermos />
+            </Route>
+            <Route path="/entrar/consentimento">
+              <TelaConsentimentoGoogle />
             </Route>
             <Route path="/recuperar">
               <TelaRecuperar />
