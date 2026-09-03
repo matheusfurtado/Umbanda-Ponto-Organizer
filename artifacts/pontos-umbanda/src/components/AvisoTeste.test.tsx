@@ -139,3 +139,40 @@ test("a saída para os planos está sempre na faixa", async () => {
     rede.restaurar();
   }
 });
+
+test("o aviso não ameaça com uma perda que não acontece", async () => {
+  // Ele dizia que ao fim do teste a pessoa perde "o link do vídeo". O vídeo
+  // saiu do plano em 03/09 e agora é de todo mundo (ADR 0002) — a frase virou
+  // ameaça falsa, e nenhum teste pegou.
+  //
+  // Importa mais que uma imprecisão: esta é a faixa que precisa ser acreditada
+  // no dia em que estiver certa. Aviso que erra uma vez deixa de ser lido nas
+  // outras, e o preço aparece justamente quando ele fala a verdade.
+  const { tela, rede } = await comPlano({ plano: "teste", diasRestantes: 5 });
+  try {
+    const texto = tela.texto();
+    ok(
+      !/v[ií]deo/i.test(texto.replace(/os v[ií]deos continuam/i, "")),
+      `o aviso volta a prometer que o vídeo some: ${texto}`,
+    );
+    // E o que ele diz que sai tem de ser o que sai mesmo.
+    match(texto, /organização por orixá/i);
+    match(texto, /sem internet|offline/i);
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});
+
+test("o aviso diz o que CONTINUA, e não só o que acaba", async () => {
+  // Num acervo litúrgico, "você vai perder" sem "isto fica" lê como ameaça de
+  // tirar o que é da pessoa. A letra nunca é tirada, e dizer isso é o que faz
+  // a faixa ser informação em vez de cobrança.
+  const { tela, rede } = await comPlano({ plano: "teste", diasRestantes: 2 });
+  try {
+    match(tela.texto(), /continuam aqui/i);
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});

@@ -52,9 +52,18 @@ export function AvisoTeste() {
             : dias === 1
               ? "Falta 1 dia do seu teste."
               : `Faltam ${dias} dias do seu teste.`}{" "}
-        {/* Diz o que continua, não só o que acaba: a letra nunca é tirada. */}
-        Depois, suas letras e os pontos que você escreveu continuam aqui — o que
-        sai é a organização por orixá, o link do vídeo e o repertório.
+        {/* Diz o que continua, não só o que acaba: a letra nunca é tirada.
+
+            O LINK DO VÍDEO saiu desta lista em 03/09 — ele deixou de ser do
+            plano e vai para todo mundo (ADR 0002). Prometer que ele some seria
+            ameaçar com uma perda que não acontece, e um aviso que erra uma vez
+            deixa de ser lido nas outras.
+
+            No lugar dele entrou o OFFLINE, que é o que de fato dói: em terreiro
+            o sinal falha, e é justamente aí que o app é aberto. */}
+        Depois, suas letras e os vídeos continuam aqui — o que sai é a
+        organização por orixá, seus repertórios, e o app funcionando sem
+        internet.
       </span>
       <Link href="/planos">
         <span className="min-h-11 shrink-0 px-2 font-medium underline underline-offset-2">
