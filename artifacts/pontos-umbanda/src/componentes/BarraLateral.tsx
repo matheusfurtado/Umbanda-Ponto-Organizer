@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { LINKS_DE_MODERACAO } from "@/componentes/linksDeModeracao";
-import { Heart, ArchiveX, BadgeCheck, SlidersHorizontal, VideoOff, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { Heart, ArchiveX, BadgeCheck, SlidersHorizontal, VideoOff, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star, UserCog } from "lucide-react";
 import { useApp } from "@/context";
 import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
@@ -121,6 +121,22 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
           className={item(local === `/perfil/${encodeURIComponent(user.apelido)}`)}
         >
           <Avatar apelido={user.apelido} foto={user.foto} tamanho="sm" /> Meu perfil
+        </Link>
+      )}
+
+      {/* MINHA CONTA — a página existia e não tinha link nenhum.
+          
+          Só se chegava nela digitando a URL, ou por um link solto dentro da
+          Política de Privacidade. É onde moram "Sair da conta" e "Apagar
+          conta": a saída da própria conta estava inalcançável pela interface,
+          e o direito de apagar os dados também.
+          
+          Vem DEPOIS de "Meu perfil" de propósito: as duas são "sobre mim", e a
+          pública primeiro — perfil é o que os outros veem, conta é o que só a
+          pessoa mexe. */}
+      {autenticado && (
+        <Link href="/conta" className={item(local === "/conta")}>
+          <UserCog className="h-4 w-4" aria-hidden /> Minha conta
         </Link>
       )}
 

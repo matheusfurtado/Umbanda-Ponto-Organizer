@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Heart, Home, Search, ListMusic, Palette, Star } from "lucide-react";
+import { Heart, Home, Search, ListMusic, Palette, Star, UserCog } from "lucide-react";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { useAuth } from "@/auth/AuthContext";
 
@@ -44,6 +44,20 @@ export function BarraInferior({ onTrocarPaleta }: { onTrocarPaleta: () => void }
       >
         <ListMusic className="h-5 w-5" aria-hidden /> Playlists
       </Link>
+      {/* MINHA CONTA, e no celular ela é mais necessária que no desktop.
+          
+          A lateral é `hidden ... lg:flex`: no telefone ela não existe. Sem este
+          item, não havia caminho NENHUM para sair da conta nem para apagá-la —
+          e apagar os próprios dados não é conveniência, é direito. A página
+          existia e ninguém conseguia chegar nela.
+          
+          Só para quem entrou: para visitante o item levaria a uma tela sobre
+          uma conta que não há, e custaria um sexto da navegação. */}
+      {autenticado && (
+        <Link href="/conta" className={item(local === "/conta")}>
+          <UserCog className="h-5 w-5" aria-hidden /> Conta
+        </Link>
+      )}
       <button onClick={onTrocarPaleta} className={item(false)}>
         <Palette className="h-5 w-5" aria-hidden /> Cores
       </button>

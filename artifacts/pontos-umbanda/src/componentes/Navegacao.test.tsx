@@ -346,3 +346,43 @@ test("toda rota de moderação registrada tem link em algum lugar", async () => 
     `rotas de moderação sem link em lugar nenhum: ${orfas.join(", ")}`,
   );
 });
+
+test("dá para chegar na própria conta — nas DUAS barras", async () => {
+  // A página `/conta` existia e não tinha link nenhum: só se chegava nela
+  // digitando a URL, ou por um link solto dentro da Política de Privacidade.
+  //
+  // É onde moram "Sair da conta" e "Apagar conta". No celular era pior: a
+  // lateral é `hidden ... lg:flex`, então não havia caminho NENHUM para sair
+  // da conta nem para apagá-la — e apagar os próprios dados é direito, não
+  // conveniência.
+  for (const Barra of [BarraLateral, BarraInferior]) {
+    const { tela, limpar } = await abrir(Barra, true);
+    try {
+      const conta = tela
+        .todos("a")
+        .filter((a) => a.getAttribute("href") === "/conta");
+      ok(
+        conta.length === 1,
+        `esperava um link para /conta, achei ${conta.length}`,
+      );
+    } finally {
+      await limpar();
+    }
+  }
+});
+
+test("visitante NÃO vê o link da conta", async () => {
+  // Para quem não entrou, o item levaria a uma tela sobre uma conta que não
+  // existe — e no celular custaria um sexto da navegação.
+  for (const Barra of [BarraLateral, BarraInferior]) {
+    const { tela, limpar } = await abrir(Barra, false);
+    try {
+      ok(
+        !tela.todos("a").some((a) => a.getAttribute("href") === "/conta"),
+        "ofereceu conta a quem não entrou",
+      );
+    } finally {
+      await limpar();
+    }
+  }
+});
