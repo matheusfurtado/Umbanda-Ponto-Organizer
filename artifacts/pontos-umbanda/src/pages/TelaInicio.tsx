@@ -284,8 +284,9 @@ export function TelaInicio({
               <ListMusic className="mb-2 h-5 w-5 text-muted-foreground" aria-hidden />
               <h3 className="font-semibold text-foreground">Monte a sua playlist</h3>
               <p className="mt-1 max-w-lg text-sm text-muted-foreground">
-                Com o plano você cria repertórios na ordem em que vai cantar, com o
-                vídeo de cada ponto, e leva tudo no celular — inclusive sem sinal.
+                Com o plano você cria repertórios na ordem em que vai cantar e leva
+                tudo no celular — inclusive sem sinal, que é o que importa no
+                terreiro.
               </p>
               <Link
                 href="/planos"

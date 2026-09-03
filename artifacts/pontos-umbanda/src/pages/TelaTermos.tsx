@@ -61,7 +61,6 @@ export function TelaTermos() {
         <ul className="list-disc space-y-1.5 pl-5">
           <li>o acervo organizado por orixá e seção, na ordem da gira;</li>
           <li>reordenar os pontos do seu jeito;</li>
-          <li>o link do vídeo casado com cada ponto, dentro do acervo;</li>
           <li>montar playlists de gira;</li>
           <li>sincronizar entre aparelhos;</li>
           <li>usar sem internet.</li>
@@ -109,8 +108,9 @@ export function TelaTermos() {
         <p>
           <strong>Nada do que é seu é apagado ao acabar o plano.</strong> As
           letras continuam ali, os pontos que você escreveu continuam ali, os
-          seus favoritos continuam ali. O que sai é a organização por orixá, o
-          link do vídeo, os repertórios, a sincronização e o uso sem internet.
+          seus favoritos continuam ali — e os vídeos também, que desde 03/09/2026
+          não dependem de plano. O que sai é a organização por orixá, os
+          repertórios, a sincronização e o uso sem internet.
         </p>
       </Secao>
 
