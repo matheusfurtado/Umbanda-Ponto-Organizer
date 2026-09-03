@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { Mic2, Music2 } from "lucide-react";
+import { ChevronRight, Mic2, Music2 } from "lucide-react";
 import { listarArtistas, type ArtistaResumo } from "@/api/artista";
 import { AvatarArtista } from "@/componentes/AvatarArtista";
 
@@ -51,17 +51,32 @@ export function ArtistasEmDestaque() {
 
   return (
     <section aria-label="Artistas" className="mb-10">
-      <h2 className="mb-1 flex items-center gap-2 px-2 text-lg font-bold text-foreground">
-        <Mic2 className="h-5 w-5 text-primary" aria-hidden />
-        Artistas
-        {/* "ver mais", e não "ver todos os 16": o número dava uma precisão
-            que não ajuda ninguém a decidir se vale tocar — e envelhece, porque
-            cada canal novo muda o rótulo de um botão que faz sempre a mesma
-            coisa. */}
-        {artistas !== null && artistas.length > QUANTOS && (
-          <Link href="/artistas" className="ml-auto text-xs font-medium text-primary underline">
-            ver mais
+      {/* O TÍTULO é o link, e não um "ver mais" sublinhado no canto.
+          
+          Ele existia jogado na ponta direita da linha, longe do que abre — e
+          era exatamente isso que incomodava: um link solto, sublinhado, sem
+          nada por perto que explicasse o que ele amplia.
+          
+          Título clicável com seta resolve os dois lados: fica ao lado do que
+          nomeia, cresce a área de toque de um texto de 12px para a linha
+          inteira, e some sozinho quando não há mais nada para ver — aí é só um
+          título, sem prometer um destino que não existe. */}
+      <h2 className="mb-1 px-2 text-lg font-bold text-foreground">
+        {artistas !== null && artistas.length > QUANTOS ? (
+          <Link
+            href="/artistas"
+            className="inline-flex min-h-11 items-center gap-2 hover:text-primary"
+          >
+            <Mic2 className="h-5 w-5 text-primary" aria-hidden />
+            Artistas
+            <ChevronRight className="h-5 w-5 text-muted-foreground" aria-hidden />
+            <span className="sr-only">ver todos os artistas</span>
           </Link>
+        ) : (
+          <span className="inline-flex items-center gap-2">
+            <Mic2 className="h-5 w-5 text-primary" aria-hidden />
+            Artistas
+          </span>
         )}
       </h2>
       <p className="mb-3 px-2 text-sm text-muted-foreground">

@@ -64,9 +64,18 @@ test("com muitos, mostra dez e a saída para os outros", async () => {
     const naPrateleira = destinos(tela).filter((h) => h?.startsWith("/artista/")).length;
     ok(naPrateleira === 10, `mostrou ${naPrateleira} em vez de dez`);
     ok(destinos(tela).includes("/artistas"), "os outros quatro sumiram do app");
-    // "ver mais", sem o número: ele dava uma precisão que não ajuda a decidir
-    // se vale tocar, e envelhecia a cada canal novo no acervo.
-    match(tela.texto(), /ver mais/);
+    // A saída é o TÍTULO, e não um "ver mais" solto na ponta direita da linha.
+    // Ele ficava longe do que abre, sublinhado, sem nada por perto explicando
+    // o que ampliava — *"esse ver mais ali tá muito feio"*.
+    //
+    // O que se cobra é a saída existir e ser o título, não o texto dela.
+    const titulo = tela
+      .todos("a")
+      .find((a) => a.getAttribute("href") === "/artistas");
+    ok(titulo, "não há saída para os outros artistas");
+    match(titulo!.textContent ?? "", /Artistas/);
+    // E o rótulo não conta: o número envelhece a cada canal novo, e não ajuda
+    // ninguém a decidir se vale tocar.
     ok(!/ver todos os \d/.test(tela.texto()), "o rótulo voltou a contar os artistas");
   } finally {
     await limpar();

@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { semAcento } from "@/lib/destacar";
 import { mensagemDeErro } from "@/api/cliente";
 import { useAuth } from "@/auth/AuthContext";
 import { girasDeQuemSigo, type GiraDeQuemSigo } from "@/api/perfil";
@@ -20,6 +22,18 @@ export function TelaGirasPublicas() {
   const [erro, setErro] = useState<string | null>(null);
   const { autenticado } = useAuth();
   const [deQuemSigo, setDeQuemSigo] = useState<GiraDeQuemSigo[]>([]);
+  const [busca, setBusca] = useState("");
+
+  // Por nome E por quem montou: numa vitrine de playlists de terreiro, "de
+  // quem é" é metade do que se procura.
+  const filtradas = useMemo(() => {
+    if (giras === null) return null;
+    const termo = semAcento(busca.trim());
+    if (!termo) return giras;
+    return giras.filter(
+      (g) => semAcento(g.nome).includes(termo) || semAcento(g.de ?? "").includes(termo),
+    );
+  }, [busca, giras]);
 
   useEffect(() => {
     publicas()
@@ -41,11 +55,31 @@ export function TelaGirasPublicas() {
   return (
     <div className="max-w-5xl px-4 pb-24 pt-5 sm:px-8">
       <h1 className="flex items-center gap-2 text-2xl font-black text-foreground sm:text-3xl">
-        <Globe className="h-6 w-6 text-primary" aria-hidden /> Playlists da comunidade
+        <Globe className="h-6 w-6 text-primary" aria-hidden /> Playlists
       </h1>
-      <p className="mb-6 mt-1 text-sm text-muted-foreground">
+      <p className="mb-4 mt-1 text-sm text-muted-foreground">
         Sequências que outras casas montaram e quiseram compartilhar.
       </p>
+
+      {/* BUSCA por nome e por quem montou.
+          
+          Filtra o que já veio, sem ir ao servidor: a lista chega inteira nesta
+          tela, e uma ida à rede a cada tecla daria espera onde não há
+          necessidade. Se um dia ela crescer a ponto de vir paginada, é aqui que
+          a busca passa a ser do servidor — e o campo já estará no lugar.
+          
+          Sem acento e sem caixa: quem procura "iemanja" tem de achar "Iemanjá".
+          É a mesma regra do acervo, e a diferença entre as duas confundiria. */}
+      <label className="mb-6 block">
+        <span className="sr-only">Buscar playlist</span>
+        <input
+          type="search"
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          placeholder="Buscar pelo nome da playlist ou por quem montou..."
+          className="min-h-11 w-full rounded-md border bg-background px-3 text-sm"
+        />
+      </label>
 
       {erro && <p role="alert" className="text-sm text-destructive">{erro}</p>}
 
@@ -79,14 +113,24 @@ export function TelaGirasPublicas() {
             ))}
           </div>
         )
-      ) : giras.length === 0 ? (
+      ) : filtradas!.length === 0 ? (
+        // Duas ausências, duas frases: "não achei o que você procurou" e "ainda
+        // não existe nenhuma" são coisas diferentes, e dizer a segunda para
+        // quem buscou faz parecer que o acervo está vazio.
         <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-          Nenhuma playlist pública ainda. Se você montou uma que vale compartilhar,
-          pode torná-la pública em <strong className="text-foreground">Minhas playlists</strong>.
+          {busca.trim() ? (
+            <>Nenhuma playlist com esse nome ou de quem você procurou.</>
+          ) : (
+            <>
+              Nenhuma playlist pública ainda. Se você montou uma que vale compartilhar,
+              pode torná-la pública em{" "}
+              <strong className="text-foreground">Minhas playlists</strong>.
+            </>
+          )}
         </p>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {giras.map((g) => (
+          {filtradas!.map((g) => (
             <CartaoGira
               key={g.id}
               id={g.id}

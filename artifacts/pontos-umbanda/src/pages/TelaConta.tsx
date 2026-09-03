@@ -164,7 +164,7 @@ export function TelaConta() {
               href={`/perfil/${encodeURIComponent(user.apelido)}`}
               className="mt-2 inline-block text-xs font-medium text-primary underline"
             >
-              Ver meu perfil como os outros veem
+              Trocar minha foto e ver meu perfil
             </Link>
           )}
         </div>
@@ -347,41 +347,21 @@ export function TelaConta() {
           </p>
         )}
 
+        {/* "Enviar meus pontos deste aparelho" e "Baixar da conta para este
+            aparelho" saíram — palavras dele: *"toda essa parte de baixar
+            informações pro aparelho pode sumir e de enviar também, por ora não
+            faremos mais isso"*.
+
+            Eram os botões da época em que o `localStorage` era a fonte da
+            verdade e a conta uma cópia. Hoje é o contrário: o servidor manda, e
+            o sync acontece sozinho. Duas ações que pedem à pessoa para decidir
+            uma direção de cópia num app que já sincroniza são convite a errar —
+            "substituir pelos da conta" apagava o que estivesse só no aparelho.
+
+            BAIXAR MEUS DADOS FICA, e não é a mesma coisa: é portabilidade
+            (LGPD, art. 18, V). Não é conveniência de sincronização, é direito —
+            e tirar junto seria tirar um direito por engano. */}
         <div className="space-y-3">
-          <LinhaAcao
-            icone={<CloudUpload className="w-5 h-5" />}
-            titulo="Enviar meus pontos deste aparelho"
-            descricao="Cria/atualiza uma cópia dos seus dados na conta. Nada é apagado."
-            onClick={() => setMigrar(true)}
-          />
-
-          {confirmandoBaixar ? (
-            <div className="p-4 rounded-xl bg-card border border-amber-500/40 space-y-3">
-              <p className="text-sm text-foreground">
-                Isto vai <b>substituir</b> os pontos deste aparelho pelos da sua conta. Se você tem algo só
-                aqui, envie primeiro (ação acima).
-              </p>
-              <div className="flex gap-2 justify-end">
-                <Button variant="ghost" size="sm" onClick={() => setConfirmandoBaixar(false)}>
-                  Cancelar
-                </Button>
-                <Button size="sm" onClick={baixarDaConta} disabled={baixandoConta}>
-                  {baixandoConta ? "Baixando..." : "Substituir pelos da conta"}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <LinhaAcao
-              icone={<DownloadCloud className="w-5 h-5" />}
-              titulo="Baixar da conta para este aparelho"
-              descricao="Mostra aqui os pontos que estão na sua conta (ex.: outro celular)."
-              onClick={() => {
-                setMsg(null);
-                setConfirmandoBaixar(true);
-              }}
-            />
-          )}
-
           <LinhaAcao
             icone={<Download className="w-5 h-5" />}
             titulo={baixando ? "Preparando..." : "Baixar meus dados"}

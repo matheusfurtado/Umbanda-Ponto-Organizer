@@ -96,9 +96,6 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
       <Link href="/novidades" className={item(local === "/novidades")}>
         <Sparkles className="h-4 w-4" aria-hidden /> Novos do mês
       </Link>
-      <Link href="/giras-publicas" className={item(local.startsWith("/giras-publicas"))}>
-        <Globe className="h-4 w-4" aria-hidden /> Playlists da comunidade
-      </Link>
       {/* Aberta como Artistas, e pelo mesmo motivo somado a outro: é um pedido
           de ajuda, e pedido escondido não é pedido. Quem só quiser ver o que
           falta não precisa de conta; indicar precisa. */}
@@ -110,14 +107,24 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
       <Link href="/artistas" className={item(local.startsWith("/artista"))}>
         <Mic2 className="h-4 w-4" aria-hidden /> Artistas
       </Link>
-      {autenticado && (
-        <Link href="/quero-meu-perfil" className={item(local === "/quero-meu-perfil")}>
-          <BadgeCheck className="h-4 w-4" aria-hidden /> Tenho um canal
-        </Link>
-      )}
+      {/* MEUS ARTISTAS e PLAYLISTS colados, um embaixo do outro.
+          
+          Pedido dele. Eles estavam separados por quatro itens — "Pontos sem
+          vídeo", "Artistas", "Tenho um canal" —, e são as duas coleções que a
+          pessoa monta: quem ela segue e o que ela guardou. Item de coleção
+          longe de item de coleção obriga a percorrer a lista inteira para
+          achar o par que se usa junto. */}
       {autenticado && (
         <Link href="/seguindo" className={item(local === "/seguindo")}>
           <Library className="h-4 w-4" aria-hidden /> Meus artistas
+        </Link>
+      )}
+      <Link href="/giras-publicas" className={item(local.startsWith("/giras-publicas"))}>
+        <Globe className="h-4 w-4" aria-hidden /> Playlists
+      </Link>
+      {autenticado && (
+        <Link href="/quero-meu-perfil" className={item(local === "/quero-meu-perfil")}>
+          <BadgeCheck className="h-4 w-4" aria-hidden /> Tenho um canal
         </Link>
       )}
       {/* "Meu perfil" saiu daqui e virou link DENTRO de "Minha conta".

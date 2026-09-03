@@ -75,7 +75,10 @@ const cartoes = (tela: Tela) =>
 test("abre sem conta — é o canal de aquisição do produto", async () => {
   const { tela, limpar } = await abrir();
   try {
-    match(tela.texto(), /Playlists da comunidade/);
+    // O nome encurtou: "Playlists da comunidade" virou "Playlists". Palavras
+    // dele: *"tira esse negócio de playlist da comunidade por só playlists"*.
+    // O subtítulo já diz de quem são — o rótulo não precisava repetir.
+    match(tela.texto(), /Playlists/);
     deepEqual(cartoes(tela), ["/gira/g1", "/gira/g2"]);
     // O apelido de quem montou, nunca o e-mail.
     match(tela.texto(), /Terreiro de Ogum/);
@@ -154,6 +157,56 @@ test("quando a vitrine falha, a tela para de dizer que está carregando", async 
     ok(
       tela.naoTem('[aria-busy="true"]'),
       "mostrou o erro e continuou fingindo que carrega",
+    );
+  } finally {
+    await limpar();
+  }
+});
+
+test("dá para buscar uma playlist pelo nome e por quem montou", async () => {
+  // Numa vitrine de playlists de terreiro, "de quem é" é metade do que se
+  // procura — buscar só por nome deixaria de fora a pergunta mais comum.
+  const { tela, limpar } = await abrir({
+    vitrine: {
+      corpo: [
+        { id: "g1", nome: "Gira de Exu", publico: true, de: "Pai João", pontos: 5 },
+        { id: "g2", nome: "Abertura", publico: true, de: "Mãe Ana", pontos: 7 },
+      ],
+    },
+    seguidas: { corpo: [] },
+  });
+  try {
+    const campo = tela.exigir('input[type="search"]');
+    await tela.mudar(campo, "exu");
+    match(tela.texto(), /Gira de Exu/);
+    ok(!/Abertura/.test(tela.texto()), "não filtrou pelo nome");
+
+    await tela.mudar(campo, "ana");
+    match(tela.texto(), /Abertura/, "não achou pela pessoa que montou");
+
+    // Sem acento e sem caixa, como no acervo: quem digita "joao" acha "João".
+    await tela.mudar(campo, "JOAO");
+    match(tela.texto(), /Gira de Exu/, "a busca exigiu acento e caixa certos");
+  } finally {
+    await limpar();
+  }
+});
+
+test("não achar não é o mesmo que não existir", async () => {
+  // Dizer "nenhuma playlist pública ainda" para quem buscou faz parecer que a
+  // vitrine está vazia — e ela não está.
+  const { tela, limpar } = await abrir({
+    vitrine: {
+      corpo: [{ id: "g1", nome: "Gira de Exu", publico: true, de: "Pai João", pontos: 5 }],
+    },
+    seguidas: { corpo: [] },
+  });
+  try {
+    await tela.mudar(tela.exigir('input[type="search"]'), "zzzzz");
+    match(tela.texto(), /Nenhuma playlist com esse nome/);
+    ok(
+      !/Nenhuma playlist pública ainda/.test(tela.texto()),
+      "culpou o acervo por uma busca que não achou",
     );
   } finally {
     await limpar();

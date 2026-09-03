@@ -76,7 +76,7 @@ export function TelaGiraPublica() {
       <div className="max-w-3xl px-4 pb-24 pt-5 sm:px-8">
         <Link href="/giras-publicas">
           <Button variant="ghost" size="sm" className="-ml-2 mb-4 gap-1.5 text-muted-foreground">
-            <ArrowLeft className="h-4 w-4" /> Playlists da comunidade
+            <ArrowLeft className="h-4 w-4" /> Playlists
           </Button>
         </Link>
 
