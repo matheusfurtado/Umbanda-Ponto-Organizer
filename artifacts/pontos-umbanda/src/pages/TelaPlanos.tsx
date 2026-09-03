@@ -27,7 +27,6 @@ const DESCRICOES: Record<string, string> = {
 
 const O_QUE_VEM = [
   "Acervo organizado por orixá, na ordem da gira",
-  "Link do vídeo de cada ponto",
   "Reordenar e montar seu repertório",
   "Sincronizar entre seus aparelhos",
   "Usar offline, sem depender de sinal",
