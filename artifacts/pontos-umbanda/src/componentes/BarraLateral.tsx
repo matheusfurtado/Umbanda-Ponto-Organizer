@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { ConviteParaEntrar } from "@/componentes/ConviteParaEntrar";
 import { LINKS_DE_MODERACAO } from "@/componentes/linksDeModeracao";
-import { Heart, ArchiveX, BadgeCheck, SlidersHorizontal, VideoOff, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star, UserCog } from "lucide-react";
+import { Heart, ArchiveX, BadgeCheck, SlidersHorizontal, VideoOff, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Send, ShieldCheck, Sparkles, Star, UserCog } from "lucide-react";
 import { useApp } from "@/context";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { useAuth } from "@/auth/AuthContext";
@@ -51,9 +51,13 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
       <Link href="/" className={item(local === "/")}>
         <Home className="h-4 w-4" aria-hidden /> Início
       </Link>
-      <Link href="/buscar" className={item(local === "/buscar")}>
-        <Search className="h-4 w-4" aria-hidden /> Buscar
-      </Link>
+      {/* "Buscar" saiu da navegação: `/buscar` renderiza o MESMO componente
+          que `/`, só com o campo focado — palavras dele, *"buscar e iniciar
+          são a mesma página"*. E o campo já fica visível no topo do Início.
+
+          A ROTA continua existindo: link salvo e atalho de teclado seguem
+          funcionando, e quem chega por ela cai no acervo com a busca pronta.
+          O que sumiu foi a segunda porta para a mesma tela. */}
 
       {/* A estrela precisava levar a algum lugar. Ela aparecia em toda linha de
           ponto e o único lugar que mostrava o resultado era uma seção do

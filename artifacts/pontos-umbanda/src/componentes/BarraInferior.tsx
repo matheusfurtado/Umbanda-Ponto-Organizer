@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { ConviteParaEntrar } from "@/componentes/ConviteParaEntrar";
-import { Heart, Home, Search, ListMusic, Palette, Star, UserCog } from "lucide-react";
+import { Heart, Home, ListMusic, Palette, Star, UserCog } from "lucide-react";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { useAuth } from "@/auth/AuthContext";
 
@@ -31,9 +31,13 @@ export function BarraInferior({ onTrocarPaleta }: { onTrocarPaleta: () => void }
       <Link href="/" className={item(local === "/")}>
         <Home className="h-5 w-5" aria-hidden /> Início
       </Link>
-      <Link href="/buscar" className={item(local === "/buscar")}>
-        <Search className="h-5 w-5" aria-hidden /> Buscar
-      </Link>
+      {/* "Buscar" saiu da navegação: `/buscar` renderiza o MESMO componente
+          que `/`, só com o campo focado — palavras dele, *"buscar e iniciar
+          são a mesma página"*. E o campo já fica visível no topo do Início.
+
+          A ROTA continua existindo: link salvo e atalho de teclado seguem
+          funcionando, e quem chega por ela cai no acervo com a busca pronta.
+          O que sumiu foi a segunda porta para a mesma tela. */}
       {/* No celular a estrela é ainda mais importante: é o atalho de quem está
           no meio da gira e precisa do ponto que já separou.
 

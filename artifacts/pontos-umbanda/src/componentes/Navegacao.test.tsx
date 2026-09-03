@@ -104,10 +104,13 @@ test("a barra lateral continua aberta ao que é de todo mundo", async () => {
   // de entrada de quem ainda não tem conta — é por elas que alguém decide ter.
   const { tela, limpar } = await abrir(BarraLateral, false);
   try {
+    // `/buscar` saiu da LISTA e não do app: ele renderiza o mesmo componente
+    // que `/`, só com o campo focado, e o campo já fica visível no Início.
+    // A rota continua existindo para link salvo.
     const abertos = destinos(tela).filter((h): h is string => h !== null);
     deepEqual(
-      ["/", "/buscar", "/novidades", "/giras-publicas", "/artistas"].filter((r) => abertos.includes(r)),
-      ["/", "/buscar", "/novidades", "/giras-publicas", "/artistas"],
+      ["/", "/novidades", "/giras-publicas", "/artistas"].filter((r) => abertos.includes(r)),
+      ["/", "/novidades", "/giras-publicas", "/artistas"],
       `sumiu algo que é de todo mundo: ${abertos.join(", ")}`,
     );
   } finally {
@@ -436,5 +439,25 @@ test("o convite promete só o que a CONTA destrava, não o plano", async () => {
     );
   } finally {
     await limpar();
+  }
+});
+
+test("não há duas portas para a mesma tela", async () => {
+  // `/buscar` renderiza o MESMO componente que `/`, só com o campo focado —
+  // "buscar e iniciar são a mesma página". Duas entradas para a mesma tela
+  // fazem parar e escolher sem motivo, e no celular custam um sexto da barra.
+  //
+  // A ROTA continua existindo: quem tiver link salvo cai no acervo com a busca
+  // pronta. O que sumiu foi a segunda porta.
+  for (const Barra of [BarraLateral, BarraInferior]) {
+    const { tela, limpar } = await abrir(Barra, true);
+    try {
+      ok(
+        !tela.todos("a").some((a) => a.getAttribute("href") === "/buscar"),
+        "a busca voltou a ser um item de navegação para a mesma tela do início",
+      );
+    } finally {
+      await limpar();
+    }
   }
 });
