@@ -23,6 +23,8 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useLocation, useSearch } from "wouter";
 
+import { useAuth } from "@/auth/AuthContext";
+
 import { Button } from "@/components/ui/button";
 import { consentirEntradaGoogle } from "@/api/conta";
 import { ehErroDeApi, ehErroDeRede } from "@/api/cliente";
@@ -30,6 +32,7 @@ import { ehErroDeApi, ehErroDeRede } from "@/api/cliente";
 export function TelaConsentimentoGoogle() {
   const busca = useSearch();
   const [, navegar] = useLocation();
+  const { recarregar } = useAuth();
   const token = new URLSearchParams(busca).get("t") ?? "";
 
   const [consentiu, setConsentiu] = useState(false);
@@ -62,6 +65,19 @@ export function TelaConsentimentoGoogle() {
         consinto_dado_religioso: consentiu,
         consinto_comunicacao: querComunicacao,
       });
+      // RECARREGAR antes de navegar, e não é detalhe.
+      //
+      // O servidor já gravou o cookie de sessão — a conta existe e está
+      // aberta. Mas o contexto de autenticação deste app não sabe: ele guarda
+      // o usuário em estado, e só descobre quem entrou perguntando ao
+      // `/auth/eu`.
+      //
+      // Sem isto, a pessoa termina o cadastro e cai numa tela que a trata como
+      // visitante — com o convite para entrar aparecendo, depois de ela ter
+      // acabado de entrar. Foi o que ele viu: *"assim que eu crio a conta já
+      // devo estar logado, pq já selecionei a conta"*. Ele estava logado; o
+      // app é que não tinha percebido.
+      await recarregar();
       navegar("/");
     } catch (problema) {
       // A mensagem do SERVIDOR quando ele deu uma: ele sabe o que houve

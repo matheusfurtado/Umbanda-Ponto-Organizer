@@ -8,18 +8,38 @@
  */
 
 import { match, ok } from "node:assert/strict";
-import { test } from "node:test";
+import { beforeEach, test } from "node:test";
 import { Router } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
 import { assentar, renderizar, type Tela } from "../../testes/renderizar.ts";
 import { fingirRede } from "../../testes/rede.ts";
 import { TelaConsentimentoGoogle } from "@/pages/TelaConsentimentoGoogle";
+import { AuthProvider } from "@/auth/AuthContext";
+
+// O `AuthProvider` lembra quem entrou no aparelho. Sem limpar, a pessoa
+// do teste anterior segue logada aqui — e há uma cerca do harness
+// cobrando isto de todo arquivo que o monta.
+beforeEach(() => localStorage.clear());
+
+const EU = {
+  id: "u1", email: "novo@exemplo.com", email_verificado: true,
+  apelido: null, admin: false, favoritos_publicos: false, foto: null,
+};
 
 async function abrir(caminho = "/entrar/consentimento?t=token-de-teste") {
   const enviados: Array<{ url: string; corpo: unknown }> = [];
+  const pedidos: string[] = [];
+  // Antes do cadastro ninguém está logado; DEPOIS, sim. É o servidor que
+  // grava o cookie, e é o `/auth/eu` que conta isso ao app.
+  let temConta = false;
   const rede = fingirRede((url, init) => {
+    pedidos.push(url);
+    if (url.includes("/auth/eu")) {
+      return temConta ? { corpo: EU } : { status: 401, corpo: {} };
+    }
     if (url.includes("/auth/google/consentir")) {
       enviados.push({ url, corpo: JSON.parse(String(init?.body ?? "{}")) });
+      temConta = true;
       return { corpo: { ok: true } };
     }
     throw new Error(`chamada não prevista: ${url}`);
@@ -27,12 +47,14 @@ async function abrir(caminho = "/entrar/consentimento?t=token-de-teste") {
   const { hook } = memoryLocation({ path: caminho });
   const tela = await renderizar(
     <Router hook={hook}>
-      <TelaConsentimentoGoogle />
+      <AuthProvider>
+        <TelaConsentimentoGoogle />
+      </AuthProvider>
     </Router>,
   );
   await assentar();
   return {
-    tela, enviados,
+    tela, enviados, pedidos,
     limpar: async () => { await tela.desmontar(); rede.restaurar(); },
   };
 }
@@ -115,12 +137,16 @@ test("o erro do SERVIDOR aparece com as palavras dele", async () => {
   // fazer. Trocá-la por texto genérico faz a pessoa recomeçar sem saber por
   // quê — e foi por pouco: eu tinha escrito `problema.mensagem`, e o campo
   // chama `detalhe`. Renderizaria "undefined".
-  const rede = fingirRede(() => ({
-    status: 400, corpo: { detail: "Este cadastro expirou. Comece de novo." },
-  }));
+  const rede = fingirRede((url) =>
+    url.includes("/auth/eu")
+      ? { status: 401, corpo: {} }
+      : { status: 400, corpo: { detail: "Este cadastro expirou. Comece de novo." } },
+  );
   const { hook } = memoryLocation({ path: "/entrar/consentimento?t=tok" });
   const tela = await renderizar(
-    <Router hook={hook}><TelaConsentimentoGoogle /></Router>,
+    <Router hook={hook}>
+      <AuthProvider><TelaConsentimentoGoogle /></AuthProvider>
+    </Router>,
   );
   await assentar();
   try {
@@ -149,13 +175,16 @@ test("nunca inventa um consentimento que a pessoa não deu", async () => {
   // Sem este caso, trocar `consentiu` por `true` no corpo passa por todos os
   // outros testes, porque todos eles marcam a caixa antes de enviar.
   const enviados: unknown[] = [];
-  const rede = fingirRede((_url, init) => {
+  const rede = fingirRede((url, init) => {
+    if (url.includes("/auth/eu")) return { status: 401, corpo: {} };
     enviados.push(JSON.parse(String(init?.body ?? "{}")));
     return { corpo: { ok: true } };
   });
   const { hook } = memoryLocation({ path: "/entrar/consentimento?t=tok" });
   const tela = await renderizar(
-    <Router hook={hook}><TelaConsentimentoGoogle /></Router>,
+    <Router hook={hook}>
+      <AuthProvider><TelaConsentimentoGoogle /></AuthProvider>
+    </Router>,
   );
   await assentar();
   try {
@@ -174,5 +203,34 @@ test("nunca inventa um consentimento que a pessoa não deu", async () => {
   } finally {
     await tela.desmontar();
     rede.restaurar();
+  }
+});
+
+test("criar a conta já deixa a pessoa DENTRO — o app não pode achar que ela é visitante", async () => {
+  // Palavras dele: "quando eu criei a conta via google ele iniciou deslogada e
+  // daí eu tive que fazer de novo pra logar, isso tá errado... assim que eu
+  // crio a conta já devo estar logado, pq já selecionei a conta".
+  //
+  // Ele ESTAVA logado: o servidor gravou o cookie. O app é que não tinha
+  // percebido — o contexto guarda o usuário em estado e só descobre quem
+  // entrou perguntando ao `/auth/eu`. Sem recarregar, a pessoa termina o
+  // cadastro e cai numa tela que a trata como visitante, com o convite para
+  // entrar aparecendo depois de ela ter acabado de entrar.
+  const { tela, pedidos, limpar } = await abrir();
+  try {
+    await tela.clicar(tela.todos("input[type=checkbox]")[0]);
+    await assentar();
+    await tela.clicar(enviar(tela));
+    await assentar();
+
+    const depoisDoCadastro = pedidos.slice(
+      pedidos.findIndex((u) => u.includes("/auth/google/consentir")),
+    );
+    ok(
+      depoisDoCadastro.some((u) => u.includes("/auth/eu")),
+      `não perguntou quem entrou depois de criar a conta: ${pedidos.join(" | ")}`,
+    );
+  } finally {
+    await limpar();
   }
 });
