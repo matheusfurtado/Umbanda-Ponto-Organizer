@@ -1,8 +1,8 @@
 import { Link, useLocation } from "wouter";
+import { ConviteParaEntrar } from "@/componentes/ConviteParaEntrar";
 import { LINKS_DE_MODERACAO } from "@/componentes/linksDeModeracao";
 import { Heart, ArchiveX, BadgeCheck, SlidersHorizontal, VideoOff, BarChart3, EyeOff, Flag, Globe, Home, Library, ListMusic, Mic2, Palette, Plus, ScanSearch, Search, Send, ShieldCheck, Sparkles, Star, UserCog } from "lucide-react";
 import { useApp } from "@/context";
-import { Avatar } from "@/componentes/Avatar";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { useAuth } from "@/auth/AuthContext";
 
@@ -45,6 +45,9 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
 
   return (
     <aside className="hidden w-60 shrink-0 flex-col gap-2 border-r bg-card/40 p-3 lg:flex">
+      {/* O convite fica no TOPO para quem não entrou: é o primeiro item da
+          navegação, e some inteiro quando ela entra. */}
+      {!autenticado && <ConviteParaEntrar />}
       <Link href="/" className={item(local === "/")}>
         <Home className="h-4 w-4" aria-hidden /> Início
       </Link>
@@ -113,16 +116,16 @@ export function BarraLateral({ onTrocarPaleta }: { onTrocarPaleta: () => void })
           <Library className="h-4 w-4" aria-hidden /> Meus artistas
         </Link>
       )}
-      {/* Só para quem escolheu apelido: sem ele não existe perfil, e um link
-          para uma página que responde 404 é pior que link nenhum. */}
-      {autenticado && user?.apelido && (
-        <Link
-          href={`/perfil/${encodeURIComponent(user.apelido)}`}
-          className={item(local === `/perfil/${encodeURIComponent(user.apelido)}`)}
-        >
-          <Avatar apelido={user.apelido} foto={user.foto} tamanho="sm" /> Meu perfil
-        </Link>
-      )}
+      {/* "Meu perfil" saiu daqui e virou link DENTRO de "Minha conta".
+          
+          Palavras dele: *"minha conta e meu perfil é a mesma coisa, então
+          unifica"*. Por dentro não são — conta é o que só a pessoa mexe, perfil
+          é o que os outros veem —, mas como PORTA DE ENTRADA são: as duas
+          significam "eu", e duas entradas para "eu" fazem parar e escolher sem
+          motivo.
+          
+          O perfil continua existindo e continua tendo URL própria: é ela que se
+          compartilha. O que sumiu foi a segunda porta, não a página. */}
 
       {/* MINHA CONTA — a página existia e não tinha link nenhum.
           

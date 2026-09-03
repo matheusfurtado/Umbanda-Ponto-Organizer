@@ -5,7 +5,7 @@
  * aparece para quem não pode usá-lo vira promessa quebrada em toda abertura.
  */
 
-import { deepEqual, ok } from "node:assert/strict";
+import { deepEqual, match, ok } from "node:assert/strict";
 import { beforeEach, test } from "node:test";
 import { Router } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
@@ -384,5 +384,57 @@ test("visitante NÃO vê o link da conta", async () => {
     } finally {
       await limpar();
     }
+  }
+});
+
+test("quem não entrou é convidado a entrar — nas duas barras", async () => {
+  // "sempre que um usuário estiver deslogado faça campanha e motive ele de
+  // fazer login". O convite fica onde a navegação já está: não interrompe
+  // ninguém no meio da gira, e leva ao login com um toque.
+  for (const Barra of [BarraLateral, BarraInferior]) {
+    const { tela, limpar } = await abrir(Barra, false);
+    try {
+      const paraLogin = tela
+        .todos("a")
+        .filter((a) => a.getAttribute("href") === "/login");
+      ok(paraLogin.length >= 1, "não há convite para entrar");
+      match(tela.texto(), /curt/i);
+    } finally {
+      await limpar();
+    }
+  }
+});
+
+test("quem já entrou NÃO vê o convite", async () => {
+  // Campanha que continua depois de convertida é propaganda, e ocupa espaço
+  // que no celular é um sexto da navegação.
+  for (const Barra of [BarraLateral, BarraInferior]) {
+    const { tela, limpar } = await abrir(Barra, true);
+    try {
+      ok(
+        !tela.todos("a").some((a) => a.getAttribute("href") === "/login"),
+        "continuou convidando quem já está dentro",
+      );
+    } finally {
+      await limpar();
+    }
+  }
+});
+
+test("o convite promete só o que a CONTA destrava, não o plano", async () => {
+  // Curtir, guardar e enviar ponto exigem conta. Playlist própria é do plano
+  // pago (ADR 0002) — prometer aqui seria vender o que a conta não entrega, e
+  // a pessoa descobriria depois de se cadastrar.
+  const { tela, limpar } = await abrir(BarraLateral, false);
+  try {
+    const texto = tela.texto();
+    match(texto, /curte/i);
+    match(texto, /mandar um ponto/i);
+    ok(
+      !/gr[áa]tis para sempre|todas as playlists|sem limite/i.test(texto),
+      `o convite promete o que a conta não entrega: ${texto}`,
+    );
+  } finally {
+    await limpar();
   }
 });

@@ -1,4 +1,5 @@
 import { Link, useLocation } from "wouter";
+import { ConviteParaEntrar } from "@/componentes/ConviteParaEntrar";
 import { Heart, Home, Search, ListMusic, Palette, Star, UserCog } from "lucide-react";
 import { useEntitlements } from "@/billing/EntitlementsContext";
 import { useAuth } from "@/auth/AuthContext";
@@ -21,7 +22,12 @@ export function BarraInferior({ onTrocarPaleta }: { onTrocarPaleta: () => void }
     }`;
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t bg-card/95 backdrop-blur lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 lg:hidden">
+      {/* No celular o convite é uma FAIXA acima da barra, e não um item dela:
+          a barra tem cinco itens e um sexto encolheria todos. A faixa some
+          quando a pessoa entra. */}
+      {!autenticado && <ConviteParaEntrar compacto />}
+      <nav className="flex border-t bg-card/95 backdrop-blur">
       <Link href="/" className={item(local === "/")}>
         <Home className="h-5 w-5" aria-hidden /> Início
       </Link>
@@ -61,6 +67,7 @@ export function BarraInferior({ onTrocarPaleta }: { onTrocarPaleta: () => void }
       <button onClick={onTrocarPaleta} className={item(false)}>
         <Palette className="h-5 w-5" aria-hidden /> Cores
       </button>
-    </nav>
+      </nav>
+    </div>
   );
 }
