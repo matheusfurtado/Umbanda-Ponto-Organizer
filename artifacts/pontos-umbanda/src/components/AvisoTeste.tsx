@@ -25,14 +25,28 @@
 import { Clock } from "lucide-react";
 import { Link } from "wouter";
 import { useEntitlements } from "@/billing/EntitlementsContext";
+import { useApp } from "@/context";
 
 export function AvisoTeste() {
   const { ent } = useEntitlements();
+  const { catalogo } = useApp();
   if (ent.plano !== "teste") return null;
 
   // `null` é "não sei", e é diferente de zero. Ver o docstring.
   const dias = ent.diasRestantes ?? null;
   const urgente = dias !== null && dias <= 3;
+
+  // O QUE A PESSOA CONSTRUIU, e só na reta final.
+  //
+  // Uma lista de funcionalidades não convence ninguém; "seus 40 pontos" sim,
+  // porque é sobre ela e ela sabe que é verdade. O número sai do catálogo que
+  // já está em memória — nenhuma requisição a mais para desenhar uma faixa.
+  //
+  // Só quando urgente, e só se houver o que dizer: repetir isto todo dia por
+  // quinze dias transforma informação em cobrança, e zero curtidas viraria uma
+  // frase constrangedora sobre não ter usado o app.
+  const curtidos = catalogo.pontos.filter((p) => p.favorito).length;
+  const pessoal = urgente && curtidos > 0;
 
   return (
     <div
@@ -61,9 +75,20 @@ export function AvisoTeste() {
 
             No lugar dele entrou o OFFLINE, que é o que de fato dói: em terreiro
             o sinal falha, e é justamente aí que o app é aberto. */}
-        Depois, suas letras e os vídeos continuam aqui — o que sai é a
-        organização por orixá, seus repertórios, e o app funcionando sem
-        internet.
+        {pessoal ? (
+          <>
+            Seus <strong className="font-medium">{curtidos} pontos curtidos</strong>{" "}
+            continuam aqui, e os vídeos também — o que para de funcionar é abri-los{" "}
+            <strong className="font-medium">sem internet</strong>, junto com a
+            organização por orixá e seus repertórios.
+          </>
+        ) : (
+          <>
+            Depois, suas letras e os vídeos continuam aqui — o que sai é a
+            organização por orixá, seus repertórios, e o app funcionando sem
+            internet.
+          </>
+        )}
       </span>
       <Link href="/planos">
         <span className="min-h-11 shrink-0 px-2 font-medium underline underline-offset-2">

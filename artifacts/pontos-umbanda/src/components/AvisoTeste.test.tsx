@@ -16,6 +16,7 @@ import { fingirRede } from "../../testes/rede.ts";
 import { AvisoTeste } from "@/components/AvisoTeste";
 import { EntitlementsProvider } from "@/billing/EntitlementsContext";
 import { AuthProvider } from "@/auth/AuthContext";
+import { AppProvider } from "@/context";
 
 /**
  * O `AuthProvider` hidrata `user` de forma SÍNCRONA do `localStorage`
@@ -34,10 +35,28 @@ const EU = {
   apelido: "maria", admin: false, foto: null, favoritos_publicos: false,
 };
 
-async function comPlano(direitos: Record<string, unknown>) {
+/** O acervo em memória, de onde sai a contagem de curtidos. */
+function acervo(curtidos: number) {
+  return {
+    orixas: [], subcategorias: [],
+    pontos: Array.from({ length: curtidos }, (_, i) => ({
+      id: `p${i}`, subcategoriaId: "", titulo: `Ponto ${i}`, letra: "l",
+      favorito: true, ordem: 0, criadoEm: 0,
+    })),
+  };
+}
+
+async function comPlano(
+  direitos: Record<string, unknown>,
+  curtidos = 0,
+) {
+  localStorage.setItem("pontos-umbanda-data", JSON.stringify(acervo(curtidos)));
   const rede = fingirRede((url) => {
     if (url.includes("/auth/eu")) return { corpo: EU };
     if (url.includes("/meus-direitos")) return { corpo: direitos };
+    if (url.includes("/acervo") || url.includes("/catalogo")) {
+      return { corpo: { ...acervo(curtidos), acesso: {}, versao: "v1" } };
+    }
     throw new Error(`chamada não prevista: ${url}`);
   });
   const { hook } = memoryLocation({ path: "/" });
@@ -45,7 +64,9 @@ async function comPlano(direitos: Record<string, unknown>) {
     <Router hook={hook}>
       <AuthProvider>
         <EntitlementsProvider>
-          <AvisoTeste />
+          <AppProvider>
+            <AvisoTeste />
+          </AppProvider>
         </EntitlementsProvider>
       </AuthProvider>
     </Router>,
@@ -171,6 +192,49 @@ test("o aviso diz o que CONTINUA, e não só o que acaba", async () => {
   const { tela, rede } = await comPlano({ plano: "teste", diasRestantes: 2 });
   try {
     match(tela.texto(), /continuam aqui/i);
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});
+
+test("na reta final a faixa fala do que a PESSOA construiu", async () => {
+  // Lista de funcionalidades não convence ninguém; "seus 40 pontos" sim,
+  // porque é sobre ela e ela sabe que é verdade.
+  const { tela, rede } = await comPlano({ plano: "teste", diasRestantes: 2 }, 40);
+  try {
+    match(tela.texto(), /40 pontos curtidos/);
+    // E diz que eles FICAM: o que acaba é abri-los sem internet, não tê-los.
+    match(tela.texto(), /continuam aqui/i);
+    match(tela.texto(), /sem internet/i);
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});
+
+test("longe do fim ela NÃO cobra com números", async () => {
+  // Repetir "seus 40 pontos" todo dia por quinze dias transforma informação em
+  // cobrança — e a faixa aparece em toda tela do app.
+  const { tela, rede } = await comPlano({ plano: "teste", diasRestantes: 12 }, 40);
+  try {
+    ok(
+      !/40 pontos curtidos/.test(tela.texto()),
+      `cobrou com número a doze dias do fim: ${tela.texto()}`,
+    );
+  } finally {
+    await tela.desmontar();
+    rede.restaurar();
+  }
+});
+
+test("sem nada curtido, não diz uma frase constrangedora", async () => {
+  // "Seus 0 pontos curtidos" seria uma observação sobre a pessoa não ter usado
+  // o app, dita no dia em que se pede dinheiro a ela.
+  const { tela, rede } = await comPlano({ plano: "teste", diasRestantes: 1 }, 0);
+  try {
+    ok(!/0 pontos/.test(tela.texto()), `disse "0 pontos": ${tela.texto()}`);
+    match(tela.texto(), /continuam aqui/i, "sumiu com a mensagem inteira");
   } finally {
     await tela.desmontar();
     rede.restaurar();
