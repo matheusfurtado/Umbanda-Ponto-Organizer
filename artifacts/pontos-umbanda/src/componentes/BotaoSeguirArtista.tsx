@@ -31,6 +31,7 @@ import { Check, Loader2, Plus } from "lucide-react";
 import { deixarDeSeguirArtista, seguirArtista } from "@/api/artista";
 import { mensagemDeErro } from "@/api/cliente";
 import { useEntitlements } from "@/billing/EntitlementsContext";
+import { pedirPlano } from "@/billing/convite";
 
 export function BotaoSeguirArtista({
   artistaId,
@@ -60,26 +61,42 @@ export function BotaoSeguirArtista({
   // não tem conta tem de ser convidado a entrar (grátis) e não a assinar —
   // pedir dinheiro a quem nem se cadastrou perde as duas coisas.
   if (seguindo !== null && !ent.seguirArtistas) {
+    // BOTÃO que abre o convite, e não um link para `/planos`.
+    //
+    // O link mandava a pessoa para uma tela de preços a partir de um toque em
+    // "Seguir" — troca de contexto no lugar de resposta. Aqui ela acabou de
+    // dizer o que quer; o convite explica na hora, e quem não se interessa
+    // fecha e continua na página do artista, que é aberta.
+    const pedir = () => pedirPlano("seguir-artista");
+
     if (compacto) {
       return (
-        <a
-          href="/planos"
+        <button
+          type="button"
+          onClick={pedir}
           aria-label="Seguir artistas faz parte do plano"
           className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-dashed px-3 text-xs font-semibold text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
         >
           <Plus className="h-3.5 w-3.5" aria-hidden />
           Seguir
-        </a>
+        </button>
       );
     }
     return (
-      <p className="text-sm text-muted-foreground">
-        <a href="/planos" className="font-medium text-primary underline">
-          Assine
-        </a>{" "}
-        para seguir e ter este artista na sua biblioteca. A página dele, os
-        pontos e os vídeos continuam abertos.
-      </p>
+      <div>
+        <button
+          type="button"
+          onClick={pedir}
+          className="inline-flex min-h-11 items-center gap-2 rounded-full border border-dashed px-5 text-sm font-semibold text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+        >
+          <Plus className="h-4 w-4" aria-hidden />
+          Seguir
+        </button>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Guardar artistas faz parte do plano. A página dele, os pontos e os
+          vídeos continuam abertos.
+        </p>
+      </div>
     );
   }
 

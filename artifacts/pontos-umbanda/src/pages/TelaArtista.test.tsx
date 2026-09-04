@@ -263,8 +263,13 @@ test("o link do vídeo aparece SEM plano — é a exceção do ADR 0007", async 
     ok(ouvir, "o link do vídeo sumiu da página do artista (ver ADR 0007)");
     // E o convite para assinar está na mesma tela: é o que prova que o cenário
     // é de quem NÃO tem plano, e não de um portão que deixou de existir.
+    // O convite virou BOTÃO (ele abre o pop-up do plano em vez de trocar a
+    // pessoa de tela); antes era um link para `/planos`. O que a asserção
+    // ancora continua o mesmo: sem o convite na tela, este teste não estaria
+    // mais medindo uma tela SEM plano.
     ok(
-      tela.todos("a").some((a) => a.getAttribute("href") === "/planos"),
+      tela.todos("button").some((b) => /Seguir/.test(b.textContent ?? "")) &&
+        /faz parte do plano/i.test(tela.texto()),
       "o cenário perdeu o portão: sem o convite a assinar, este teste não " +
         "estaria mais medindo uma tela sem plano",
     );

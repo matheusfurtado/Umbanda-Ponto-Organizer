@@ -215,12 +215,25 @@ test("logado e SEM plano: o botão vira convite para assinar, não erro", async 
   // O terceiro estado. Sem ele, quem tem conta e não assina clicaria "Seguir",
   // levaria 402 do servidor e leria uma mensagem de erro onde devia ler um
   // convite — a pior forma de descobrir que algo é pago.
-  const { tela, limpar } = await abrir(false, { status: 204 },
+  const { tela, rede, limpar } = await abrir(false, { status: 204 },
     { plano: "gratis", seguirArtistas: false });
   try {
-    ok(tela.naoTem("button"), "ofereceu um botão que o servidor vai recusar");
-    const convite = tela.todos("a").find((a) => a.getAttribute("href") === "/planos");
-    ok(convite, "não há caminho para assinar");
+    // BOTÃO que abre o convite, e não link para `/planos`.
+    //
+    // Era um link, e mandar a pessoa para uma tabela de preços a partir de um
+    // toque em "Seguir" é troca de contexto no lugar de resposta. Palavras
+    // dele ao pedir o pop-up: *"eu não achei foi a propaganda do plano"*.
+    //
+    // O que continua preso é que o clique NÃO tenta seguir: oferecer um botão
+    // que o servidor vai recusar com 402 faz a pessoa descobrir que algo é
+    // pago por uma mensagem de erro.
+    const seguir = tela.todos("button").find((b) => /Seguir/.test(b.textContent ?? ""));
+    ok(seguir, "não há por onde pedir para seguir");
+    await tela.clicar(seguir!);
+    await assentar();
+    ok(metodosDoSeguir(rede).length === 0,
+       "chamou o servidor mesmo sem o direito — o 402 viraria erro na tela");
+
     // E a descoberta continua dita como aberta: fechar a página do artista é o
     // que o ADR 0007 escolheu NÃO fazer, e a frase é o que impede alguém de
     // achar que fechou.

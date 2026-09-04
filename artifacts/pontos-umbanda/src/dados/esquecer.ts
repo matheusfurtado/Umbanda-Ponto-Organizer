@@ -51,6 +51,16 @@ export const CHAVES_QUE_FICAM: Record<string, string> = {
     "decisão sobre o APARELHO, não sobre a pessoa: quem dispensou a faixa de " +
     "instalar dispensou naquele aparelho, e trazê-la de volta a cada logout " +
     "repetiria a insistência que ela veio calar",
+  "pontos-umbanda-convite-em":
+    "quando o convite para assinar apareceu por último NESTE aparelho. Mesma " +
+    "razão do `instalar-dispensado`: apagando ao sair, quem desloga e loga de " +
+    "novo levaria o pop-up na cara outra vez, e o descanso de uma semana " +
+    "deixaria de existir para quem troca de conta. Não diz nada sobre a pessoa",
+  "pontos-umbanda-aberturas":
+    "quantas vezes o app foi aberto neste aparelho — é o que segura o convite " +
+    "na PRIMEIRA abertura. Zerando ao sair, todo logout devolveria alguém à " +
+    "condição de recém-chegado e o convite voltaria a aparecer cedo demais. " +
+    "É um contador de aparelho, sem nada da conta dentro",
 };
 
 /**

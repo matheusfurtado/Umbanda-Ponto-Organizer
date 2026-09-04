@@ -3,6 +3,7 @@ import { Link, Redirect, Route, Switch, useLocation } from "wouter";
 import { AvisoAcervo } from "@/components/AvisoAcervo";
 import { AvisoTeste } from "@/components/AvisoTeste";
 import { InstallBanner } from "@/components/InstallBanner";
+import { PopUpDoPlano } from "@/componentes/PopUpDoPlano";
 import { AppProvider, useApp } from "@/context";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { GerenciadorMigracao } from "@/componentes/GerenciadorMigracao";
@@ -158,6 +159,11 @@ export function Moldura({ children }: { children: ReactNode }) {
             para instalar no meio de um cadastro é interromper a única coisa
             que a pessoa está tentando fazer. */}
         <InstallBanner />
+        {/* Ao lado da faixa de instalar, e pelo mesmo motivo: dentro da
+            moldura, ele fica fora do login, do cadastro e do redefinir senha —
+            telas em que a pessoa está tentando fazer UMA coisa, e vender no
+            meio disso é interromper justamente ela. */}
+        <PopUpDoPlano />
       </main>
       <BarraInferior onTrocarPaleta={() => setPaleta(true)} />
       <EscolherPaleta aberto={paleta} onFechar={() => setPaleta(false)} />

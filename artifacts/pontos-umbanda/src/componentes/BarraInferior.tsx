@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 import { ConviteParaEntrar } from "@/componentes/ConviteParaEntrar";
 import { Heart, Home, ListMusic, Palette, Star, UserCog } from "lucide-react";
 import { useEntitlements } from "@/billing/EntitlementsContext";
+import { pedirPlano } from "@/billing/convite";
 import { useAuth } from "@/auth/AuthContext";
 
 /**
@@ -48,12 +49,23 @@ export function BarraInferior({ onTrocarPaleta }: { onTrocarPaleta: () => void }
           <Heart className="h-5 w-5" aria-hidden /> Curtidas
         </Link>
       )}
-      <Link
-        href={ent.repertorios ? "/repertorios" : "/planos"}
-        className={item(local.startsWith("/repertorios"))}
-      >
-        <ListMusic className="h-5 w-5" aria-hidden /> Playlists
-      </Link>
+      {/* Sem o direito, o toque abre o CONVITE em vez de trocar a pessoa de
+          tela. Ir parar numa tabela de preços por ter tocado em "Playlists" é
+          troca de contexto no lugar de resposta — e quem fecha o convite
+          continua exatamente onde estava. */}
+      {ent.repertorios ? (
+        <Link href="/repertorios" className={item(local.startsWith("/repertorios"))}>
+          <ListMusic className="h-5 w-5" aria-hidden /> Playlists
+        </Link>
+      ) : (
+        <button
+          type="button"
+          onClick={() => pedirPlano("montar-playlist")}
+          className={item(false)}
+        >
+          <ListMusic className="h-5 w-5" aria-hidden /> Playlists
+        </button>
+      )}
       {/* MINHA CONTA, e no celular ela é mais necessária que no desktop.
           
           A lateral é `hidden ... lg:flex`: no telefone ela não existe. Sem este
